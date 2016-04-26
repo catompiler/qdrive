@@ -8,9 +8,6 @@
 #include <QDebug>
 
 
-//! Число попыток чтения данных.
-#define DRIVE_RETRIES_COUNT 10
-
 #define DRIVE_ID_NAME_MAX 20
 
 #pragma pack(push, 1)
@@ -152,18 +149,13 @@ void DriveWorker::connectToDevice()
     if(connected_to_device) return;
     if(!good()) return;
 
-    size_t retries = 0;
     int res = 0;
 
     const int max_id_size = 252;
 
     QVector<quint8> response(max_id_size);
 
-    for(retries = 0; retries < DRIVE_RETRIES_COUNT; retries ++){
-        res = modbus_report_slave_id(modbus, &response[0]);
-        if(res != -1) break;
-    }
-
+    res = modbusTry(modbus_report_slave_id, &response[0]);
     if(res == -1){
         emit errorOccured(tr("Нет ответа от устройства.(%1)").arg(modbus_strerror(errno)));
         return;
@@ -200,13 +192,9 @@ void DriveWorker::disconnectFromDevice()
 
 void DriveWorker::setRunning(bool run)
 {
-    size_t retries = 0;
     int res = 0;
 
-    for(retries = 0; retries < DRIVE_RETRIES_COUNT; retries ++){
-        res = modbus_write_bit(modbus, DRIVE_MODBUS_COIL_RUN, run);
-        if(res != -1) break;
-    }
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_RUN, run);
     if(res == -1){
         emit errorOccured(tr("Невозможно записать данные о запуске.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
@@ -227,13 +215,9 @@ void DriveWorker::stopDrive()
 
 void DriveWorker::setReference(unsigned int reference)
 {
-    size_t retries = 0;
     int res = 0;
 
-    for(retries = 0; retries < DRIVE_RETRIES_COUNT; retries ++){
-        res = modbus_write_register(modbus, DRIVE_MODBUS_HOLD_REG_REFERENCE, static_cast<int>(reference));
-        if(res != -1) break;
-    }
+    res = modbusTry(modbus_write_register, DRIVE_MODBUS_HOLD_REG_REFERENCE, static_cast<int>(reference));
     if(res == -1){
         emit errorOccured(tr("Невозможно записать данные о задании.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
@@ -244,15 +228,11 @@ void DriveWorker::setReference(unsigned int reference)
 
 void DriveWorker::update()
 {
-    size_t retries = 0;
     int res = 0;
     uint16_t udata = 0;
     uint8_t bits_data = 0;
 
-    for(retries = 0; retries < DRIVE_RETRIES_COUNT; retries ++){
-        res = modbus_read_registers(modbus, DRIVE_MODBUS_HOLD_REG_REFERENCE, 1, &udata);
-        if(res != -1) break;
-    }
+    res = modbusTry(modbus_read_registers, DRIVE_MODBUS_HOLD_REG_REFERENCE, 1, &udata);
     if(res == -1){
         emit errorOccured(tr("Невозможно прочитать данные о задании.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
@@ -260,10 +240,7 @@ void DriveWorker::update()
     }
     dev_reference = udata;
 
-    for(retries = 0; retries < DRIVE_RETRIES_COUNT; retries ++){
-        res = modbus_read_bits(modbus, DRIVE_MODBUS_COIL_RUN, 1, &bits_data);
-        if(res != -1) break;
-    }
+    res = modbusTry(modbus_read_bits, DRIVE_MODBUS_COIL_RUN, 1, &bits_data);
     if(res == -1){
         emit errorOccured(tr("Невозможно прочитать данные о выполнении.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();

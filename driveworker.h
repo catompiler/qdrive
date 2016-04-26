@@ -161,6 +161,27 @@ private:
      * @return Распакованное значение.
      */
     float unpack_fxd_10_6(int16_t value);
+
+    //! Число попыток чтения данных.
+    const size_t drive_modbus_retries = 10;
+
+    /**
+     * Шаблонная функция попыток
+     * обмена данными по Modbus.
+     */
+    template <typename Func, typename ... Args>
+    int modbusTry(Func func, Args ... args);
 };
+
+template <typename Func, typename ... Args>
+int DriveWorker::modbusTry(Func func, Args ... args)
+{
+    int res = -1;
+    for(size_t retries = 0; retries < drive_modbus_retries; retries ++){
+        res = func(modbus, args...);
+        if(res != -1) break;
+    }
+    return res;
+}
 
 #endif // SHAFTBALANCERWORKER_H
