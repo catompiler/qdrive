@@ -2,6 +2,7 @@
 #include <QTimer>
 #include <QVector>
 #include "settings.h"
+#include "parameters_ids.h"
 #include <modbus/modbus-rtu.h>
 #include <sys/time.h>
 #include <errno.h>
@@ -54,6 +55,9 @@ DriveWorker::DriveWorker() : QThread()
 
     dev_reference = 0;
     dev_running = false;
+    dev_u_a = 0.0f;
+    dev_u_b = 0.0f;
+    dev_u_c = 0.0f;
 }
 
 DriveWorker::~DriveWorker()
@@ -142,6 +146,21 @@ unsigned int DriveWorker::reference() const
 bool DriveWorker::running() const
 {
     return dev_running;
+}
+
+float DriveWorker::powerUa() const
+{
+    return dev_u_a;
+}
+
+float DriveWorker::powerUb() const
+{
+    return dev_u_b;
+}
+
+float DriveWorker::powerUc() const
+{
+    return dev_u_c;
 }
 
 void DriveWorker::connectToDevice()
@@ -248,6 +267,30 @@ void DriveWorker::update()
     }
     dev_running = bits_data;
 
+    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_A, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать напряжение фазы A.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_u_a = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
+
+    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_B, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать напряжение фазы B.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_u_b = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
+
+    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_C, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать напряжение фазы C.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_u_c = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
+
     emit updated();
 
     timer->start();
@@ -273,4 +316,22 @@ void DriveWorker::cleanup_modbus()
 float DriveWorker::unpack_fxd_10_6(int16_t value)
 {
     return (float)value / 64;
+}
+
+float DriveWorker::unpack_parameter(int16_t value, DriveWorker::param_type_t type)
+{
+    switch(type){
+    default:
+    case PARAM_TYPE_INT:
+        return static_cast<float>(value);
+    case PARAM_TYPE_UINT:
+        return static_cast<float>(static_cast<unsigned int>(value));
+    case PARAM_TYPE_FRACT_10:
+        return static_cast<float>(value) / 10;
+    case PARAM_TYPE_FRACT_100:
+        return static_cast<float>(value) / 100;
+    case PARAM_TYPE_FRACT_1000:
+        return static_cast<float>(value) / 1000;
+    }
+    return 0.0f;
 }

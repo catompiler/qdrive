@@ -51,6 +51,24 @@ public:
      */
     bool running() const;
 
+    /**
+     * @brief Получает напряжение фазы A.
+     * @return Напряжение фазы A.
+     */
+    float powerUa() const;
+
+    /**
+     * @brief Получает напряжение фазы B.
+     * @return Напряжение фазы B.
+     */
+    float powerUb() const;
+
+    /**
+     * @brief Получает напряжение фазы C.
+     * @return Напряжение фазы C.
+     */
+    float powerUc() const;
+
 signals:
 
     /**
@@ -124,6 +142,15 @@ private slots:
     void update();
 
 private:
+    //! Тип значения параметра.
+    typedef enum _Parameter_Type {
+        PARAM_TYPE_INT = 0,
+        PARAM_TYPE_UINT = 1,
+        PARAM_TYPE_FRACT_10 = 2,
+        PARAM_TYPE_FRACT_100 = 3,
+        PARAM_TYPE_FRACT_1000 = 4
+    } param_type_t;
+
     /**
      * @brief Точка входа потока.
      */
@@ -154,6 +181,18 @@ private:
      * @brief Работа.
      */
     bool dev_running;
+    /**
+     * @brief Напряжение фазы A.
+     */
+    float dev_u_a;
+    /**
+     * @brief Напряжение фазы B.
+     */
+    float dev_u_b;
+    /**
+     * @brief Напряжение фазы C.
+     */
+    float dev_u_c;
 
     /**
      * @brief Преобразует fixed10_6_t во float.
@@ -161,6 +200,14 @@ private:
      * @return Распакованное значение.
      */
     float unpack_fxd_10_6(int16_t value);
+
+    /**
+     * @brief Распаковывает параметр во float.
+     * @param value Значение для распаковки.
+     * @param type Тип параметра.
+     * @return Распакованное значение.
+     */
+    float unpack_parameter(int16_t value, param_type_t type);
 
     //! Число попыток чтения данных.
     const size_t drive_modbus_retries = 10;

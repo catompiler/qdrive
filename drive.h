@@ -49,6 +49,24 @@ public:
      */
     bool running() const;
 
+    /**
+     * @brief Получает напряжение фазы A.
+     * @return Напряжение фазы A.
+     */
+    float powerUa() const;
+
+    /**
+     * @brief Получает напряжение фазы B.
+     * @return Напряжение фазы B.
+     */
+    float powerUb() const;
+
+    /**
+     * @brief Получает напряжение фазы C.
+     * @return Напряжение фазы C.
+     */
+    float powerUc() const;
+
 signals:
 
     /**

@@ -5,6 +5,7 @@
 #include "drive.h"
 #include <QApplication>
 #include <QMessageBox>
+#include <QString>
 #include <QDebug>
 
 
@@ -72,6 +73,10 @@ void MainWindow::updated()
     ui->hsReference->setValue(drive->reference());
 
     ui->sbReference->blockSignals(false);
+
+    ui->lblUa->setText(QString::number(drive->powerUa(), 'f', 2));
+    ui->lblUb->setText(QString::number(drive->powerUb(), 'f', 2));
+    ui->lblUc->setText(QString::number(drive->powerUc(), 'f', 2));
 }
 
 void MainWindow::errorOccured(const QString &error_text)

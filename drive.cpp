@@ -58,6 +58,21 @@ bool Drive::running() const
     return worker->running();
 }
 
+float Drive::powerUa() const
+{
+    return worker->powerUa();
+}
+
+float Drive::powerUb() const
+{
+    return worker->powerUb();
+}
+
+float Drive::powerUc() const
+{
+    return worker->powerUc();
+}
+
 void Drive::startWorkerThread()
 {
     if(!worker->isRunning()){

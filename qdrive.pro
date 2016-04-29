@@ -26,7 +26,8 @@ HEADERS  += mainwindow.h \
     settings.h \
     settingsdlg.h \
     drive.h \
-    driveworker.h
+    driveworker.h \
+    parameters_ids.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui
