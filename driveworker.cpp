@@ -1,5 +1,6 @@
 #include "driveworker.h"
 #include <QTimer>
+#include <QMutex>
 #include <QVector>
 #include "settings.h"
 #include "parameters_ids.h"
@@ -49,6 +50,8 @@ DriveWorker::DriveWorker() : QThread()
     timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, this, &DriveWorker::update);
 
+    mutex = new QMutex();
+
     modbus = nullptr;
 
     connected_to_device = false;
@@ -58,11 +61,14 @@ DriveWorker::DriveWorker() : QThread()
     dev_u_a = 0.0f;
     dev_u_b = 0.0f;
     dev_u_c = 0.0f;
+    dev_u_rot = 0.0f;
+    dev_debug0 = 0;
 }
 
 DriveWorker::~DriveWorker()
 {
     cleanup_modbus();
+    delete mutex;
     delete timer;
 }
 
@@ -161,6 +167,16 @@ float DriveWorker::powerUb() const
 float DriveWorker::powerUc() const
 {
     return dev_u_c;
+}
+
+float DriveWorker::powerUrot() const
+{
+    return dev_u_rot;
+}
+
+int DriveWorker::debug0() const
+{
+    return dev_debug0;
 }
 
 void DriveWorker::connectToDevice()
@@ -291,6 +307,22 @@ void DriveWorker::update()
     }
     dev_u_c = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
 
+    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_ROT, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать напряжение ротора.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_u_rot = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_10);
+
+    res = modbusTry(modbus_read_input_registers, PARAM_ID_DEBUG_0, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать отладочный параметр 0.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_debug0 = static_cast<int>(static_cast<int16_t>(udata));
+
     emit updated();
 
     timer->start();
@@ -318,7 +350,7 @@ float DriveWorker::unpack_fxd_10_6(int16_t value)
     return (float)value / 64;
 }
 
-float DriveWorker::unpack_parameter(int16_t value, DriveWorker::param_type_t type)
+float DriveWorker::unpack_parameter(int16_t value, param_type_t type)
 {
     switch(type){
     default:

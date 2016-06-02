@@ -5,6 +5,10 @@
 #ifndef PARAMETERS_IDS_H
 #define	PARAMETERS_IDS_H
 
+#include <stdint.h>
+
+typedef uint16_t param_id_t;
+
 // Идентификаторы.
 /**
  * Номинальное напряжение, В.
@@ -122,6 +126,46 @@
  * Длительность импульса открытия симистора возбуждения, мкс.
  */
 #define PARAM_ID_TRIAC_EXC_OPEN_TIME 91
+/**
+ * Отладочный параметр 0
+ */
+#define PARAM_ID_DEBUG_0 1000
+/**
+ * Отладочный параметр 1
+ */
+#define PARAM_ID_DEBUG_1 1001
+/**
+ * Отладочный параметр 2
+ */
+#define PARAM_ID_DEBUG_2 1002
+/**
+ * Отладочный параметр 3
+ */
+#define PARAM_ID_DEBUG_3 1003
+/**
+ * Отладочный параметр 4
+ */
+#define PARAM_ID_DEBUG_4 1004
+/**
+ * Отладочный параметр 5
+ */
+#define PARAM_ID_DEBUG_5 1005
+/**
+ * Отладочный параметр 6
+ */
+#define PARAM_ID_DEBUG_6 1006
+/**
+ * Отладочный параметр 7
+ */
+#define PARAM_ID_DEBUG_7 1007
+/**
+ * Отладочный параметр 8
+ */
+#define PARAM_ID_DEBUG_8 1008
+/**
+ * Отладочный параметр 9
+ */
+#define PARAM_ID_DEBUG_9 1009
 /**
  * Напряжение фазы A.
  */

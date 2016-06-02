@@ -73,6 +73,16 @@ float Drive::powerUc() const
     return worker->powerUc();
 }
 
+float Drive::powerUrot() const
+{
+    return worker->powerUrot();
+}
+
+int Drive::debug0() const
+{
+    return worker->debug0();
+}
+
 void Drive::startWorkerThread()
 {
     if(!worker->isRunning()){

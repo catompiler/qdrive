@@ -2,9 +2,13 @@
 #define SHAFTBALANCERWORKER_H
 
 #include <QThread>
+#include <QHash>
+#include <QPair>
 #include <stddef.h>
+#include "parameter.h"
 
 class QTimer;
+class QMutex;
 typedef struct _modbus modbus_t;
 
 
@@ -68,6 +72,18 @@ public:
      * @return Напряжение фазы C.
      */
     float powerUc() const;
+
+    /**
+     * @brief Получает напряжение якоря.
+     * @return Напряжение якоря.
+     */
+    float powerUrot() const;
+
+    /**
+     * @brief Получает отладочный параметр 0.
+     * @return Отладочный параметр 0.
+     */
+    int debug0() const;
 
 signals:
 
@@ -142,14 +158,12 @@ private slots:
     void update();
 
 private:
-    //! Тип значения параметра.
-    typedef enum _Parameter_Type {
-        PARAM_TYPE_INT = 0,
-        PARAM_TYPE_UINT = 1,
-        PARAM_TYPE_FRACT_10 = 2,
-        PARAM_TYPE_FRACT_100 = 3,
-        PARAM_TYPE_FRACT_1000 = 4
-    } param_type_t;
+
+    /**
+     * @brief Тип списка параметров для обновления.
+     * QHash< Идентификатор, QPair< Параметр, Количество ссылок >>;
+     */
+    typedef QHash<param_id_t, QPair<Parameter*, size_t>> UpdateParamsList;
 
     /**
      * @brief Точка входа потока.
@@ -169,6 +183,10 @@ private:
      * @brief Протокол Modbus RTU.
      */
     modbus_t* modbus;
+    /**
+     * @brief Мютекс.
+     */
+    QMutex* mutex;
     /**
      * @brief Флаг подключения к устройству.
      */
@@ -193,6 +211,14 @@ private:
      * @brief Напряжение фазы C.
      */
     float dev_u_c;
+    /**
+     * @brief Напряжение якоря.
+     */
+    float dev_u_rot;
+    /**
+     * @brief Отладочный параметр 0.
+     */
+    int dev_debug0;
 
     /**
      * @brief Преобразует fixed10_6_t во float.

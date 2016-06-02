@@ -20,14 +20,16 @@ SOURCES += main.cpp\
     settings.cpp \
     settingsdlg.cpp \
     drive.cpp \
-    driveworker.cpp
+    driveworker.cpp \
+    parameter.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
     settingsdlg.h \
     drive.h \
     driveworker.h \
-    parameters_ids.h
+    parameters_ids.h \
+    parameter.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui

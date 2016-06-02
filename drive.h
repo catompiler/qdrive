@@ -67,6 +67,18 @@ public:
      */
     float powerUc() const;
 
+    /**
+     * @brief Получает напряжение якоря.
+     * @return Напряжение якоря.
+     */
+    float powerUrot() const;
+
+    /**
+     * @brief Получает отладочный параметр 0.
+     * @return Отладочный параметр 0.
+     */
+    int debug0() const;
+
 signals:
 
     /**

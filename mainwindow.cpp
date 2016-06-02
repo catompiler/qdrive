@@ -77,6 +77,9 @@ void MainWindow::updated()
     ui->lblUa->setText(QString::number(drive->powerUa(), 'f', 2));
     ui->lblUb->setText(QString::number(drive->powerUb(), 'f', 2));
     ui->lblUc->setText(QString::number(drive->powerUc(), 'f', 2));
+    ui->lblUrot->setText(QString::number(drive->powerUrot(), 'f', 2));
+
+    ui->lblDebug0->setText(QString::number(drive->debug0()));
 }
 
 void MainWindow::errorOccured(const QString &error_text)
