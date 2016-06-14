@@ -10,6 +10,8 @@ namespace Ui {
 class MainWindow;
 }
 
+class QGridLayout;
+
 
 /**
  * @brief Класс главного окна приложения.
@@ -96,11 +98,20 @@ private slots:
      */
     void on_sbReference_valueChanged(int value);
 
+    /**
+     * @brief Обработчик нажатия кнопки сброса ошибок.
+     */
+    void on_pbClearErrs_clicked();
+
 private:
     /**
      * @brief Обновляет настройки.
      */
     void setup();
+    /**
+     * @brief Обновляет список просматриваемых параметров.
+     */
+    void refreshViewedParams();
     /**
      * @brief Графический интерфейс.
      */
@@ -114,6 +125,10 @@ private:
      * устройством привода.
      */
     Drive* drive;
+    /**
+     * @brief Разметка виджетов параметров.
+     */
+    QGridLayout* glMain;
 };
 
 #endif // MAINWINDOW_H

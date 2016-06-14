@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     settingsdlg.cpp \
     drive.cpp \
     driveworker.cpp \
-    parameter.cpp
+    parameter.cpp \
+    paramview.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
@@ -29,7 +30,9 @@ HEADERS  += mainwindow.h \
     drive.h \
     driveworker.h \
     parameters_ids.h \
-    parameter.h
+    parameter.h \
+    paramview.h \
+    drive_types.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui

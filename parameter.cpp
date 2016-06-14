@@ -54,6 +54,25 @@ void Parameter::setId(param_id_t parameter_id)
     param_id = parameter_id;
 }
 
+QString Parameter::toString() const
+{
+    switch(param_type){
+    case PARAM_TYPE_INT:
+        return QString::number(toInt());
+    case PARAM_TYPE_UINT:
+        return QString::number(toUInt());
+    case PARAM_TYPE_FRACT_10:
+        return QString::number(toFloat(), 'f', 1);
+    case PARAM_TYPE_FRACT_100:
+        return QString::number(toFloat(), 'f', 2);
+    case PARAM_TYPE_FRACT_1000:
+        return QString::number(toFloat(), 'f', 3);
+    default:
+        break;
+    }
+    return QString();
+}
+
 int Parameter::toInt() const
 {
     if(param) return param->toInt();

@@ -5,9 +5,33 @@
 #include "drive.h"
 #include <QApplication>
 #include <QMessageBox>
+#include <QGridLayout>
+#include <QLayoutItem>
 #include <QString>
 #include <QDebug>
+#include "parameter.h"
+#include "paramview.h"
 
+
+struct ParamItem {
+    QString name;
+    param_id_t id;
+    param_type_t type;
+};
+
+static ParamItem default_params[] = {
+    {"Ua", PARAM_ID_POWER_U_A, PARAM_TYPE_FRACT_100},
+    {"Ia", PARAM_ID_POWER_I_A, PARAM_TYPE_FRACT_100},
+    {"Ub", PARAM_ID_POWER_U_B, PARAM_TYPE_FRACT_100},
+    {"Ib", PARAM_ID_POWER_I_B, PARAM_TYPE_FRACT_100},
+    {"Uc", PARAM_ID_POWER_U_C, PARAM_TYPE_FRACT_100},
+    {"Ic", PARAM_ID_POWER_I_C, PARAM_TYPE_FRACT_100},
+    {"Urot", PARAM_ID_POWER_U_ROT, PARAM_TYPE_FRACT_10},
+    {"Irot", PARAM_ID_POWER_I_ROT, PARAM_TYPE_FRACT_10},
+    {"Iexc", PARAM_ID_POWER_I_EXC, PARAM_TYPE_FRACT_1000}
+};
+
+#define PARAM_ITEMS_COLS 2
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -15,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    glMain = new QGridLayout();
+    centralWidget()->setLayout(glMain);
 
     settingsDlg = nullptr;
 
@@ -27,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setup();
 
+    refreshViewedParams();
+
     refreshUi();
 }
 
@@ -34,6 +63,7 @@ MainWindow::~MainWindow()
 {
     delete drive;
     delete settingsDlg;
+    delete glMain;
     delete ui;
 }
 
@@ -50,6 +80,7 @@ void MainWindow::refreshUi()
     ui->pbStop->setEnabled(connected && running);
     ui->hsReference->setEnabled(connected);
     ui->sbReference->setEnabled(connected);
+    ui->pbClearErrs->setEnabled(connected);
 }
 
 void MainWindow::connected()
@@ -73,13 +104,6 @@ void MainWindow::updated()
     ui->hsReference->setValue(drive->reference());
 
     ui->sbReference->blockSignals(false);
-
-    ui->lblUa->setText(QString::number(drive->powerUa(), 'f', 2));
-    ui->lblUb->setText(QString::number(drive->powerUb(), 'f', 2));
-    ui->lblUc->setText(QString::number(drive->powerUc(), 'f', 2));
-    ui->lblUrot->setText(QString::number(drive->powerUrot(), 'f', 2));
-
-    ui->lblDebug0->setText(QString::number(drive->debug0()));
 }
 
 void MainWindow::errorOccured(const QString &error_text)
@@ -142,7 +166,44 @@ void MainWindow::on_sbReference_valueChanged(int value)
     drive->setReference(value);
 }
 
+void MainWindow::on_pbClearErrs_clicked()
+{
+    drive->clearErrors();
+}
+
 void MainWindow::setup()
 {
     drive->setup();
+}
+
+void MainWindow::refreshViewedParams()
+{
+    QWidget* widget;
+    QLayoutItem* item = nullptr;
+    ParamView* paramView = nullptr;
+    Parameter* param = nullptr;
+
+    while((item = glMain->takeAt(0)) != nullptr){
+        widget = item->widget();
+        if(widget){
+            paramView = qobject_cast<ParamView*>(widget);
+            if(paramView) delete paramView->parameter();
+        }
+        delete item;
+    }
+
+    size_t n_widget = 0;
+    for(ParamItem& paramItem : default_params){
+        paramView = new ParamView(this);
+        param = new Parameter(paramItem.type, paramItem.id);
+
+        drive->addUpdParam(param);
+        connect(drive, &Drive::updated, paramView, &ParamView::updated);
+
+        paramView->viewParam(paramItem.name, param);
+
+        glMain->addWidget(paramView, n_widget / PARAM_ITEMS_COLS, n_widget % PARAM_ITEMS_COLS);
+
+        n_widget ++;
+    }
 }

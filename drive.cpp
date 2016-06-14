@@ -18,6 +18,7 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::start, worker, &DriveWorker::startDrive);
     connect(this, &Drive::stop, worker, &DriveWorker::stopDrive);
     connect(this, &Drive::setReference, worker, &DriveWorker::setReference);
+    connect(this, &Drive::clearErrors, worker, &DriveWorker::clearErrors);
 }
 
 Drive::~Drive()
@@ -58,29 +59,14 @@ bool Drive::running() const
     return worker->running();
 }
 
-float Drive::powerUa() const
+void Drive::addUpdParam(Parameter *param)
 {
-    return worker->powerUa();
+    worker->addUpdParam(param);
 }
 
-float Drive::powerUb() const
+void Drive::removeUpdParam(Parameter *param)
 {
-    return worker->powerUb();
-}
-
-float Drive::powerUc() const
-{
-    return worker->powerUc();
-}
-
-float Drive::powerUrot() const
-{
-    return worker->powerUrot();
-}
-
-int Drive::debug0() const
-{
-    return worker->debug0();
+    worker->removeUpdParam(param);
 }
 
 void Drive::startWorkerThread()

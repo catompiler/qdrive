@@ -35,10 +35,14 @@ typedef struct _DriveModbusId {
 // Константы адресов.
 // Регистры ввода.
 // Регистры хранения.
+//! Задание.
 #define DRIVE_MODBUS_HOLD_REG_REFERENCE (DRIVE_MODBUS_HOLD_REGS_START + 0)
 // Цифровые входа.
 // Регистры флагов.
+//! Запуск/останов.
 #define DRIVE_MODBUS_COIL_RUN (DRIVE_MODBUS_COIS_START + 0)
+//! Сброс ошибок.
+#define DRIVE_MODBUS_COIL_CLEAR_ERRORS (DRIVE_MODBUS_COIS_START + 1)
 
 
 DriveWorker::DriveWorker() : QThread()
@@ -52,22 +56,20 @@ DriveWorker::DriveWorker() : QThread()
 
     mutex = new QMutex();
 
+    upd_params = new UpdateParamsList();
+
     modbus = nullptr;
 
     connected_to_device = false;
 
     dev_reference = 0;
     dev_running = false;
-    dev_u_a = 0.0f;
-    dev_u_b = 0.0f;
-    dev_u_c = 0.0f;
-    dev_u_rot = 0.0f;
-    dev_debug0 = 0;
 }
 
 DriveWorker::~DriveWorker()
 {
     cleanup_modbus();
+    delete upd_params;
     delete mutex;
     delete timer;
 }
@@ -154,29 +156,34 @@ bool DriveWorker::running() const
     return dev_running;
 }
 
-float DriveWorker::powerUa() const
+void DriveWorker::addUpdParam(Parameter *param)
 {
-    return dev_u_a;
+    mutex->lock();
+
+    UpdateParamsList::iterator it = upd_params->find(param->id());
+
+    if(it == upd_params->end()){
+        upd_params->insert(param->id(), qMakePair(param, static_cast<size_t>(1)));
+    }else{
+        it->second ++;
+    }
+
+    mutex->unlock();
 }
 
-float DriveWorker::powerUb() const
+void DriveWorker::removeUpdParam(Parameter *param)
 {
-    return dev_u_b;
-}
+    mutex->lock();
 
-float DriveWorker::powerUc() const
-{
-    return dev_u_c;
-}
+    UpdateParamsList::iterator it = upd_params->find(param->id());
 
-float DriveWorker::powerUrot() const
-{
-    return dev_u_rot;
-}
+    if(it != upd_params->end()){
+        if(-- it->second == 0){
+            upd_params->erase(it);
+        }
+    }
 
-int DriveWorker::debug0() const
-{
-    return dev_debug0;
+    mutex->unlock();
 }
 
 void DriveWorker::connectToDevice()
@@ -261,6 +268,18 @@ void DriveWorker::setReference(unsigned int reference)
     dev_reference = reference;
 }
 
+void DriveWorker::clearErrors()
+{
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_CLEAR_ERRORS, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно очистить ошибки привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+}
+
 void DriveWorker::update()
 {
     int res = 0;
@@ -282,46 +301,20 @@ void DriveWorker::update()
         return;
     }
     dev_running = bits_data;
+    mutex->lock();
 
-    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_A, 1, &udata);
-    if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать напряжение фазы A.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
-        return;
+    for(UpdateParamsList::iterator it = upd_params->begin(); it != upd_params->end(); ++ it){
+        res = modbusTry(modbus_read_input_registers, it->first->id(), 1, &udata);
+        if(res == -1){
+            emit errorOccured(tr("Невозможно прочитать параметр с id %1.(%2)")
+                              .arg(it->first->id()).arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return;
+        }
+        it->first->setRaw(udata);
     }
-    dev_u_a = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
 
-    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_B, 1, &udata);
-    if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать напряжение фазы B.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
-        return;
-    }
-    dev_u_b = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
-
-    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_C, 1, &udata);
-    if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать напряжение фазы C.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
-        return;
-    }
-    dev_u_c = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_100);
-
-    res = modbusTry(modbus_read_input_registers, PARAM_ID_POWER_U_ROT, 1, &udata);
-    if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать напряжение ротора.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
-        return;
-    }
-    dev_u_rot = unpack_parameter(static_cast<int16_t>(udata), PARAM_TYPE_FRACT_10);
-
-    res = modbusTry(modbus_read_input_registers, PARAM_ID_DEBUG_0, 1, &udata);
-    if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать отладочный параметр 0.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
-        return;
-    }
-    dev_debug0 = static_cast<int>(static_cast<int16_t>(udata));
+    mutex->unlock();
 
     emit updated();
 
@@ -343,11 +336,6 @@ void DriveWorker::cleanup_modbus()
         connected_to_device = false;
         dev_running = false;
     }
-}
-
-float DriveWorker::unpack_fxd_10_6(int16_t value)
-{
-    return (float)value / 64;
 }
 
 float DriveWorker::unpack_parameter(int16_t value, param_type_t type)

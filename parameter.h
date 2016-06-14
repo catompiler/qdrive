@@ -1,9 +1,15 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
+#include <QString>
 #include <stdint.h>
 #include <math.h>
 #include "parameters_ids.h"
+
+
+
+//! @brief Тип идентификатора параметра.
+typedef uint16_t param_id_t;
 
 
 //! @brief Тип значения параметра.
@@ -73,6 +79,12 @@ public:
      * @param parameter_id Идентификатор параметра.
      */
     void setId(param_id_t parameter_id);
+
+    /**
+     * @brief Получает строковое представление значения параметра.
+     * @return Строковое представление значения параметра.
+     */
+    QString toString() const;
 
     /**
      * @brief Получает целочисленное знаковое значение параметра.

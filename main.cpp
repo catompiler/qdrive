@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "settings.h"
-#include <QDebug>
+
 
 
 int main(int argc, char *argv[])
@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
     Settings::get().read();
 
     //srand(time(NULL));
-    testParams();
 
     MainWindow w;
     w.show();

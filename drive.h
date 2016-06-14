@@ -4,6 +4,7 @@
 #include <QObject>
 
 class DriveWorker;
+class Parameter;
 
 /**
  * @brief Класс интерфейса взаимодействия с устройством балансировки.
@@ -50,34 +51,16 @@ public:
     bool running() const;
 
     /**
-     * @brief Получает напряжение фазы A.
-     * @return Напряжение фазы A.
+     * @brief Добавляет параметр для обновления.
+     * @param param Параметр.
      */
-    float powerUa() const;
+    void addUpdParam(Parameter* param);
 
     /**
-     * @brief Получает напряжение фазы B.
-     * @return Напряжение фазы B.
+     * @brief Удаляет параметр для обновления.
+     * @param param Параметр.
      */
-    float powerUb() const;
-
-    /**
-     * @brief Получает напряжение фазы C.
-     * @return Напряжение фазы C.
-     */
-    float powerUc() const;
-
-    /**
-     * @brief Получает напряжение якоря.
-     * @return Напряжение якоря.
-     */
-    float powerUrot() const;
-
-    /**
-     * @brief Получает отладочный параметр 0.
-     * @return Отладочный параметр 0.
-     */
-    int debug0() const;
+    void removeUpdParam(Parameter* param);
 
 signals:
 
@@ -141,6 +124,11 @@ signals:
      * @param reference Задание.
      */
     void setReference(unsigned int reference);
+
+    /**
+     * @brief Очищает ошибки привода.
+     */
+    void clearErrors();
 
 private:
     /**

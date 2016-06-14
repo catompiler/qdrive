@@ -56,34 +56,16 @@ public:
     bool running() const;
 
     /**
-     * @brief Получает напряжение фазы A.
-     * @return Напряжение фазы A.
+     * @brief Добавляет параметр для обновления.
+     * @param param Параметр.
      */
-    float powerUa() const;
+    void addUpdParam(Parameter* param);
 
     /**
-     * @brief Получает напряжение фазы B.
-     * @return Напряжение фазы B.
+     * @brief Удаляет параметр для обновления.
+     * @param param Параметр.
      */
-    float powerUb() const;
-
-    /**
-     * @brief Получает напряжение фазы C.
-     * @return Напряжение фазы C.
-     */
-    float powerUc() const;
-
-    /**
-     * @brief Получает напряжение якоря.
-     * @return Напряжение якоря.
-     */
-    float powerUrot() const;
-
-    /**
-     * @brief Получает отладочный параметр 0.
-     * @return Отладочный параметр 0.
-     */
-    int debug0() const;
+    void removeUpdParam(Parameter* param);
 
 signals:
 
@@ -150,6 +132,11 @@ public slots:
      */
     void setReference(unsigned int reference);
 
+    /**
+     * @brief Очищает ошибки привода.
+     */
+    void clearErrors();
+
 private slots:
 
     /**
@@ -199,33 +186,6 @@ private:
      * @brief Работа.
      */
     bool dev_running;
-    /**
-     * @brief Напряжение фазы A.
-     */
-    float dev_u_a;
-    /**
-     * @brief Напряжение фазы B.
-     */
-    float dev_u_b;
-    /**
-     * @brief Напряжение фазы C.
-     */
-    float dev_u_c;
-    /**
-     * @brief Напряжение якоря.
-     */
-    float dev_u_rot;
-    /**
-     * @brief Отладочный параметр 0.
-     */
-    int dev_debug0;
-
-    /**
-     * @brief Преобразует fixed10_6_t во float.
-     * @param value Значение для распаковки.
-     * @return Распакованное значение.
-     */
-    float unpack_fxd_10_6(int16_t value);
 
     /**
      * @brief Распаковывает параметр во float.
@@ -234,6 +194,8 @@ private:
      * @return Распакованное значение.
      */
     float unpack_parameter(int16_t value, param_type_t type);
+
+    UpdateParamsList* upd_params;
 
     //! Число попыток чтения данных.
     const size_t drive_modbus_retries = 10;
