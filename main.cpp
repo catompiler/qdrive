@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
     Settings::get().read();
 
     //srand(time(NULL));
-
     MainWindow w;
     w.show();
 

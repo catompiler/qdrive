@@ -117,6 +117,63 @@ void Parameter::setRaw(uint16_t val)
     if(param) param->setRaw(val);
 }
 
+QString Parameter::number(param_type_t param_type, int val)
+{
+    switch(param_type){
+    case PARAM_TYPE_INT:
+        return QString::number(val);
+    case PARAM_TYPE_UINT:
+        return QString::number(static_cast<unsigned int>(val));
+    case PARAM_TYPE_FRACT_10:
+        return QString::number(static_cast<float>(val), 'f', 1);
+    case PARAM_TYPE_FRACT_100:
+        return QString::number(static_cast<float>(val), 'f', 2);
+    case PARAM_TYPE_FRACT_1000:
+        return QString::number(static_cast<float>(val), 'f', 3);
+    default:
+        break;
+    }
+    return QString();
+}
+
+QString Parameter::number(param_type_t param_type, unsigned int val)
+{
+    switch(param_type){
+    case PARAM_TYPE_INT:
+        return QString::number(val);
+    case PARAM_TYPE_UINT:
+        return QString::number(val);
+    case PARAM_TYPE_FRACT_10:
+        return QString::number(static_cast<float>(val), 'f', 1);
+    case PARAM_TYPE_FRACT_100:
+        return QString::number(static_cast<float>(val), 'f', 2);
+    case PARAM_TYPE_FRACT_1000:
+        return QString::number(static_cast<float>(val), 'f', 3);
+    default:
+        break;
+    }
+    return QString();
+}
+
+QString Parameter::number(param_type_t param_type, float val)
+{
+    switch(param_type){
+    case PARAM_TYPE_INT:
+        return QString::number(static_cast<int>(val));
+    case PARAM_TYPE_UINT:
+        return QString::number(static_cast<int>(val));
+    case PARAM_TYPE_FRACT_10:
+        return QString::number(val, 'f', 1);
+    case PARAM_TYPE_FRACT_100:
+        return QString::number(val, 'f', 2);
+    case PARAM_TYPE_FRACT_1000:
+        return QString::number(val, 'f', 3);
+    default:
+        break;
+    }
+    return QString();
+}
+
 Parameter::Parameter()
 {
     param = nullptr;

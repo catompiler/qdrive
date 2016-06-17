@@ -7,6 +7,7 @@
 #include "parameter.h"
 
 class QPaintEvent;
+class QMouseEvent;
 
 
 class ParamView : public QFrame
@@ -26,6 +27,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent* event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
     QString param_name;

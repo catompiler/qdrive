@@ -136,6 +136,30 @@ public:
      */
     virtual void setRaw(uint16_t val);
 
+    /**
+     * @brief Получает строковое представление значения согласно типа параметра.
+     * @param param_type Тип параметра.
+     * @param val Значение.
+     * @return Строковое представление.
+     */
+    static QString number(param_type_t param_type, int val);
+
+    /**
+     * @brief Получает строковое представление значения согласно типа параметра.
+     * @param param_type Тип параметра.
+     * @param val Значение.
+     * @return Строковое представление.
+     */
+    static QString number(param_type_t param_type, unsigned int val);
+
+    /**
+     * @brief Получает строковое представление значения согласно типа параметра.
+     * @param param_type Тип параметра.
+     * @param val Значение.
+     * @return Строковое представление.
+     */
+    static QString number(param_type_t param_type, float val);
+
 protected:
     Parameter();
     ParameterBase* param;
@@ -200,7 +224,7 @@ public:
         { return static_cast<uint16_t>(floor(value * 10.0f + 0.5f)); }
 
     void setRaw(uint16_t val)
-        { value = static_cast<float>(val) / 10.0f; }
+        { value = static_cast<float>(static_cast<int16_t>(val)) / 10.0f; }
 };
 
 
@@ -218,7 +242,7 @@ public:
         { return static_cast<uint16_t>(floor(value * 100.0f + 0.5f)); }
 
     void setRaw(uint16_t val)
-        { value = static_cast<float>(val) / 100.0f; }
+        { value = static_cast<float>(static_cast<int16_t>(val)) / 100.0f; }
 };
 
 
@@ -236,7 +260,7 @@ public:
         { return static_cast<uint16_t>(floor(value * 1000.0f + 0.5f)); }
 
     void setRaw(uint16_t val)
-        { value = static_cast<float>(val) / 1000.0f; }
+        { value = static_cast<float>(static_cast<int16_t>(val)) / 1000.0f; }
 };
 
 #endif // PARAMETER_H

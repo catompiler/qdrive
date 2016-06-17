@@ -1,5 +1,7 @@
 #include "paramview.h"
 #include <QPaintEvent>
+#include <QMouseEvent>
+#include <QToolTip>
 #include <QPainter>
 #include <QRect>
 #include <QSize>
@@ -10,6 +12,8 @@
 
 ParamView::ParamView(QWidget *parent) : QFrame(parent)
 {
+    setMouseTracking(true);
+
     param = nullptr;
     setFrameShadow(QFrame::Sunken);
     setFrameShape(QFrame::StyledPanel);
@@ -53,6 +57,21 @@ void ParamView::paintEvent(QPaintEvent *event)
     //painter.drawRect(QRect(0, 0, width()-1, height()-1));
 
     drawParameter(painter);
+}
+
+void ParamView::mouseMoveEvent(QMouseEvent *event)
+{
+    QFrame::mouseMoveEvent(event);
+
+    int index = event->x();
+
+    if(buffer->size() < width()) index -= width() - buffer->size();
+
+    if(index < buffer->size() && index > 0){
+        QToolTip::showText(event->globalPos(),Parameter::number(param->type(), buffer->at(index)), this);
+    }else{
+        QToolTip::hideText();
+    }
 }
 
 void ParamView::drawParameter(QPainter &painter)
