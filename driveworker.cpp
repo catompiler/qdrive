@@ -476,6 +476,7 @@ void DriveWorker::run()
 void DriveWorker::cleanup_modbus()
 {
     if(modbus){
+        modbus_close(modbus);
         modbus_free(modbus);
         modbus = nullptr;
         connected_to_device = false;
