@@ -218,6 +218,11 @@ private:
     void cleanup_modbus();
 
     /**
+     * @brief Очищает списки параметров для чтения / записи.
+     */
+    void cleanup_rw_params();
+
+    /**
      * @brief Таймер для отсчёта периода обновления.
      */
     QTimer* timer;

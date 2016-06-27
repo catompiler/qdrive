@@ -263,6 +263,8 @@ void DriveWorker::disconnectFromDevice()
 
     connected_to_device = false;
 
+    cleanup_rw_params();
+
     emit disconnected();
 }
 
@@ -282,13 +284,13 @@ void DriveWorker::setRunning(bool run)
 void DriveWorker::startDrive()
 {
     setRunning(true);
-    if(dev_running) emit information(tr("Привод запущен."));
+    if(dev_running) emit information(tr("Запуск привода."));
 }
 
 void DriveWorker::stopDrive()
 {
     setRunning(false);
-    if(!dev_running) emit information(tr("Привод остановлен."));
+    if(!dev_running) emit information(tr("Останов привода."));
 }
 
 void DriveWorker::setReference(unsigned int reference)
@@ -479,6 +481,24 @@ void DriveWorker::cleanup_modbus()
         connected_to_device = false;
         dev_running = false;
     }
+}
+
+void DriveWorker::cleanup_rw_params()
+{
+    read_mutex->lock();
+    for(auto it = read_params->begin(); it != read_params->end(); ++it){
+        it->second->finish();
+    }
+    read_params->clear();
+    read_mutex->unlock();
+
+
+    write_mutex->lock();
+    for(auto it = write_params->begin(); it != write_params->end(); ++it){
+        it->second->finish();
+    }
+    write_params->clear();
+    write_mutex->unlock();
 }
 
 float DriveWorker::unpack_parameter(int16_t value, param_type_t type)
