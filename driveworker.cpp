@@ -3,7 +3,8 @@
 #include <QMutex>
 #include <QVector>
 #include "settings.h"
-#include "parameters_ids.h"
+#include "future.h"
+#include "parameter.h"
 #include <modbus/modbus-rtu.h>
 #include <sys/time.h>
 #include <errno.h>
@@ -43,6 +44,10 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_RUN (DRIVE_MODBUS_COIS_START + 0)
 //! Сброс ошибок.
 #define DRIVE_MODBUS_COIL_CLEAR_ERRORS (DRIVE_MODBUS_COIS_START + 1)
+//! Применение настроек.
+#define DRIVE_MODBUS_COIL_APPLY_PARAMS (DRIVE_MODBUS_COIS_START + 2)
+//! Сохранение настроек.
+#define DRIVE_MODBUS_COIL_SAVE_PARAMS (DRIVE_MODBUS_COIS_START + 3)
 
 
 DriveWorker::DriveWorker() : QThread()
@@ -54,9 +59,14 @@ DriveWorker::DriveWorker() : QThread()
     timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, this, &DriveWorker::update);
 
-    mutex = new QMutex();
-
+    upd_mutex = new QMutex();
     upd_params = new UpdateParamsList();
+
+    read_mutex = new QMutex();
+    read_params = new ReadParamsList();
+
+    write_mutex = new QMutex();
+    write_params = new WriteParamsList();
 
     modbus = nullptr;
 
@@ -69,8 +79,14 @@ DriveWorker::DriveWorker() : QThread()
 DriveWorker::~DriveWorker()
 {
     cleanup_modbus();
+    delete write_params;
+    delete write_mutex;
+
+    delete read_params;
+    delete read_mutex;
+
     delete upd_params;
-    delete mutex;
+    delete upd_mutex;
     delete timer;
 }
 
@@ -158,7 +174,7 @@ bool DriveWorker::running() const
 
 void DriveWorker::addUpdParam(Parameter *param)
 {
-    mutex->lock();
+    upd_mutex->lock();
 
     UpdateParamsList::iterator it = upd_params->find(param->id());
 
@@ -168,12 +184,12 @@ void DriveWorker::addUpdParam(Parameter *param)
         it->second ++;
     }
 
-    mutex->unlock();
+    upd_mutex->unlock();
 }
 
 void DriveWorker::removeUpdParam(Parameter *param)
 {
-    mutex->lock();
+    upd_mutex->lock();
 
     UpdateParamsList::iterator it = upd_params->find(param->id());
 
@@ -183,7 +199,25 @@ void DriveWorker::removeUpdParam(Parameter *param)
         }
     }
 
-    mutex->unlock();
+    upd_mutex->unlock();
+}
+
+void DriveWorker::addReadParams(QList<Parameter *> &params, Future *future)
+{
+    read_mutex->lock();
+
+    read_params->append(qMakePair(params, future));
+
+    read_mutex->unlock();
+}
+
+void DriveWorker::addWriteParams(QList<Parameter *> &params, Future *future)
+{
+    write_mutex->lock();
+
+    write_params->append(qMakePair(params, future));
+
+    write_mutex->unlock();
 }
 
 void DriveWorker::connectToDevice()
@@ -248,11 +282,13 @@ void DriveWorker::setRunning(bool run)
 void DriveWorker::startDrive()
 {
     setRunning(true);
+    if(dev_running) emit information(tr("Привод запущен."));
 }
 
 void DriveWorker::stopDrive()
 {
     setRunning(false);
+    if(!dev_running) emit information(tr("Привод остановлен."));
 }
 
 void DriveWorker::setReference(unsigned int reference)
@@ -266,6 +302,8 @@ void DriveWorker::setReference(unsigned int reference)
         return;
     }
     dev_reference = reference;
+
+    emit information(tr("Задание установлено."));
 }
 
 void DriveWorker::clearErrors()
@@ -278,7 +316,112 @@ void DriveWorker::clearErrors()
         disconnectFromDevice();
         return;
     }
+    emit information(tr("Ошибки очищены."));
 }
+
+void DriveWorker::saveParams()
+{
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_SAVE_PARAMS, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно сохранить параметры привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Параметры сохранены."));
+}
+
+void DriveWorker::readNextParams()
+{
+    int res = 0;
+    uint16_t udata = 0;
+    int cur_progress = 0;
+
+    for(;;){
+        read_mutex->lock();
+
+        if(read_params->isEmpty()){
+            read_mutex->unlock();
+            break;
+        }
+
+        QPair<QList<Parameter*>, Future*> curParams = read_params->takeFirst();
+
+        read_mutex->unlock();
+
+        curParams.second->setProgressRange(0, curParams.first.size());
+        curParams.second->setProgress(0);
+
+        for(QList<Parameter*>::iterator it = curParams.first.begin(); it != curParams.first.end(); ++ it){
+            if(curParams.second->needCancel()){
+                emit information(tr("Чтение отменено."));
+                break;
+            }
+            res = modbusTry(modbus_read_registers, (*it)->id(), 1, &udata);
+            if(res == -1){
+                emit errorOccured(tr("Невозможно прочитать параметр с id %1.(%2)")
+                                  .arg((*it)->id()).arg(modbus_strerror(errno)));
+                curParams.second->finish();
+                disconnectFromDevice();
+                return;
+            }
+            (*it)->setRaw(udata);
+            curParams.second->setProgress(++ cur_progress);
+        }
+        curParams.second->finish();
+    }
+}
+
+void DriveWorker::writeNextParams()
+{
+    int res = 0;
+    uint16_t udata = 0;
+    int cur_progress = 0;
+
+    for(;;){
+        write_mutex->lock();
+
+        if(write_params->isEmpty()){
+            write_mutex->unlock();
+            break;
+        }
+
+        QPair<QList<Parameter*>, Future*> curParams = write_params->takeFirst();
+
+        write_mutex->unlock();
+
+        curParams.second->setProgressRange(0, curParams.first.size());
+        curParams.second->setProgress(0);
+
+        for(QList<Parameter*>::iterator it = curParams.first.begin(); it != curParams.first.end(); ++ it){
+            if(curParams.second->needCancel()){
+                emit information(tr("Запись отменена."));
+                break;
+            }
+            udata = (*it)->toRaw();
+            res = modbusTry(modbus_write_registers, (*it)->id(), 1, &udata);
+            if(res == -1){
+                emit errorOccured(tr("Невозможно записать параметр с id %1.(%2)")
+                                  .arg((*it)->id()).arg(modbus_strerror(errno)));
+                curParams.second->finish();
+                disconnectFromDevice();
+                return;
+            }
+            curParams.second->setProgress(++ cur_progress);
+        }
+        curParams.second->finish();
+    }
+
+    // Применим параметры.
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_APPLY_PARAMS, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно применить параметры привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+}
+
 
 void DriveWorker::update()
 {
@@ -301,7 +444,7 @@ void DriveWorker::update()
         return;
     }
     dev_running = bits_data;
-    mutex->lock();
+    upd_mutex->lock();
 
     for(UpdateParamsList::iterator it = upd_params->begin(); it != upd_params->end(); ++ it){
         res = modbusTry(modbus_read_input_registers, it->first->id(), 1, &udata);
@@ -314,7 +457,7 @@ void DriveWorker::update()
         it->first->setRaw(udata);
     }
 
-    mutex->unlock();
+    upd_mutex->unlock();
 
     emit updated();
 

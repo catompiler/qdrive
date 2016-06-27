@@ -1,6 +1,7 @@
 #include "drive.h"
 #include "driveworker.h"
 #include "settings.h"
+#include "future.h"
 #include <QDebug>
 
 
@@ -19,6 +20,9 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::stop, worker, &DriveWorker::stopDrive);
     connect(this, &Drive::setReference, worker, &DriveWorker::setReference);
     connect(this, &Drive::clearErrors, worker, &DriveWorker::clearErrors);
+    connect(this, &Drive::saveParams, worker, &DriveWorker::saveParams);
+    connect(this, &Drive::readNextParams, worker, &DriveWorker::readNextParams);
+    connect(this, &Drive::writeNextParams, worker, &DriveWorker::writeNextParams);
 }
 
 Drive::~Drive()
@@ -67,6 +71,32 @@ void Drive::addUpdParam(Parameter *param)
 void Drive::removeUpdParam(Parameter *param)
 {
     worker->removeUpdParam(param);
+}
+
+Future *Drive::readParams(QList<Parameter *> &params)
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    worker->addReadParams(params, future);
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit readNextParams();
+
+    return future;
+}
+
+Future *Drive::writeParams(QList<Parameter *> &params)
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    worker->addWriteParams(params, future);
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit writeNextParams();
+
+    return future;
 }
 
 void Drive::startWorkerThread()

@@ -3,14 +3,17 @@
 #include "settings.h"
 #include "settingsdlg.h"
 #include "drive.h"
+#include "parameter.h"
+#include "paramview.h"
+#include "paramsmodel.h"
+#include "future.h"
 #include <QApplication>
 #include <QMessageBox>
+#include <QProgressDialog>
 #include <QGridLayout>
 #include <QLayoutItem>
 #include <QString>
 #include <QDebug>
-#include "parameter.h"
-#include "paramview.h"
 
 
 struct ParamItem {
@@ -33,6 +36,9 @@ static ParamItem default_params[] = {
 
 #define PARAM_ITEMS_COLS 2
 
+#define TREEVIEW_PARAMS_COL_NAME_WIDTH 250
+#define TREEVIEW_PARAMS_EXPANDED
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,7 +47,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     glMain = new QGridLayout();
-    centralWidget()->setLayout(glMain);
+    ui->tabSensors->setLayout(glMain);
+
+    paramsModel = new ParamsModel();
+    ui->tvParams->setModel(paramsModel);
+#ifdef TREEVIEW_PARAMS_COL_NAME_WIDTH
+    ui->tvParams->setColumnWidth(0, TREEVIEW_PARAMS_COL_NAME_WIDTH);
+#endif
+#ifdef TREEVIEW_PARAMS_EXPANDED
+    ui->tvParams->expandAll();
+#endif
 
     settingsDlg = nullptr;
 
@@ -62,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete drive;
+    delete paramsModel;
     delete settingsDlg;
     delete glMain;
     delete ui;
@@ -81,6 +97,9 @@ void MainWindow::refreshUi()
     ui->hsReference->setEnabled(connected);
     ui->sbReference->setEnabled(connected);
     ui->pbClearErrs->setEnabled(connected);
+    ui->pbReadParams->setEnabled(connected);
+    ui->pbWriteParams->setEnabled(connected);
+    ui->pbSaveParams->setEnabled(connected);
 }
 
 void MainWindow::connected()
@@ -171,6 +190,53 @@ void MainWindow::on_pbClearErrs_clicked()
     drive->clearErrors();
 }
 
+void MainWindow::on_pbDefaultParams_clicked()
+{
+    paramsModel->applyDefault();
+}
+
+void MainWindow::on_pbReadParams_clicked()
+{
+    QList<Parameter*> params = paramsModel->getParamsList();
+
+    QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                    0, params.size(), this);
+    progress->setWindowTitle(tr("Чтение параметров"));
+    Future* future = drive->readParams(params);
+
+    connect(future, &Future::finished, future, &Future::deleteLater);
+    connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+    connect(future, &Future::finished, paramsModel, &ParamsModel::paramsUpdated);
+    connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+    connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+    connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+
+    progress->show();
+}
+
+void MainWindow::on_pbWriteParams_clicked()
+{
+    QList<Parameter*> params = paramsModel->getParamsList();
+
+    QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                    0, params.size(), this);
+    progress->setWindowTitle(tr("Запись параметров"));
+    Future* future = drive->writeParams(params);
+
+    connect(future, &Future::finished, future, &Future::deleteLater);
+    connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+    connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+    connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+    connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+
+    progress->show();
+}
+
+void MainWindow::on_pbSaveParams_clicked()
+{
+    drive->saveParams();
+}
+
 void MainWindow::setup()
 {
     drive->setup();
@@ -194,7 +260,7 @@ void MainWindow::refreshViewedParams()
 
     size_t n_widget = 0;
     for(ParamItem& paramItem : default_params){
-        paramView = new ParamView(this);
+        paramView = new ParamView();
         param = new Parameter(paramItem.type, paramItem.id);
 
         drive->addUpdParam(param);

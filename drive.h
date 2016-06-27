@@ -5,6 +5,7 @@
 
 class DriveWorker;
 class Parameter;
+class Future;
 
 /**
  * @brief Класс интерфейса взаимодействия с устройством балансировки.
@@ -61,6 +62,24 @@ public:
      * @param param Параметр.
      */
     void removeUpdParam(Parameter* param);
+
+    /**
+     * @brief Читает список параметров из привода.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @param params Список параметров.
+     * @return Будущее.
+     */
+    Future* readParams(QList<Parameter*>& params);
+
+    /**
+     * @brief Записывает список параметров в привод.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @param params Список параметров.
+     * @return Будущее.
+     */
+    Future* writeParams(QList<Parameter*>& params);
 
 signals:
 
@@ -129,6 +148,22 @@ signals:
      * @brief Очищает ошибки привода.
      */
     void clearErrors();
+
+    /**
+     * @brief Сохраняет параметры в ПЗУ.
+     */
+    void saveParams();
+
+//private signals:
+    /**
+     * @brief Читает следующий список параметров.
+     */
+    void readNextParams();
+
+    /**
+     * @brief Записывает следующий список параметров.
+     */
+    void writeNextParams();
 
 private:
     /**

@@ -5,6 +5,7 @@
 
 class SettingsDlg;
 class Drive;
+class ParamsModel;
 
 namespace Ui {
 class MainWindow;
@@ -103,6 +104,26 @@ private slots:
      */
     void on_pbClearErrs_clicked();
 
+    /**
+     * @brief Обработчик нажатия кнопки параметров по-умолчанию.
+     */
+    void on_pbDefaultParams_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки чтения параметров.
+     */
+    void on_pbReadParams_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки записи параметров.
+     */
+    void on_pbWriteParams_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки сохранения параметров.
+     */
+    void on_pbSaveParams_clicked();
+
 private:
     /**
      * @brief Обновляет настройки.
@@ -129,6 +150,10 @@ private:
      * @brief Разметка виджетов параметров.
      */
     QGridLayout* glMain;
+    /**
+     * @brief Модель списка параметров.
+     */
+    ParamsModel* paramsModel;
 };
 
 #endif // MAINWINDOW_H

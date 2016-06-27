@@ -1,15 +1,20 @@
-#ifndef SHAFTBALANCERWORKER_H
-#define SHAFTBALANCERWORKER_H
+#ifndef DRIVEWORKER_H
+#define DRIVEWORKER_H
 
 #include <QThread>
 #include <QHash>
 #include <QPair>
+#include <QQueue>
+#include <QList>
 #include <stddef.h>
-#include "parameter.h"
+#include "drive_types.h"
+
 
 class QTimer;
 class QMutex;
 typedef struct _modbus modbus_t;
+class Future;
+class Parameter;
 
 
 /**
@@ -18,6 +23,9 @@ typedef struct _modbus modbus_t;
 class DriveWorker : public QThread
 {
     Q_OBJECT
+
+    friend class Drive;
+
 public:
     /**
      * @brief Конструктор.
@@ -66,6 +74,20 @@ public:
      * @param param Параметр.
      */
     void removeUpdParam(Parameter* param);
+
+    /**
+     * @brief Добавляет параметры для чтения.
+     * @param params Список параметров для чтения.
+     * @param future Будущее для контроля.
+     */
+    void addReadParams(QList<Parameter*>& params, Future* future);
+
+    /**
+     * @brief Добавляет параметры для записи.
+     * @param params Список параметров для записи.
+     * @param future Будущее для контроля.
+     */
+    void addWriteParams(QList<Parameter*>& params, Future* future);
 
 signals:
 
@@ -137,7 +159,22 @@ public slots:
      */
     void clearErrors();
 
+    /**
+     * @brief Сохраняет параметры в ПЗУ.
+     */
+    void saveParams();
+
 private slots:
+
+    /**
+     * @brief Читает следующий список параметров.
+     */
+    void readNextParams();
+
+    /**
+     * @brief Записывает следующий список параметров.
+     */
+    void writeNextParams();
 
     /**
      * @brief Обновляет статус устройства и балансировки.
@@ -151,6 +188,24 @@ private:
      * QHash< Идентификатор, QPair< Параметр, Количество ссылок >>;
      */
     typedef QHash<param_id_t, QPair<Parameter*, size_t>> UpdateParamsList;
+
+    /**
+     * @brief Тип списка параметров для чтения.
+     * QList< QPair< QList<Параметр>, Будущее >>;
+     * Qt использует подсчёт ссылок в контейнерах,
+     * поэтому ничего страшного в хранении в переменной
+     * самого списка, а не его указателя нет.
+     */
+    typedef QQueue<QPair<QList<Parameter*>, Future*>> ReadParamsList;
+
+    /**
+     * @brief Тип списка параметров для записи.
+     * QList< QPair< QList<Параметр>, Будущее >>;
+     * Qt использует подсчёт ссылок в контейнерах,
+     * поэтому ничего страшного в хранении в переменной
+     * самого списка, а не его указателя нет.
+     */
+    typedef QQueue<QPair<QList<Parameter*>, Future*>> WriteParamsList;
 
     /**
      * @brief Точка входа потока.
@@ -171,9 +226,17 @@ private:
      */
     modbus_t* modbus;
     /**
-     * @brief Мютекс.
+     * @brief Мютекс обновления параметров.
      */
-    QMutex* mutex;
+    QMutex* upd_mutex;
+    /**
+     * @brief Мютекс чтения параметров.
+     */
+    QMutex* read_mutex;
+    /**
+     * @brief Мютекс записи параметров.
+     */
+    QMutex* write_mutex;
     /**
      * @brief Флаг подключения к устройству.
      */
@@ -195,7 +258,20 @@ private:
      */
     float unpack_parameter(int16_t value, param_type_t type);
 
+    /**
+     * @brief Список параметров для обновления.
+     */
     UpdateParamsList* upd_params;
+
+    /**
+     * @brief Список параметров для чтения.
+     */
+    ReadParamsList* read_params;
+
+    /**
+     * @brief Список параметров для записи.
+     */
+    WriteParamsList* write_params;
 
     //! Число попыток чтения данных.
     const size_t drive_modbus_retries = 10;
@@ -219,4 +295,4 @@ int DriveWorker::modbusTry(Func func, Args ... args)
     return res;
 }
 
-#endif // SHAFTBALANCERWORKER_H
+#endif // DRIVEWORKER_H

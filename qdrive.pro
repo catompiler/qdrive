@@ -13,16 +13,21 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = qdrive
 TEMPLATE = app
 
-LIBS    += -lmodbus
+LIBS    += -Lc:/MinGW/lib -lmodbus
+
+INCLUDEPATH += ../lib c:/MinGW/include
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     settings.cpp \
     settingsdlg.cpp \
     drive.cpp \
     driveworker.cpp \
     parameter.cpp \
-    paramview.cpp
+    paramview.cpp \
+    future.cpp \
+    ../lib/menu/menu.c \
+    paramsmodel.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
@@ -32,7 +37,11 @@ HEADERS  += mainwindow.h \
     parameters_ids.h \
     parameter.h \
     paramview.h \
-    drive_types.h
+    drive_types.h \
+    parameters_list.h \
+    future.h \
+    ../lib/menu/menu.h \
+    paramsmodel.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui
