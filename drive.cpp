@@ -4,6 +4,8 @@
 #include "future.h"
 #include <QDebug>
 
+#define WORKER_THREAD_WAIT_MAX 1000000UL
+
 
 Drive::Drive(QObject *parent) : QObject(parent)
 {
@@ -110,6 +112,6 @@ void Drive::stopWorkerThread()
 {
     if(worker->isRunning()){
         worker->quit();
-        worker->wait();
+        worker->wait(WORKER_THREAD_WAIT_MAX);
     }
 }
