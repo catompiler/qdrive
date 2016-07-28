@@ -59,6 +59,9 @@ public:
     unsigned int deviceTimeout() const;
     void setDeviceTimeout(unsigned int value);
 
+    unsigned int byteTimeout() const;
+    void setByteTimeout(unsigned int value);
+
     unsigned int devicePeriod() const;
     void setDevicePeriod(unsigned int value);
 
@@ -75,6 +78,7 @@ private:
     StopBits io_stop_bits;
     uint8_t dev_address;
     unsigned int dev_timeout;
+    unsigned int dev_byte_timeout;
     unsigned int dev_period;
 };
 

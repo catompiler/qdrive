@@ -10,6 +10,16 @@ Future::Future(QObject *parent) : QObject(parent)
     op_progress = 0;
 }
 
+/*Future::Future(const Future &future)
+{
+    op_run = future.op_run;
+    op_done = future.op_done;
+    op_cancel = future.op_cancel;
+    op_progress_min = future.op_progress_min;
+    op_progress_max = future.op_progress_max;
+    op_progress = future.op_progress;
+}*/
+
 Future::~Future()
 {
 }

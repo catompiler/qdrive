@@ -3,9 +3,13 @@
 
 #include <QMainWindow>
 
+class QCloseEvent;
+
 class SettingsDlg;
 class Drive;
 class ParamsModel;
+class EventsModel;
+class EventModel;
 
 namespace Ui {
 class MainWindow;
@@ -124,6 +128,37 @@ private slots:
      */
     void on_pbSaveParams_clicked();
 
+    /**
+     * @brief Обработчик нажатия кнопки чтения событий.
+     */
+    void on_pbReadEvents_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки чтения осциллограмм.
+     */
+    void on_pbReadOscs_clicked();
+
+    /**
+     * @brief Обработчик выделения события.
+     * @param current Текущий индекс.
+     * @param previous Предыдущий индекс.
+     */
+    void lvEvents_currentChanged(const QModelIndex& current, const QModelIndex& previous);
+
+    /**
+     * @brief Обработчик выбора осциллограмм для отображения.
+     * @param index Индекс осциллограммы.
+     */
+    void on_cbOscs_currentIndexChanged(int index);
+
+protected:
+    /**
+     * @brief Переопределённая функция
+     * обработки события закрытия окна.
+     * @param event Событие.
+     */
+    void closeEvent(QCloseEvent* event);
+
 private:
     /**
      * @brief Обновляет настройки.
@@ -154,6 +189,14 @@ private:
      * @brief Модель списка параметров.
      */
     ParamsModel* paramsModel;
+    /**
+     * @brief Модель списка событий.
+     */
+    EventsModel* eventsModel;
+    /**
+     * @brief Модель события.
+     */
+    EventModel* eventModel;
 };
 
 #endif // MAINWINDOW_H

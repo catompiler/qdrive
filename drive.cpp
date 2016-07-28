@@ -25,6 +25,8 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::saveParams, worker, &DriveWorker::saveParams);
     connect(this, &Drive::readNextParams, worker, &DriveWorker::readNextParams);
     connect(this, &Drive::writeNextParams, worker, &DriveWorker::writeNextParams);
+    connect(this, &Drive::doReadEvents, worker, &DriveWorker::readEvents);
+    connect(this, &Drive::doReadOscillograms, worker, &DriveWorker::readOscillograms);
 }
 
 Drive::~Drive()
@@ -65,6 +67,41 @@ bool Drive::running() const
     return worker->running();
 }
 
+drive_errors_t Drive::errors() const
+{
+    return worker->errors();
+}
+
+drive_warnings_t Drive::warnings() const
+{
+    return worker->warnings();
+}
+
+drive_power_errors_t Drive::powerErrors() const
+{
+    return worker->powerErrors();
+}
+
+drive_power_warnings_t Drive::powerWarnings() const
+{
+    return worker->powerWarnings();
+}
+
+drive_phase_errors_t Drive::phaseErrors() const
+{
+    return worker->phaseErrors();
+}
+
+QList<DriveEvent> Drive::events() const
+{
+    return worker->events();
+}
+
+QList<DriveOscillogram> Drive::oscillograms() const
+{
+    return worker->oscillograms();
+}
+
 void Drive::addUpdParam(Parameter *param)
 {
     worker->addUpdParam(param);
@@ -99,6 +136,61 @@ Future *Drive::writeParams(QList<Parameter *> &params)
     emit writeNextParams();
 
     return future;
+}
+
+Future *Drive::readEvents()
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit doReadEvents(future);
+
+    return future;
+}
+
+Future *Drive::readOscillograms()
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit doReadOscillograms(future);
+
+    return future;
+}
+
+QString Drive::errorToString(drive_error_t err)
+{
+    switch(err){
+    default:
+    case DRIVE_ERROR_NONE:
+        return QString("DRIVE_ERROR_NONE");
+    case DRIVE_ERROR_POWER_DATA_NOT_AVAIL:
+        return QString("DRIVE_ERROR_POWER_DATA_NOT_AVAIL");
+    case DRIVE_ERROR_POWER_INVALID:
+        return QString("DRIVE_ERROR_POWER_INVALID");
+    case DRIVE_ERROR_EMERGENCY_STOP:
+        return QString("DRIVE_ERROR_EMERGENCY_STOP");
+    case DRIVE_ERROR_PHASE:
+        return QString("DRIVE_ERROR_PHASE");
+    }
+    return QString();
+}
+
+QStringList Drive::errorsToString(drive_errors_t errs)
+{
+    QStringList list;
+
+    while(errs != 0){
+        if(errs & 0x1)
+            list << errorToString(static_cast<drive_error_t>(errs & 0x1));
+        errs >>= 1;
+    }
+
+    return list;
 }
 
 void Drive::startWorkerThread()

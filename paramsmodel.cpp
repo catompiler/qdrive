@@ -56,6 +56,8 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_TIME, "Возбужд.", 0, 0, 0),
     MENU_DESCR(0, 0, "Тепловая защита", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_6I, "Время работы при перегрузе 6x, с", 0, 0, 0),
+    MENU_DESCR(0, 0, "Коммуникация", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_MODBUS_BAUD, "Скорость Modbus RTU", 0, 0, 0),
     //MENU_DESCR(0, 0, "Menu1_1", 0, 0, 0)
 };
 

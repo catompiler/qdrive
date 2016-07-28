@@ -6,13 +6,17 @@
 #include "parameter.h"
 #include "paramview.h"
 #include "paramsmodel.h"
+#include "eventsmodel.h"
+#include "eventmodel.h"
 #include "future.h"
 #include <QApplication>
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QGridLayout>
 #include <QLayoutItem>
 #include <QString>
+#include <QItemSelectionModel>
 #include <QDebug>
 
 
@@ -39,6 +43,8 @@ static ParamItem default_params[] = {
 #define TREEVIEW_PARAMS_COL_NAME_WIDTH 250
 #define TREEVIEW_PARAMS_EXPANDED
 
+#define TREEVIEW_EVENT_COL_NAME_WIDTH 150
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -57,6 +63,15 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef TREEVIEW_PARAMS_EXPANDED
     ui->tvParams->expandAll();
 #endif
+
+    eventsModel = new EventsModel();
+    ui->lvEvents->setModel(eventsModel);
+    connect(ui->lvEvents->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &MainWindow::lvEvents_currentChanged);
+
+    eventModel = new EventModel();
+    ui->tvEvent->setModel(eventModel);
+    ui->tvEvent->setColumnWidth(0, TREEVIEW_EVENT_COL_NAME_WIDTH);
 
     settingsDlg = nullptr;
 
@@ -77,6 +92,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete drive;
+    delete eventModel;
+    delete eventsModel;
     delete paramsModel;
     delete settingsDlg;
     delete glMain;
@@ -100,6 +117,8 @@ void MainWindow::refreshUi()
     ui->pbReadParams->setEnabled(connected);
     ui->pbWriteParams->setEnabled(connected);
     ui->pbSaveParams->setEnabled(connected);
+    ui->pbReadEvents->setEnabled(connected);
+    ui->pbReadOscs->setEnabled(connected);
 }
 
 void MainWindow::connected()
@@ -123,6 +142,10 @@ void MainWindow::updated()
     ui->hsReference->setValue(drive->reference());
 
     ui->sbReference->blockSignals(false);
+
+    ui->lblErrsVal->setText(QString("0x%1").arg(drive->errors(), 0, 16));
+    ui->lblPhErrsVal->setText(QString("0x%1").arg(drive->phaseErrors(), 0, 16));
+    ui->lblPwrErrsVal->setText(QString("0x%1").arg(drive->powerErrors(), 0, 16));
 }
 
 void MainWindow::errorOccured(const QString &error_text)
@@ -202,6 +225,7 @@ void MainWindow::on_pbReadParams_clicked()
     QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
                                                     0, params.size(), this);
     progress->setWindowTitle(tr("Чтение параметров"));
+    progress->setModal(true);
     Future* future = drive->readParams(params);
 
     connect(future, &Future::finished, future, &Future::deleteLater);
@@ -221,6 +245,7 @@ void MainWindow::on_pbWriteParams_clicked()
     QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
                                                     0, params.size(), this);
     progress->setWindowTitle(tr("Запись параметров"));
+    progress->setModal(true);
     Future* future = drive->writeParams(params);
 
     connect(future, &Future::finished, future, &Future::deleteLater);
@@ -237,6 +262,121 @@ void MainWindow::on_pbSaveParams_clicked()
     drive->saveParams();
 }
 
+void MainWindow::on_pbReadEvents_clicked()
+{
+    QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                    0, 0, this);
+    progress->setWindowTitle(tr("Чтение событий"));
+    progress->setModal(true);
+    Future* future = drive->readEvents();
+
+    connect(future, &Future::finished, future, &Future::deleteLater);
+    connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+    connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+    connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+    connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+    connect(future, &Future::finished, future, [this](){
+        eventsModel->setEvents(drive->events());
+    });
+
+    progress->show();
+}
+
+void MainWindow::on_pbReadOscs_clicked()
+{
+    ui->cbOscs->clear();
+
+    QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                    0, 0, this);
+    progress->setWindowTitle(tr("Чтение осциллограмм"));
+    progress->setModal(true);
+    Future* future = drive->readOscillograms();
+
+    connect(future, &Future::finished, future, &Future::deleteLater);
+    connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+    connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+    connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+    connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+    connect(future, &Future::finished, future, [this](){
+        auto oscs = drive->oscillograms();
+        if(!oscs.empty()){
+            for(auto it = oscs.begin(); it != oscs.end(); ++ it){
+                ui->cbOscs->addItem(tr("Событие %1").arg(it->eventId()));
+            }
+            ui->cbOscs->setCurrentIndex(0);
+        }
+    });
+
+    progress->show();
+}
+
+void MainWindow::lvEvents_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
+{
+    eventModel->setEvent(eventsModel->eventByIndex(current));
+}
+
+void MainWindow::on_cbOscs_currentIndexChanged(int index)
+{
+    ui->oscVoltages->clearWaveforms();
+    ui->oscCurrents->clearWaveforms();
+
+    if(index < 0){
+        return;
+    }
+
+    auto oscs = drive->oscillograms();
+
+    if(index >= oscs.size()) return;
+
+    auto osc = oscs[index];
+
+    static const size_t voltage_channels[] = {
+        DRIVE_POWER_OSC_CHANNEL_Ua,
+        DRIVE_POWER_OSC_CHANNEL_Ub,
+        DRIVE_POWER_OSC_CHANNEL_Uc,
+        DRIVE_POWER_OSC_CHANNEL_Urot
+    };
+
+    static const Qt::GlobalColor osc_colors[] = {
+        Qt::yellow,
+        Qt::green,
+        Qt::red,
+        Qt::blue,
+        Qt::magenta
+    };
+
+    static const size_t current_channels[] = {
+        DRIVE_POWER_OSC_CHANNEL_Ia,
+        DRIVE_POWER_OSC_CHANNEL_Ib,
+        DRIVE_POWER_OSC_CHANNEL_Ic,
+        DRIVE_POWER_OSC_CHANNEL_Irot,
+        DRIVE_POWER_OSC_CHANNEL_Iexc
+    };
+
+    size_t color_index = 0;
+    for(const size_t& channel: voltage_channels){
+        if(channel < osc.channelsCount()){
+            OscView::Waveform* wf = new OscView::Waveform(osc.channel(channel));
+            ui->oscVoltages->setWaveform(static_cast<int>(channel), wf, osc_colors[color_index ++]);
+        }
+    }
+    color_index = 0;
+    for(const size_t& channel: current_channels){
+        if(channel < osc.channelsCount()){
+            OscView::Waveform* wf = new OscView::Waveform(osc.channel(channel));
+            ui->oscCurrents->setWaveform(static_cast<int>(channel), wf, osc_colors[color_index ++]);
+        }
+    }
+
+    ui->oscVoltages->adjustView();
+    ui->oscCurrents->adjustView();
+}
+
+void MainWindow::closeEvent(QCloseEvent* /*event*/)
+{
+    qApp->quit();
+}
+
 void MainWindow::setup()
 {
     drive->setup();
@@ -244,7 +384,7 @@ void MainWindow::setup()
 
 void MainWindow::refreshViewedParams()
 {
-    QWidget* widget;
+    QWidget* widget = nullptr;
     QLayoutItem* item = nullptr;
     ParamView* paramView = nullptr;
     Parameter* param = nullptr;

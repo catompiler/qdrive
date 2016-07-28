@@ -47,6 +47,7 @@ void SettingsDlg::loadSettings()
 
     ui->sbDevAddr->setValue(settings.deviceAddress());
     ui->sbTimeOut->setValue(settings.deviceTimeout());
+    ui->sbByteTimeOut->setValue(settings.byteTimeout());
     ui->sbPeriod->setValue(settings.devicePeriod());
 }
 
@@ -61,6 +62,7 @@ void SettingsDlg::storeSettings()
 
     settings.setDeviceAddress(ui->sbDevAddr->value());
     settings.setDeviceTimeout(ui->sbTimeOut->value());
+    settings.setByteTimeout(ui->sbByteTimeOut->value());
     settings.setDevicePeriod(ui->sbPeriod->value());
 }
 

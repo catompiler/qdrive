@@ -16,6 +16,7 @@ public:
      * @param parent Родитель.
      */
     explicit Future(QObject *parent = 0);
+    //Future(const Future& future);
     ~Future();
 
 
@@ -163,5 +164,7 @@ private:
      */
     QVariant op_res;
 };
+
+//Q_DECLARE_METATYPE(Future)
 
 #endif // FUTURE_H

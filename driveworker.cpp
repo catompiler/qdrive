@@ -2,11 +2,16 @@
 #include <QTimer>
 #include <QMutex>
 #include <QVector>
+#include <QByteArray>
+#include <QDataStream>
+#include <algorithm>
+#include <iterator>
 #include "settings.h"
 #include "future.h"
 #include "parameter.h"
 #include <modbus/modbus-rtu.h>
 #include <sys/time.h>
+#include <string.h>
 #include <errno.h>
 #include <QDebug>
 
@@ -31,23 +36,146 @@ typedef struct _DriveModbusId {
 //! Начало адресов цифровых входов.
 #define DRIVE_MODBUS_DINS_START 2000
 //! Начало адресов регистров флагов.
-#define DRIVE_MODBUS_COIS_START 2000
+#define DRIVE_MODBUS_COILS_START 2000
 
 // Константы адресов.
 // Регистры ввода.
+//! Полуслова ошибок.
+#define DRIVE_MODBUS_INPUT_REG_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 0)
+#define DRIVE_MODBUS_INPUT_REG_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 1)
+//! Полуслова предупреждений
+#define DRIVE_MODBUS_INPUT_REG_WARNINGS0 (DRIVE_MODBUS_INPUT_REGS_START + 2)
+#define DRIVE_MODBUS_INPUT_REG_WARNINGS1 (DRIVE_MODBUS_INPUT_REGS_START + 3)
+//! Полуслова ошибок питания.
+#define DRIVE_MODBUS_INPUT_REG_PWR_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 4)
+#define DRIVE_MODBUS_INPUT_REG_PWR_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 5)
+//! Полуслова предупреждений питания.
+#define DRIVE_MODBUS_INPUT_REG_PWR_WARNINGS0 (DRIVE_MODBUS_INPUT_REGS_START + 6)
+#define DRIVE_MODBUS_INPUT_REG_PWR_WARNINGS1 (DRIVE_MODBUS_INPUT_REGS_START + 7)
+//! Полуслова ошибок фаз.
+#define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 8)
+#define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 9)
 // Регистры хранения.
 //! Задание.
 #define DRIVE_MODBUS_HOLD_REG_REFERENCE (DRIVE_MODBUS_HOLD_REGS_START + 0)
 // Цифровые входа.
 // Регистры флагов.
 //! Запуск/останов.
-#define DRIVE_MODBUS_COIL_RUN (DRIVE_MODBUS_COIS_START + 0)
+#define DRIVE_MODBUS_COIL_RUN (DRIVE_MODBUS_COILS_START + 0)
 //! Сброс ошибок.
-#define DRIVE_MODBUS_COIL_CLEAR_ERRORS (DRIVE_MODBUS_COIS_START + 1)
+#define DRIVE_MODBUS_COIL_CLEAR_ERRORS (DRIVE_MODBUS_COILS_START + 1)
 //! Применение настроек.
-#define DRIVE_MODBUS_COIL_APPLY_PARAMS (DRIVE_MODBUS_COIS_START + 2)
+#define DRIVE_MODBUS_COIL_APPLY_PARAMS (DRIVE_MODBUS_COILS_START + 2)
 //! Сохранение настроек.
-#define DRIVE_MODBUS_COIL_SAVE_PARAMS (DRIVE_MODBUS_COIS_START + 3)
+#define DRIVE_MODBUS_COIL_SAVE_PARAMS (DRIVE_MODBUS_COILS_START + 3)
+
+
+// Пользовательские функции и коды.
+// Запрос: | func | code | [args] |
+// Ответ:  | func | code | [data] |
+
+// Константы статуса асинхронных операций.
+//! Операция не начата.
+#define DRIVE_MODBUS_ASYNC_OP_IDLE 0
+//! Операция завершена.
+#define DRIVE_MODBUS_ASYNC_OP_DONE 1
+//! Операция в процессе.
+#define DRIVE_MODBUS_ASYNC_OP_RUNNING 2
+//! Ошибка при выполнении операции.
+#define DRIVE_MODBUS_ASYNC_OP_ERROR 3
+
+//! Функция доступа к списку событий.
+#define DRIVE_MODBUS_FUNC_EVENTS_ACCESS 65
+/**
+ * Код получения числа событий.
+ * Запрос: | 65 | 0 |
+ * Ответ:  | 65 | 0 | N |
+ * N - число событий, 1 байт.
+ */
+#define DRIVE_MODBUS_CODE_EVENTS_COUNT 0
+/**
+ * Код запуска чтения события
+ * с заданным номером.
+ * Запрос: | 65 | 1 | N |
+ * Ответ:  | 65 | 1 | N |
+ * N - номер события, 1 байт.
+ */
+#define DRIVE_MODBUS_CODE_READ_EVENT 1
+/**
+ * Код получения статуса
+ * чтения события.
+ * Запрос: | 65 | 2 |
+ * Ответ:  | 65 | 2 | N |
+ * N - состояние чтения события, 1 байт:
+ *     0 - событие не прочитано;
+ *     1 - событие прочитано;
+ *     2 - чтение в процессе.
+ *     3 - ошибка чтения события.
+ */
+#define DRIVE_MODBUS_CODE_READ_EVENT_STATUS 2
+/**
+ * Код чтения прочитанного
+ * события.
+ * Запрос: | 65 | 3 |
+ * Ответ:  | 65 | 3 | N | data |
+ * N - размер данных события, 1 байт;
+ * data - данные события, N байт.
+ */
+#define DRIVE_MODBUS_CODE_GET_READED_EVENT 3
+
+
+//! Функция доступа к осциллограммам.
+#define DRIVE_MODBUS_FUNC_OSC_ACCESS 66
+/**
+ * Код получения числа осциллограмм.
+ * Запрос: | 66 | 0 |
+ * Ответ:  | 66 | 0 | N |
+ * N - число осциллограмм, 1 байт.
+ */
+#define DRIVE_MODBUS_CODE_OSC_COUNT 0
+/**
+ * Код получения идентификатора
+ * события осциллограммы с
+ * заданным номером.
+ * Запрос: | 66 | 1 | N |
+ * Ответ:  | 66 | 1 | ID |
+ * N - номер осциллограммы, 1 байт.
+ * ID - идентификатор события, 1 байт.
+ */
+#define DRIVE_MODBUS_CODE_OSC_EVENT_ID 1
+/**
+ * Код запуска чтения заданного
+ * канала осциллограммы
+ * с заданным номером.
+ * Запрос: | 66 | 2 | N | CH |
+ * Ответ:  | 66 | 2 | N | CH |
+ * N - номер осциллограммы, 1 байт.
+ * CH - канал осциллограммы, 1 байт.
+ */
+#define DRIVE_MODBUS_CODE_READ_OSC 2
+/**
+ * Код получения статуса
+ * чтения осциллограммы.
+ * Запрос: | 66 | 3 |
+ * Ответ:  | 66 | 3 | N |
+ * N - состояние чтения осциллограммы, 1 байт:
+ *     0 - осциллограмма не прочитана;
+ *     1 - осциллограмма прочитана;
+ *     2 - чтение в процессе.
+ *     3 - ошибка чтения осциллограммы.
+ */
+#define DRIVE_MODBUS_CODE_READ_OSC_STATUS 3
+/**
+ * Код чтения прочитанной
+ * осциллограммы.
+ * Запрос: | 66 | 4 | A | N |
+ * Ответ:  | 66 | 4 | N | data |
+ * A - смещение в данных канала осциллограммы, 2 байта, старшим вперёд.
+ * N - размер данных осциллограммы, 1 байт;
+ * data - данные осциллограммы, N байт.
+ */
+#define DRIVE_MODBUS_CODE_GET_READED_OSC 4
+
 
 
 DriveWorker::DriveWorker() : QThread()
@@ -68,17 +196,31 @@ DriveWorker::DriveWorker() : QThread()
     write_mutex = new QMutex();
     write_params = new WriteParamsList();
 
+    events_list = new QList<DriveEvent>();
+
+    osc_list = new QList<DriveOscillogram>();
+
     modbus = nullptr;
 
     connected_to_device = false;
 
     dev_reference = 0;
     dev_running = false;
+    dev_errors = 0;
+    dev_warnings = 0;
+    dev_power_errors = 0;
+    dev_power_warnings = 0;
+    dev_phase_errors = 0;
 }
 
 DriveWorker::~DriveWorker()
 {
     cleanup_modbus();
+
+    delete osc_list;
+
+    delete events_list;
+
     delete write_params;
     delete write_mutex;
 
@@ -129,7 +271,8 @@ bool DriveWorker::setup()
 
     modbus_set_debug(modbus, false);
 
-    modbus_set_error_recovery(modbus, static_cast<modbus_error_recovery_mode>(MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL));
+    //modbus_set_error_recovery(modbus, static_cast<modbus_error_recovery_mode>(MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL));
+    modbus_set_error_recovery(modbus, static_cast<modbus_error_recovery_mode>(MODBUS_ERROR_RECOVERY_NONE));
 
     modbus_rtu_set_serial_mode(modbus, MODBUS_RTU_RS232);
 
@@ -145,7 +288,14 @@ bool DriveWorker::setup()
     tv_timeout.tv_sec = settings.deviceTimeout() / 1000;
     tv_timeout.tv_usec = (settings.deviceTimeout() % 1000) * 1000;
 
-    modbus_set_response_timeout(modbus, &tv_timeout);
+    //modbus_set_response_timeout(modbus, &tv_timeout);
+    modbus_set_response_timeout(modbus, tv_timeout.tv_sec, tv_timeout.tv_usec);
+
+    tv_timeout.tv_sec = settings.byteTimeout() / 1000;
+    tv_timeout.tv_usec = (settings.byteTimeout() % 1000) * 1000;
+
+    //modbus_set_byte_timeout(modbus, &tv_timeout);
+    modbus_set_byte_timeout(modbus, tv_timeout.tv_sec, tv_timeout.tv_usec);
 
     timer->setInterval(settings.devicePeriod());
 
@@ -170,6 +320,41 @@ unsigned int DriveWorker::reference() const
 bool DriveWorker::running() const
 {
     return dev_running;
+}
+
+drive_errors_t DriveWorker::errors() const
+{
+    return dev_errors;
+}
+
+drive_warnings_t DriveWorker::warnings() const
+{
+    return dev_warnings;
+}
+
+drive_power_errors_t DriveWorker::powerErrors() const
+{
+    return dev_power_errors;
+}
+
+drive_power_warnings_t DriveWorker::powerWarnings() const
+{
+    return dev_power_warnings;
+}
+
+drive_phase_errors_t DriveWorker::phaseErrors() const
+{
+    return dev_phase_errors;
+}
+
+QList<DriveEvent> DriveWorker::events() const
+{
+    return QList<DriveEvent>(*events_list);
+}
+
+QList<DriveOscillogram> DriveWorker::oscillograms() const
+{
+    return QList<DriveOscillogram>(*osc_list);
 }
 
 void DriveWorker::addUpdParam(Parameter *param)
@@ -231,7 +416,8 @@ void DriveWorker::connectToDevice()
 
     QVector<quint8> response(max_id_size);
 
-    res = modbusTry(modbus_report_slave_id, &response[0]);
+    //res = modbusTry(modbus_report_slave_id, &response[0]);
+    res = modbusTry(modbus_report_slave_id, max_id_size, &response[0]);
     if(res == -1){
         emit errorOccured(tr("Нет ответа от устройства.(%1)").arg(modbus_strerror(errno)));
         return;
@@ -270,6 +456,8 @@ void DriveWorker::disconnectFromDevice()
 
 void DriveWorker::setRunning(bool run)
 {
+    if(!connected_to_device) return;
+
     int res = 0;
 
     res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_RUN, run);
@@ -283,18 +471,24 @@ void DriveWorker::setRunning(bool run)
 
 void DriveWorker::startDrive()
 {
+    if(!connected_to_device) return;
+
     setRunning(true);
     if(dev_running) emit information(tr("Запуск привода."));
 }
 
 void DriveWorker::stopDrive()
 {
+    if(!connected_to_device) return;
+
     setRunning(false);
     if(!dev_running) emit information(tr("Останов привода."));
 }
 
 void DriveWorker::setReference(unsigned int reference)
 {
+    if(!connected_to_device) return;
+
     int res = 0;
 
     res = modbusTry(modbus_write_register, DRIVE_MODBUS_HOLD_REG_REFERENCE, static_cast<int>(reference));
@@ -310,6 +504,8 @@ void DriveWorker::setReference(unsigned int reference)
 
 void DriveWorker::clearErrors()
 {
+    if(!connected_to_device) return;
+
     int res = 0;
 
     res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_CLEAR_ERRORS, 1);
@@ -323,6 +519,8 @@ void DriveWorker::clearErrors()
 
 void DriveWorker::saveParams()
 {
+    if(!connected_to_device) return;
+
     int res = 0;
 
     res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_SAVE_PARAMS, 1);
@@ -334,8 +532,386 @@ void DriveWorker::saveParams()
     emit information(tr("Параметры сохранены."));
 }
 
+bool DriveWorker::readEvent(drive_event_t* event, size_t index)
+{
+    if(!connected_to_device) return false;
+
+    QVector<uint8_t> buf(MODBUS_RTU_MAX_ADU_LENGTH);
+
+    uint8_t dev_addr = Settings::get().deviceAddress();
+
+    unsigned int status = DRIVE_MODBUS_ASYNC_OP_IDLE;
+
+    int res = 0;
+
+#define REQ_DATA_OFFSET 3
+
+    uint8_t read_event_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_EVENTS_ACCESS,
+        DRIVE_MODBUS_CODE_READ_EVENT,
+        static_cast<uint8_t>(index)
+    };
+
+    uint8_t read_status_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_EVENTS_ACCESS,
+        DRIVE_MODBUS_CODE_READ_EVENT_STATUS
+    };
+
+    uint8_t get_event_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_EVENTS_ACCESS,
+        DRIVE_MODBUS_CODE_GET_READED_EVENT
+    };
+
+    res = modbusTryRaw(read_event_req, sizeof(read_event_req), &buf[0]);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно начать чтение события.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*index*/ + 2/*crc*/){
+        emit errorOccured(tr("Ошибочный ответ при начале чтения события.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    for(;;){
+        res = modbusTryRaw(read_status_req, sizeof(read_status_req), &buf[0]);
+        if(res == -1){
+            emit errorOccured(tr("Невозможно запросить состояние чтения события.(%1)").arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return false;
+        }
+
+        if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*status*/ + 2/*crc*/){
+            emit errorOccured(tr("Ошибочный ответ при чтении статуса чтения события.(%1)").arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return false;
+        }
+
+        status = static_cast<unsigned int>(buf[REQ_DATA_OFFSET]);
+
+        if(status == DRIVE_MODBUS_ASYNC_OP_DONE) break;
+        else if(status >= DRIVE_MODBUS_ASYNC_OP_ERROR){
+            emit errorOccured(tr("Ошибка чтения события."));
+            disconnectFromDevice();
+            return false;
+        }
+        // wait
+        usleep(drive_modbus_wait_time_us);
+    }
+
+    res = modbusTryRaw(get_event_req, sizeof(get_event_req), &buf[0]);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно получить событие.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*size*/ + sizeof(drive_event_t) + 2/*crc*/){
+        emit errorOccured(tr("Ошибочный ответ при получении события.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    if(buf[REQ_DATA_OFFSET] != sizeof(drive_event_t)){
+        emit errorOccured(tr("Ошибочный размер полученного события.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    memcpy(event, &buf[REQ_DATA_OFFSET + 1], sizeof(drive_event_t));
+
+#undef REQ_DATA_OFFSET
+
+    return true;
+}
+
+void DriveWorker::readEvents(Future* future)
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+#define REQ_DATA_OFFSET 3
+
+    QByteArray ba(MODBUS_RTU_MAX_ADU_LENGTH, 0x0);
+    QDataStream ds(&ba, QIODevice::ReadWrite);
+
+    ds.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+
+    uint8_t dev_addr = Settings::get().deviceAddress();
+
+    ds << dev_addr
+       << static_cast<uint8_t>(DRIVE_MODBUS_FUNC_EVENTS_ACCESS)
+       << static_cast<uint8_t>(DRIVE_MODBUS_CODE_EVENTS_COUNT);
+
+    future->start();
+
+    res = modbusTryRaw(ba.data(), static_cast<int>(ds.device()->pos()), ba.data());
+    if(res == -1){
+        emit errorOccured(tr("Невозможно получить число событий.(%1)").arg(modbus_strerror(errno)));
+        future->finish();
+        disconnectFromDevice();
+        return;
+    }
+
+    if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*count*/ + 2/*crc*/){
+        emit errorOccured(tr("Ошибочный ответ при получении числа событий.(%1)").arg(modbus_strerror(errno)));
+        future->finish();
+        disconnectFromDevice();
+        return;
+    }
+
+    size_t events_count = static_cast<size_t>(ba[REQ_DATA_OFFSET]);
+
+    events_list->clear();
+
+    future->setProgressRange(0, static_cast<int>(events_count));
+
+    drive_event_t event;
+
+    for(size_t index = 0; index < events_count; index ++){
+        if(readEvent(&event, index)){
+            events_list->append(DriveEvent(event));
+        }else{
+            break;
+        }
+        if(future->needCancel()) break;
+        future->setProgress(static_cast<int>(index + 1));
+    }
+
+    future->finish();
+
+#undef REQ_DATA_OFFSET
+}
+
+bool DriveWorker::readOscillogramChannel(DriveOscillogram::Channel *channel, size_t index, size_t ch_index)
+{
+    if(!connected_to_device) return false;
+
+    QVector<uint8_t> buf(MODBUS_RTU_MAX_ADU_LENGTH);
+
+    uint8_t dev_addr = Settings::get().deviceAddress();
+
+    unsigned int status = DRIVE_MODBUS_ASYNC_OP_IDLE;
+
+    int res = 0;
+
+#define REQ_DATA_OFFSET 3
+
+    uint8_t read_osc_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_OSC_ACCESS,
+        DRIVE_MODBUS_CODE_READ_OSC,
+        static_cast<uint8_t>(index),
+        static_cast<uint8_t>(ch_index)
+    };
+
+    uint8_t read_status_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_OSC_ACCESS,
+        DRIVE_MODBUS_CODE_READ_OSC_STATUS
+    };
+
+    uint8_t get_osc_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_OSC_ACCESS,
+        DRIVE_MODBUS_CODE_GET_READED_OSC,
+        0, 0, // Адрес.
+        0 // Размер.
+    };
+
+    res = modbusTryRaw(read_osc_req, sizeof(read_osc_req), &buf[0]);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно начать чтение канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*index*/ + 1/*channel*/ + 2/*crc*/){
+        emit errorOccured(tr("Ошибочный ответ при начале чтения канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    for(;;){
+        res = modbusTryRaw(read_status_req, sizeof(read_status_req), &buf[0]);
+        if(res == -1){
+            emit errorOccured(tr("Невозможно запросить состояние чтения канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return false;
+        }
+
+        if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*status*/ + 2/*crc*/){
+            emit errorOccured(tr("Ошибочный ответ при чтении статуса чтения канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return false;
+        }
+
+        status = static_cast<unsigned int>(buf[REQ_DATA_OFFSET]);
+
+        if(status == DRIVE_MODBUS_ASYNC_OP_DONE) break;
+        else if(status >= DRIVE_MODBUS_ASYNC_OP_ERROR){
+            emit errorOccured(tr("Ошибка чтения канала осциллограммы."));
+            disconnectFromDevice();
+            return false;
+        }
+        // wait
+        usleep(drive_modbus_wait_time_us);
+    }
+
+    QVector<uint8_t> osc_data;
+    size_t addr = 0;
+    size_t size = 0;
+    size_t max_size = MODBUS_RTU_MAX_ADU_LENGTH - 1/*addr*/ - 1/*func*/ - 1/*code*/ - 1/*size*/ - 2/*crc*/;
+
+    while(static_cast<unsigned int>(osc_data.size()) < DRIVE_POWER_OSC_CHANNEL_SIZE){
+
+        size = std::min<size_t>(max_size, (DRIVE_POWER_OSC_CHANNEL_SIZE - osc_data.size()));
+
+        get_osc_req[REQ_DATA_OFFSET + 0] = (addr >> 16) & 0xff;
+        get_osc_req[REQ_DATA_OFFSET + 1] = addr & 0xff;
+        get_osc_req[REQ_DATA_OFFSET + 2] = size;
+
+        addr += size;
+
+        res = modbusTryRaw(get_osc_req, sizeof(get_osc_req), &buf[0]);
+        if(res == -1){
+            emit errorOccured(tr("Невозможно получить данные канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return false;
+        }
+
+        if(static_cast<unsigned int>(res) != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*size*/ + size + 2/*crc*/){
+            emit errorOccured(tr("Ошибочный ответ при получении данных канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
+            disconnectFromDevice();
+            return false;
+        }
+        std::copy(buf.begin() + REQ_DATA_OFFSET + 1, buf.begin() + REQ_DATA_OFFSET + 1 + size, std::back_inserter(osc_data));
+    }
+    channel->setData(0, reinterpret_cast<osc_value_t*>(osc_data.data()), osc_data.size() / sizeof(osc_value_t));
+
+#undef REQ_DATA_OFFSET
+
+    return true;
+}
+
+bool DriveWorker::readOscillogram(DriveOscillogram* oscillogram, size_t index, Future* future)
+{
+    if(!connected_to_device) return false;
+
+    QVector<uint8_t> buf(MODBUS_RTU_MAX_ADU_LENGTH);
+
+    uint8_t dev_addr = Settings::get().deviceAddress();
+
+    int res = 0;
+
+#define REQ_DATA_OFFSET 3
+
+    uint8_t read_osc_event_id_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_OSC_ACCESS,
+        DRIVE_MODBUS_CODE_OSC_EVENT_ID,
+        static_cast<uint8_t>(index)
+    };
+
+    res = modbusTryRaw(read_osc_event_id_req, sizeof(read_osc_event_id_req), &buf[0]);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно получить идентификатор события осциллограммы.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*id*/ + 2/*crc*/){
+        emit errorOccured(tr("Ошибочный ответ при получении идентификатора события осциллограммы.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return false;
+    }
+
+    //qDebug() << "ev_id:" << buf[REQ_DATA_OFFSET];
+
+    oscillogram->setEventId(static_cast<drive_event_id_t>(buf[REQ_DATA_OFFSET]));
+
+    for(size_t i = 0; i < oscillogram->channelsCount(); i ++){
+        if(!readOscillogramChannel(oscillogram->channel(i), index, i)) return false;
+        if(future->needCancel()) return false;
+        future->setProgress(future->progress() + 1);
+    }
+
+#undef REQ_DATA_OFFSET
+
+    return true;
+}
+
+void DriveWorker::readOscillograms(Future *future)
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+#define REQ_DATA_OFFSET 3
+
+    QByteArray ba(MODBUS_RTU_MAX_ADU_LENGTH, 0x0);
+    QDataStream ds(&ba, QIODevice::ReadWrite);
+
+    ds.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+
+    uint8_t dev_addr = Settings::get().deviceAddress();
+
+    ds << dev_addr
+       << static_cast<uint8_t>(DRIVE_MODBUS_FUNC_OSC_ACCESS)
+       << static_cast<uint8_t>(DRIVE_MODBUS_CODE_OSC_COUNT);
+
+    future->start();
+
+    res = modbusTryRaw(ba.data(), static_cast<int>(ds.device()->pos()), ba.data());
+    if(res == -1){
+        emit errorOccured(tr("Невозможно получить число осциллограмм.(%1)").arg(modbus_strerror(errno)));
+        future->finish();
+        disconnectFromDevice();
+        return;
+    }
+
+    if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*count*/ + 2/*crc*/){
+        emit errorOccured(tr("Ошибочный ответ при получении числа осциллограмм.(%1)").arg(modbus_strerror(errno)));
+        future->finish();
+        disconnectFromDevice();
+        return;
+    }
+
+    size_t osc_count = static_cast<size_t>(ba[REQ_DATA_OFFSET]);
+
+    //qDebug() << osc_count;
+
+    osc_list->clear();
+
+    DriveOscillogram osc;
+
+    future->setProgressRange(0, static_cast<int>(osc_count) * osc.channelsCount());
+
+    for(size_t index = 0; index < osc_count; index ++){
+        if(readOscillogram(&osc, index, future)){
+            osc_list->append(osc);
+        }else{
+            break;
+        }
+        if(future->needCancel()) break;
+        //future->setProgress(static_cast<int>(index + 1));
+    }
+
+    future->finish();
+
+#undef REQ_DATA_OFFSET
+}
+
 void DriveWorker::readNextParams()
 {
+    if(!connected_to_device) return;
+
     int res = 0;
     uint16_t udata = 0;
     int cur_progress = 0;
@@ -377,6 +953,8 @@ void DriveWorker::readNextParams()
 
 void DriveWorker::writeNextParams()
 {
+    if(!connected_to_device) return;
+
     int res = 0;
     uint16_t udata = 0;
     int cur_progress = 0;
@@ -427,6 +1005,8 @@ void DriveWorker::writeNextParams()
 
 void DriveWorker::update()
 {
+    if(!connected_to_device) return;
+
     int res = 0;
     uint16_t udata = 0;
     uint8_t bits_data = 0;
@@ -446,11 +1026,27 @@ void DriveWorker::update()
         return;
     }
     dev_running = bits_data;
+
+    #define DRIVE_FLAGS_DATA_LEN 10
+    uint16_t drive_flags_data[DRIVE_FLAGS_DATA_LEN];
+    res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_ERRORS0, DRIVE_FLAGS_DATA_LEN, drive_flags_data);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать состояния привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_errors = (static_cast<drive_errors_t>(drive_flags_data[1]) << 16) | drive_flags_data[0];
+    dev_warnings = (static_cast<drive_warnings_t>(drive_flags_data[3]) << 16) | drive_flags_data[2];
+    dev_power_errors = (static_cast<drive_power_errors_t>(drive_flags_data[5]) << 16) | drive_flags_data[4];
+    dev_power_warnings = (static_cast<drive_power_warnings_t>(drive_flags_data[7]) << 16) | drive_flags_data[6];
+    dev_phase_errors = (static_cast<drive_phase_errors_t>(drive_flags_data[9]) << 16) | drive_flags_data[8];
+
     upd_mutex->lock();
 
     for(UpdateParamsList::iterator it = upd_params->begin(); it != upd_params->end(); ++ it){
         res = modbusTry(modbus_read_input_registers, it->first->id(), 1, &udata);
         if(res == -1){
+            upd_mutex->unlock();
             emit errorOccured(tr("Невозможно прочитать параметр с id %1.(%2)")
                               .arg(it->first->id()).arg(modbus_strerror(errno)));
             disconnectFromDevice();
@@ -518,4 +1114,16 @@ float DriveWorker::unpack_parameter(int16_t value, param_type_t type)
         return static_cast<float>(value) / 1000;
     }
     return 0.0f;
+}
+
+int DriveWorker::modbusTryRaw(void *req, size_t req_size, void *buffer)
+{
+    int res = -1;
+    for(size_t retries = 0; retries < drive_modbus_retries; retries ++){
+        res = modbus_send_raw_request(modbus, static_cast<uint8_t*>(req), req_size);
+        if(res == -1) continue;
+        res = modbus_receive_raw_confirmation(modbus, static_cast<uint8_t*>(buffer));
+        if(res != -1) break;
+    }
+    return res;
 }

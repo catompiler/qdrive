@@ -2,6 +2,12 @@
 #define DRIVE_H
 
 #include <QObject>
+#include <QString>
+#include <QStringList>
+#include "driveevent.h"
+#include "drive_types.h"
+#include "driveevent.h"
+#include "driveoscillogram.h"
 
 class DriveWorker;
 class Parameter;
@@ -52,6 +58,48 @@ public:
     bool running() const;
 
     /**
+     * @brief Получает ошибки.
+     * @return Ошибки.
+     */
+    drive_errors_t errors() const;
+
+    /**
+     * @brief Получает предупреждения.
+     * @return Предупреждения.
+     */
+    drive_warnings_t warnings() const;
+
+    /**
+     * @brief Получает ошибки питания.
+     * @return Ошибки питания.
+     */
+    drive_power_errors_t powerErrors() const;
+
+    /**
+     * @brief Получает предупреждения питания.
+     * @return Предупреждения питания.
+     */
+    drive_power_warnings_t powerWarnings() const;
+
+    /**
+     * @brief Получает ошибки фаз.
+     * @return Ошибки фаз.
+     */
+    drive_phase_errors_t phaseErrors() const;
+
+    /**
+     * @brief Получает события привода.
+     * @return События привода.
+     */
+    QList<DriveEvent> events() const;
+
+    /**
+     * @brief Получает осциллограммы привода.
+     * @return Осциллограммы привода.
+     */
+    QList<DriveOscillogram> oscillograms() const;
+
+    /**
      * @brief Добавляет параметр для обновления.
      * @param param Параметр.
      */
@@ -80,6 +128,36 @@ public:
      * @return Будущее.
      */
     Future* writeParams(QList<Parameter*>& params);
+
+    /**
+     * @brief Читает события.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @return Будущее.
+     */
+    Future* readEvents();
+
+    /**
+     * @brief Читает осциллограммы.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @return Будущее.
+     */
+    Future* readOscillograms();
+
+    /**
+     * @brief Получает строковое представление ошибки привода.
+     * @param err Ошибка привода.
+     * @return Строковое представление ошибки привода.
+     */
+    static QString errorToString(drive_error_t err);
+
+    /**
+     * @brief Получает строковые представления ошибок привода.
+     * @param errs Ошибки привода.
+     * @return Строковые представления ошибок привода.
+     */
+    static QStringList errorsToString(drive_errors_t errs);
 
 signals:
 
@@ -164,6 +242,16 @@ signals:
      * @brief Записывает следующий список параметров.
      */
     void writeNextParams();
+
+    /**
+     * @brief Читает события.
+     */
+    void doReadEvents(Future* future);
+
+    /**
+     * @brief Читает осциллограммы.
+     */
+    void doReadOscillograms(Future* future);
 
 private:
     /**

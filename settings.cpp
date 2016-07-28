@@ -28,6 +28,7 @@ bool Settings::read()
     io_stop_bits = static_cast<Settings::StopBits>(settings.value("io_stop_bits", 0).toUInt());
     dev_address = static_cast<uint8_t>(settings.value("dev_address", 0x1).toUInt());
     dev_timeout = settings.value("dev_timeout", 100).toUInt();
+    dev_byte_timeout = settings.value("dev_byte_timeout", 100).toUInt();
     dev_period = settings.value("dev_period", 100).toUInt();
 
     return true;
@@ -43,6 +44,7 @@ bool Settings::write()
     settings.setValue("io_stop_bits", static_cast<unsigned int>(io_stop_bits));
     settings.setValue("dev_address", static_cast<unsigned int>(dev_address));
     settings.setValue("dev_timeout", dev_timeout);
+    settings.setValue("dev_byte_timeout", dev_byte_timeout);
     settings.setValue("dev_period", dev_period);
 
     return true;
@@ -106,6 +108,16 @@ unsigned int Settings::deviceTimeout() const
 void Settings::setDeviceTimeout(unsigned int value)
 {
     dev_timeout = value;
+}
+
+unsigned int Settings::byteTimeout() const
+{
+    return dev_byte_timeout;
+}
+
+void Settings::setByteTimeout(unsigned int value)
+{
+    dev_byte_timeout = value;
 }
 
 unsigned int Settings::devicePeriod() const

@@ -7,6 +7,8 @@
 #include <QQueue>
 #include <QList>
 #include <stddef.h>
+#include "driveevent.h"
+#include "driveoscillogram.h"
 #include "drive_types.h"
 
 
@@ -62,6 +64,48 @@ public:
      * @return Флаг работы.
      */
     bool running() const;
+
+    /**
+     * @brief Получает ошибки.
+     * @return Ошибки.
+     */
+    drive_errors_t errors() const;
+
+    /**
+     * @brief Получает предупреждения.
+     * @return Предупреждения.
+     */
+    drive_warnings_t warnings() const;
+
+    /**
+     * @brief Получает ошибки питания.
+     * @return Ошибки питания.
+     */
+    drive_power_errors_t powerErrors() const;
+
+    /**
+     * @brief Получает предупреждения питания.
+     * @return Предупреждения питания.
+     */
+    drive_power_warnings_t powerWarnings() const;
+
+    /**
+     * @brief Получает ошибки фаз.
+     * @return Ошибки фаз.
+     */
+    drive_phase_errors_t phaseErrors() const;
+
+    /**
+     * @brief Получает события привода.
+     * @return События привода.
+     */
+    QList<DriveEvent> events() const;
+
+    /**
+     * @brief Получает осциллограммы привода.
+     * @return Осциллограммы привода.
+     */
+    QList<DriveOscillogram> oscillograms() const;
 
     /**
      * @brief Добавляет параметр для обновления.
@@ -164,6 +208,16 @@ public slots:
      */
     void saveParams();
 
+    /**
+     * @brief Читает события.
+     */
+    void readEvents(Future* future);
+
+    /**
+     * @brief Читает осциллограммы.
+     */
+    void readOscillograms(Future* future);
+
 private slots:
 
     /**
@@ -223,6 +277,32 @@ private:
     void cleanup_rw_params();
 
     /**
+     * @brief Читает событие.
+     * @param event Событие.
+     * @param index Индекс события.
+     * @return Флаг успешного чтения события.
+     */
+    bool readEvent(drive_event_t* event, size_t index);
+
+    /**
+     * @brief Читает канал осциллограммы.
+     * @param channel Канал осциллограммы.
+     * @param index Индекс осциллограммы.
+     * @param ch_index Индекс канала осциллограммы.
+     * @return Флаг успешного чтения канала осциллограммы.
+     */
+    bool readOscillogramChannel(DriveOscillogram::Channel* channel, size_t index, size_t ch_index);
+
+    /**
+     * @brief Читает осциллограмму.
+     * @param oscillogram Осциллограмма.
+     * @param index Индекс осциллограммы.
+     * @param future Будущее.
+     * @return Флаг успешного чтения осциллограммы.
+     */
+    bool readOscillogram(DriveOscillogram* oscillogram, size_t index, Future* future);
+
+    /**
      * @brief Таймер для отсчёта периода обновления.
      */
     QTimer* timer;
@@ -254,6 +334,26 @@ private:
      * @brief Работа.
      */
     bool dev_running;
+    /**
+     * @brief Ошибки.
+     */
+    drive_errors_t dev_errors;
+    /**
+     * @brief Предупреждения.
+     */
+    drive_warnings_t dev_warnings;
+    /**
+     * @brief Ошибки питания.
+     */
+    drive_errors_t dev_power_errors;
+    /**
+     * @brief Предупреждения питания.
+     */
+    drive_warnings_t dev_power_warnings;
+    /**
+     * @brief Ошибки фаз.
+     */
+    drive_phase_errors_t dev_phase_errors;
 
     /**
      * @brief Распаковывает параметр во float.
@@ -278,8 +378,21 @@ private:
      */
     WriteParamsList* write_params;
 
+    /**
+     * @brief Список событий.
+     */
+    QList<DriveEvent>* events_list;
+
+    /**
+     * @brief Список осциллограмм.
+     */
+    QList<DriveOscillogram>* osc_list;
+
     //! Число попыток чтения данных.
     const size_t drive_modbus_retries = 10;
+
+    //! Ожидание чтения данных.
+    const size_t drive_modbus_wait_time_us = 1000;
 
     /**
      * Шаблонная функция попыток
@@ -287,6 +400,15 @@ private:
      */
     template <typename Func, typename ... Args>
     int modbusTry(Func func, Args ... args);
+
+    /**
+     * @brief Функция попыток сырого запроса к устройству.
+     * @param req Запрос.
+     * @param req_size Размер запроса.
+     * @param buffer Буфер 256 байт для ответа.
+     * @return Число полученных байт, либо -1 при ошибке.
+     */
+    int modbusTryRaw(void* req, size_t req_size, void* buffer);
 };
 
 template <typename Func, typename ... Args>

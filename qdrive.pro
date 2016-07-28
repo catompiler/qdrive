@@ -27,7 +27,13 @@ SOURCES += main.cpp\
     paramview.cpp \
     future.cpp \
     ../lib/menu/menu.c \
-    paramsmodel.cpp
+    paramsmodel.cpp \
+    eventsmodel.cpp \
+    eventmodel.cpp \
+    driveevent.cpp \
+    driveoscillogram.cpp \
+    oscview.cpp \
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
@@ -41,7 +47,13 @@ HEADERS  += mainwindow.h \
     parameters_list.h \
     future.h \
     ../lib/menu/menu.h \
-    paramsmodel.h
+    paramsmodel.h \
+    eventsmodel.h \
+    eventmodel.h \
+    driveevent.h \
+    driveoscillogram.h \
+    oscview.h \
+    utils.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui

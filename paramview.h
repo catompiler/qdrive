@@ -36,20 +36,8 @@ private:
     QQueue<float>* buffer;
     float buffer_max;
 
-    enum TextPosition {
-        TEXT_POS_TOP_LEFT = 0,
-        TEXT_POS_TOP_RIGHT,
-        TEXT_POS_BOTTOM_LEFT,
-        TEXT_POS_BOTTOM_RIGHT,
-        TEXT_POS_TOP_CENTER,
-        TEXT_POS_BOTTOM_CENTER,
-        TEXT_POS_LEFT_CENTER,
-        TEXT_POS_RIGHT_CENTER
-    };
-
     void drawParameter(QPainter& painter);
 
-    void drawTextAt(QPainter& painter, const QString& text, int x, int y, TextPosition pos);
     void scaleFont(QFont &scale_font, int needed_height, int min_size, int max_size);
     float getNearestMax(float value);
 };
