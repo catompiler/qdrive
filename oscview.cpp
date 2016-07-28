@@ -118,19 +118,26 @@ void OscView::setWaveformColor(int id, const QColor& color)
 
 void OscView::delWaveform(int id)
 {
-    waveforms->remove(id);
+    if(waveforms->contains(id)){
+        delete (*waveforms)[id].first;
+        waveforms->remove(id);
 
-    updatePixmap();
-    update();
+        updatePixmap();
+        update();
+    }
 }
 
 void OscView::clearWaveforms()
 {
-    for(auto it = waveforms->begin(); it != waveforms->end(); ++ it) delete it.value().first;
-    waveforms->clear();
+    if(!waveforms->empty()){
+        for(auto it = waveforms->begin(); it != waveforms->end(); ++ it){
+            delete it.value().first;
+        }
+        waveforms->clear();
 
-    updatePixmap();
-    update();
+        updatePixmap();
+        update();
+    }
 }
 
 void OscView::paintEvent(QPaintEvent* /*event*/)
