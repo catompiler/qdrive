@@ -275,13 +275,17 @@ void OscView::updatePixmap()
 {
     QPainter painter(main_pixmap);
 
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+
     view_settings->top().adjustMarks(width() / XMARGIN, height() / YMARGIN);
     painter.fillRect(main_pixmap->rect(), palette().dark());
 
     drawAxes(&painter);
 
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
     for(auto it = waveforms->begin(); it != waveforms->end(); ++ it){
-        painter.setPen(it.value().second);
+        painter.setPen(QPen(it.value().second, 1.5));
         drawWaveform(&painter, it.value().first);
     }
 }
