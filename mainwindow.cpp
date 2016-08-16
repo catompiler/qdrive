@@ -114,6 +114,7 @@ void MainWindow::refreshUi()
     ui->hsReference->setEnabled(connected);
     ui->sbReference->setEnabled(connected);
     ui->pbClearErrs->setEnabled(connected);
+    ui->pbCalibrate->setEnabled(connected && !running);
     ui->pbReadParams->setEnabled(connected);
     ui->pbWriteParams->setEnabled(connected);
     ui->pbSaveParams->setEnabled(connected);
@@ -211,6 +212,11 @@ void MainWindow::on_sbReference_valueChanged(int value)
 void MainWindow::on_pbClearErrs_clicked()
 {
     drive->clearErrors();
+}
+
+void MainWindow::on_pbCalibrate_clicked()
+{
+    drive->calibratePower();
 }
 
 void MainWindow::on_pbDefaultParams_clicked()

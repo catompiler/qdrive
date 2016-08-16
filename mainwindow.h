@@ -109,6 +109,11 @@ private slots:
     void on_pbClearErrs_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки калибровки питания.
+     */
+    void on_pbCalibrate_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки параметров по-умолчанию.
      */
     void on_pbDefaultParams_clicked();

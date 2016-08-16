@@ -220,11 +220,12 @@ void OscView::mouseReleaseEvent(QMouseEvent* event)
 
         sel_rect = sel_rect.normalized();
 
-        rect_view = QRectF(unmap(sel_rect.topLeft()), unmap(sel_rect.bottomRight()));
+        if(sel_rect.width() >= 4 && sel_rect.height() >= 4){
+            rect_view = QRectF(unmap(sel_rect.topLeft()), unmap(sel_rect.bottomRight()));
+            view_settings->top().view(rect_view);
+            updatePixmap();
+        }
 
-        view_settings->top().view(rect_view);
-
-        updatePixmap();
         update();
         break;
     default:
@@ -273,6 +274,8 @@ void OscView::wheelEvent(QWheelEvent* event)
 
 void OscView::updatePixmap()
 {
+    if(main_pixmap->width() == 0 || main_pixmap->height() == 0) return;
+
     QPainter painter(main_pixmap);
 
     painter.setRenderHint(QPainter::TextAntialiasing, true);

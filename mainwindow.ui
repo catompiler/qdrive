@@ -39,7 +39,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabSensors">
        <attribute name="title">
@@ -231,7 +231,7 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidgetVoltages">
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -308,7 +308,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidgetCurrents">
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -505,7 +505,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
      <item>
       <widget class="QPushButton" name="pbStart">
        <property name="text">
@@ -553,46 +553,69 @@
        <property name="title">
         <string>Ошибки</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblErrs">
-          <property name="text">
-           <string>Общие</string>
-          </property>
-         </widget>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="leftMargin">
+         <number>4</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="rightMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>4</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblErrs">
+            <property name="text">
+             <string>Общие</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="lblErrsVal">
+            <property name="text">
+             <string>0x0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblPhErrs">
+            <property name="text">
+             <string>Фаз</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="lblPhErrsVal">
+            <property name="text">
+             <string>0x0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblPwrErrs">
+            <property name="text">
+             <string>Питания</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="lblPwrErrsVal">
+            <property name="text">
+             <string>0x0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="lblErrsVal">
+        <item>
+         <widget class="QPushButton" name="pbClearErrs">
           <property name="text">
-           <string>0x0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="lblPhErrs">
-          <property name="text">
-           <string>Фаз</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="lblPhErrsVal">
-          <property name="text">
-           <string>0x0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="lblPwrErrs">
-          <property name="text">
-           <string>Питания</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="lblPwrErrsVal">
-          <property name="text">
-           <string>0x0</string>
+           <string>Сброс</string>
           </property>
          </widget>
         </item>
@@ -600,9 +623,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pbClearErrs">
+      <widget class="QPushButton" name="pbCalibrate">
        <property name="text">
-        <string>Сброс ошибок</string>
+        <string>Калибровка</string>
        </property>
       </widget>
      </item>

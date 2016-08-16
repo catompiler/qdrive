@@ -58,6 +58,18 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_6I, "Время работы при перегрузе 6x, с", 0, 0, 0),
     MENU_DESCR(0, 0, "Коммуникация", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_MODBUS_BAUD, "Скорость Modbus RTU", 0, 0, 0),
+    MENU_DESCR(0, 0, "Калибровочные данные", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ua, "Значение калибровки Ua", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ub, "Значение калибровки Ub", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Uc, "Значение калибровки Uc", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Urot, "Значение калибровки Urot", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ia, "Значение калибровки Ia", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ib, "Значение калибровки Ib", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ic, "Значение калибровки Ic", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Irot, "Значение калибровки Irot", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Iexc, "Значение калибровки Iexc", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Iref, "Значение калибровки Iref", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ifan, "Значение калибровки Ifan", 0, 0, 0),
     //MENU_DESCR(0, 0, "Menu1_1", 0, 0, 0)
 };
 

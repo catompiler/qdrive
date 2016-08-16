@@ -68,6 +68,8 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_APPLY_PARAMS (DRIVE_MODBUS_COILS_START + 2)
 //! Сохранение настроек.
 #define DRIVE_MODBUS_COIL_SAVE_PARAMS (DRIVE_MODBUS_COILS_START + 3)
+//! Калибровка питания.
+#define DRIVE_MODBUS_COIL_CALIBRATE_POWER (DRIVE_MODBUS_COILS_START + 4)
 
 
 // Пользовательские функции и коды.
@@ -515,6 +517,21 @@ void DriveWorker::clearErrors()
         return;
     }
     emit information(tr("Ошибки очищены."));
+}
+
+void DriveWorker::calibratePower()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_CALIBRATE_POWER, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно калибровать питание привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Калибровка."));
 }
 
 void DriveWorker::saveParams()

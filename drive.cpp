@@ -22,6 +22,7 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::stop, worker, &DriveWorker::stopDrive);
     connect(this, &Drive::setReference, worker, &DriveWorker::setReference);
     connect(this, &Drive::clearErrors, worker, &DriveWorker::clearErrors);
+    connect(this, &Drive::calibratePower, worker, &DriveWorker::calibratePower);
     connect(this, &Drive::saveParams, worker, &DriveWorker::saveParams);
     connect(this, &Drive::readNextParams, worker, &DriveWorker::readNextParams);
     connect(this, &Drive::writeNextParams, worker, &DriveWorker::writeNextParams);

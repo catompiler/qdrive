@@ -204,6 +204,11 @@ public slots:
     void clearErrors();
 
     /**
+     * @brief Калибрует питание.
+     */
+    void calibratePower();
+
+    /**
      * @brief Сохраняет параметры в ПЗУ.
      */
     void saveParams();
