@@ -143,6 +143,15 @@ typedef enum _Drive_State {
     DRIVE_STATE_ERROR       = 7  //!< Ошибка.
 } drive_state_t;
 
+//! Перечисление состояний инициализации привода.
+typedef enum _Drive_Init_State {
+    DRIVE_INIT_NONE = 0,
+    DRIVE_INIT_RESET = 1,
+    DRIVE_INIT_WAIT_PHASES = 2,
+    DRIVE_INIT_WAIT_POWER = 3,
+    DRIVE_INIT_DONE = 4
+} drive_init_state_t;
+
 //! Перечисление состояний калибровки питания.
 typedef enum _Drive_Power_Calibration {
     DRIVE_PWR_CALIBRATION_NONE    = 0, //!< Нет калибровки.
@@ -292,6 +301,9 @@ typedef enum _DrivePhaseErr {
 //! Тип ошибок фаз.
 typedef uint32_t drive_phase_errors_t;
 
+//! Тип времени между фазами.
+typedef uint16_t phase_time_t;
+
 
 //! Тип идентификатора события.
 typedef uint8_t drive_event_id_t;
@@ -311,6 +323,7 @@ typedef struct _Drive_Event {
     uint8_t type; //!< Тип события.
     uint8_t state; //!< Состояние привода.
     uint8_t direction; //!< Направление вращения привода.
+    uint8_t init_state; //!< Состояние инициализации.
     uint8_t calibration_state; //!< Состояние калибровки привода.
     uint8_t starting_state; //!< Состояние запуска привода.
     uint8_t stopping_state; //!< Состояние останова привода.
@@ -322,6 +335,9 @@ typedef struct _Drive_Event {
     drive_power_warnings_t power_warnings; //!< Предупреждения питания привода.
     drive_power_errors_t power_errors; //!< Ошибки питания привода.
     drive_phase_errors_t phase_errors; //!< Ошибки фаз привода.
+    phase_time_t phase_a_time; //!< Время фазы A.
+    phase_time_t phase_b_time; //!< Время фазы B.
+    phase_time_t phase_c_time; //!< Время фазы C.
     uint32_t time; //!< Время возникновения события.
     uint16_t crc; //!< Контрольная сумма.
 } drive_event_t;

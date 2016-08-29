@@ -48,6 +48,13 @@ drive_dir_t DriveEvent::direction() const
     return static_cast<drive_dir_t>(event_impl->direction);
 }
 
+drive_init_state_t DriveEvent::initState() const
+{
+    if(!isValid()) return static_cast<drive_init_state_t>(0);
+
+    return static_cast<drive_init_state_t>(event_impl->init_state);
+}
+
 drive_power_calibration_t DriveEvent::calibrationState() const
 {
     if(!isValid()) return static_cast<drive_power_calibration_t>(0);
@@ -123,6 +130,27 @@ drive_phase_errors_t DriveEvent::phaseErrors() const
     if(!isValid()) return static_cast<drive_phase_errors_t>(0);
 
     return event_impl->phase_errors;
+}
+
+phase_time_t DriveEvent::phaseTimeA() const
+{
+    if(!isValid()) return static_cast<phase_time_t>(0);
+
+    return event_impl->phase_a_time;
+}
+
+phase_time_t DriveEvent::phaseTimeB() const
+{
+    if(!isValid()) return static_cast<phase_time_t>(0);
+
+    return event_impl->phase_b_time;
+}
+
+phase_time_t DriveEvent::phaseTimeC() const
+{
+    if(!isValid()) return static_cast<phase_time_t>(0);
+
+    return event_impl->phase_c_time;
 }
 
 uint32_t DriveEvent::time() const

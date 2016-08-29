@@ -139,6 +139,11 @@ private slots:
     void on_pbReadEvents_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки очистки событий.
+     */
+    void on_pbClearEvents_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки чтения осциллограмм.
      */
     void on_pbReadOscs_clicked();

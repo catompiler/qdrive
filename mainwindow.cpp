@@ -114,6 +114,7 @@ void MainWindow::refreshUi()
     ui->hsReference->setEnabled(connected);
     ui->sbReference->setEnabled(connected);
     ui->pbClearErrs->setEnabled(connected);
+    ui->pbClearEvents->setEnabled(connected);
     ui->pbCalibrate->setEnabled(connected && !running);
     ui->pbReadParams->setEnabled(connected);
     ui->pbWriteParams->setEnabled(connected);
@@ -286,6 +287,11 @@ void MainWindow::on_pbReadEvents_clicked()
     });
 
     progress->show();
+}
+
+void MainWindow::on_pbClearEvents_clicked()
+{
+    drive->clearEvents();
 }
 
 void MainWindow::on_pbReadOscs_clicked()

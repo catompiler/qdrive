@@ -46,6 +46,12 @@ public:
     drive_dir_t direction() const;
 
     /**
+     * @brief Получает состояние инициализации привода.
+     * @return Состояние инициализации привода.
+     */
+    drive_init_state_t initState() const;
+
+    /**
      * @brief Получает состояние калибровки привода.
      * @return Состояние калибровки привода.
      */
@@ -110,6 +116,24 @@ public:
      * @return Ошибки фаз привода.
      */
     drive_phase_errors_t phaseErrors() const;
+
+    /**
+     * @brief Получает время фазы A.
+     * @return Время фазы A.
+     */
+    phase_time_t phaseTimeA() const;
+
+    /**
+     * @brief Получает время фазы C.
+     * @return Время фазы C.
+     */
+    phase_time_t phaseTimeC() const;
+
+    /**
+     * @brief Получает время фазы B.
+     * @return Время фазы B.
+     */
+    phase_time_t phaseTimeB() const;
 
     /**
      * @brief Получает время события.

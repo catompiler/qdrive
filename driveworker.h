@@ -204,6 +204,11 @@ public slots:
     void clearErrors();
 
     /**
+     * @brief Очищает список событий.
+     */
+    void clearEvents();
+
+    /**
      * @brief Калибрует питание.
      */
     void calibratePower();

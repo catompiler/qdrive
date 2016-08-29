@@ -16,25 +16,30 @@ static const QString header_names[EVENT_COLUMNS_COUNT] = {
 #define EVENT_ROW_TYPE 1
 #define EVENT_ROW_STATE 2
 #define EVENT_ROW_DIRECTION 3
-#define EVENT_ROW_CALIBR_STATE 4
-#define EVENT_ROW_STARTING_STATE 5
-#define EVENT_ROW_STOPPING_STATE 6
-#define EVENT_ROW_ERR_STOPPING_STATE 7
-#define EVENT_ROW_REFERENCE 8
-#define EVENT_ROW_FLAGS 9
-#define EVENT_ROW_WARNINGS 10
-#define EVENT_ROW_ERRORS 11
-#define EVENT_ROW_POWER_WARNINGS 12
-#define EVENT_ROW_POWER_ERRORS 13
-#define EVENT_ROW_PHASE_ERRORS 14
-#define EVENT_ROW_TIME 15
+#define EVENT_ROW_INIT_STATE 4
+#define EVENT_ROW_CALIBR_STATE 5
+#define EVENT_ROW_STARTING_STATE 6
+#define EVENT_ROW_STOPPING_STATE 7
+#define EVENT_ROW_ERR_STOPPING_STATE 8
+#define EVENT_ROW_REFERENCE 9
+#define EVENT_ROW_FLAGS 10
+#define EVENT_ROW_WARNINGS 11
+#define EVENT_ROW_ERRORS 12
+#define EVENT_ROW_POWER_WARNINGS 13
+#define EVENT_ROW_POWER_ERRORS 14
+#define EVENT_ROW_PHASE_ERRORS 15
+#define EVENT_ROW_PHASE_A_TIME 16
+#define EVENT_ROW_PHASE_B_TIME 17
+#define EVENT_ROW_PHASE_C_TIME 18
+#define EVENT_ROW_TIME 19
 
-#define EVENT_ROWS_COUNT 16
+#define EVENT_ROWS_COUNT 20
 static const QString rows_names[EVENT_ROWS_COUNT] = {
     QObject::tr("Идентификатор"),
     QObject::tr("Тип"),
     QObject::tr("Состояние"),
     QObject::tr("Направление"),
+    QObject::tr("Сост. инициализ."),
     QObject::tr("Сост. калибровки"),
     QObject::tr("Сост. запуска"),
     QObject::tr("Сост. останова"),
@@ -46,6 +51,9 @@ static const QString rows_names[EVENT_ROWS_COUNT] = {
     QObject::tr("Предупреждения пит."),
     QObject::tr("Ошибки пит."),
     QObject::tr("Ошибки фаз"),
+    QObject::tr("Время фазы A"),
+    QObject::tr("Время фазы B"),
+    QObject::tr("Время фазы C"),
     QObject::tr("Время"),
 };
 
@@ -81,6 +89,8 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         return QString("%1").arg(cur_event->state(), 0, 10);
     case EVENT_ROW_DIRECTION:
         return QString("%1").arg(cur_event->direction(), 0, 10);
+    case EVENT_ROW_INIT_STATE:
+        return QString("%1").arg(cur_event->initState(), 0, 10);
     case EVENT_ROW_CALIBR_STATE:
         return QString("%1").arg(cur_event->calibrationState(), 0, 10);
     case EVENT_ROW_STARTING_STATE:
@@ -103,6 +113,12 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         return QString("0x%1").arg(cur_event->powerErrors(), 0, 16);
     case EVENT_ROW_PHASE_ERRORS:
         return QString("0x%1").arg(cur_event->phaseErrors(), 0, 16);
+    case EVENT_ROW_PHASE_A_TIME:
+        return QString("%1").arg(cur_event->phaseTimeA(), 0, 10);
+    case EVENT_ROW_PHASE_B_TIME:
+        return QString("%1").arg(cur_event->phaseTimeB(), 0, 10);
+    case EVENT_ROW_PHASE_C_TIME:
+        return QString("%1").arg(cur_event->phaseTimeC(), 0, 10);
     case EVENT_ROW_TIME:
         return QString("0x%1").arg(cur_event->time(), 0, 10);
     }
