@@ -1,6 +1,7 @@
 #include "eventmodel.h"
 #include <string.h>
 #include <QString>
+#include <QDateTime>
 
 
 #define EVENT_COLUMNS_COUNT 2
@@ -120,7 +121,7 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
     case EVENT_ROW_PHASE_C_TIME:
         return QString("%1").arg(cur_event->phaseTimeC(), 0, 10);
     case EVENT_ROW_TIME:
-        return QString("0x%1").arg(cur_event->time(), 0, 10);
+        return QDateTime::fromTime_t(cur_event->time(), Qt::UTC, 0).toString("hh:mm:ss dd.MM.yyyy");
     }
 
     return QVariant();

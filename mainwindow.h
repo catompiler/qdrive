@@ -144,6 +144,11 @@ private slots:
     void on_pbClearEvents_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки установки времени.
+     */
+    void on_pbSetTime_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки чтения осциллограмм.
      */
     void on_pbReadOscs_clicked();

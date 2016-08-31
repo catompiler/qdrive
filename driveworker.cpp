@@ -13,6 +13,8 @@
 #include <sys/time.h>
 #include <string.h>
 #include <errno.h>
+#include <QDate>
+#include <QTime>
 #include <QDebug>
 
 
@@ -58,6 +60,19 @@ typedef struct _DriveModbusId {
 // Регистры хранения.
 //! Задание.
 #define DRIVE_MODBUS_HOLD_REG_REFERENCE (DRIVE_MODBUS_HOLD_REGS_START + 0)
+// Дата и время.
+//! Год.
+#define DRIVE_MODBUS_HOLD_REG_DATETIME_YEAR (DRIVE_MODBUS_HOLD_REGS_START + 1)
+//! Месяц.
+#define DRIVE_MODBUS_HOLD_REG_DATETIME_MONTH (DRIVE_MODBUS_HOLD_REGS_START + 2)
+//! День.
+#define DRIVE_MODBUS_HOLD_REG_DATETIME_DAY (DRIVE_MODBUS_HOLD_REGS_START + 3)
+//! Час.
+#define DRIVE_MODBUS_HOLD_REG_DATETIME_HOUR (DRIVE_MODBUS_HOLD_REGS_START + 4)
+//! Минута.
+#define DRIVE_MODBUS_HOLD_REG_DATETIME_MIN (DRIVE_MODBUS_HOLD_REGS_START + 5)
+//! Секунда.
+#define DRIVE_MODBUS_HOLD_REG_DATETIME_SEC (DRIVE_MODBUS_HOLD_REGS_START + 6)
 // Цифровые входа.
 // Регистры флагов.
 //! Запуск/останов.
@@ -564,6 +579,34 @@ void DriveWorker::saveParams()
         return;
     }
     emit information(tr("Параметры сохранены."));
+}
+
+void DriveWorker::setDateTime(QDateTime datetime)
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    uint16_t data[6];
+
+    QDate date = datetime.date();
+    QTime time = datetime.time();
+
+    data[0] = date.year();
+    data[1] = date.month();
+    data[2] = date.day();
+    data[3] = time.hour();
+    data[4] = time.minute();
+    data[5] = time.second();
+
+    res = modbusTry(modbus_write_registers, DRIVE_MODBUS_HOLD_REG_DATETIME_YEAR, 6, data);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно установить дату и время.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+
+    emit information(tr("Дата и время установлены."));
 }
 
 bool DriveWorker::readEvent(drive_event_t* event, size_t index)

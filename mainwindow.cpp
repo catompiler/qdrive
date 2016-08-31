@@ -119,6 +119,7 @@ void MainWindow::refreshUi()
     ui->pbReadParams->setEnabled(connected);
     ui->pbWriteParams->setEnabled(connected);
     ui->pbSaveParams->setEnabled(connected);
+    ui->pbSetTime->setEnabled(connected);
     ui->pbReadEvents->setEnabled(connected);
     ui->pbReadOscs->setEnabled(connected);
 }
@@ -292,6 +293,11 @@ void MainWindow::on_pbReadEvents_clicked()
 void MainWindow::on_pbClearEvents_clicked()
 {
     drive->clearEvents();
+}
+
+void MainWindow::on_pbSetTime_clicked()
+{
+    drive->setDateTime(QDateTime::currentDateTime());
 }
 
 void MainWindow::on_pbReadOscs_clicked()

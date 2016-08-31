@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QDateTime>
 #include "driveevent.h"
 #include "drive_types.h"
 #include "driveevent.h"
@@ -241,6 +242,12 @@ signals:
      * @brief Сохраняет параметры в ПЗУ.
      */
     void saveParams();
+
+    /**
+     * @brief Устанавливает дату и время.
+     * @param datetime Дата и время.
+     */
+    void setDateTime(QDateTime datetime);
 
 //private signals:
     /**

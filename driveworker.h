@@ -6,6 +6,7 @@
 #include <QPair>
 #include <QQueue>
 #include <QList>
+#include <QDateTime>
 #include <stddef.h>
 #include "driveevent.h"
 #include "driveoscillogram.h"
@@ -217,6 +218,12 @@ public slots:
      * @brief Сохраняет параметры в ПЗУ.
      */
     void saveParams();
+
+    /**
+     * @brief Устанавливает дату и время.
+     * @param datetime Дата и время.
+     */
+    void setDateTime(QDateTime datetime);
 
     /**
      * @brief Читает события.
