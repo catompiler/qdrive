@@ -1,4 +1,7 @@
 #include "driveoscillogram.h"
+#include <QString>
+#include <QFile>
+#include <QDataStream>
 #include <string.h>
 #include <new>
 
@@ -64,6 +67,92 @@ DriveOscillogram::Channel *DriveOscillogram::channel(size_t index)
     return &channels[index];
 }
 
+bool DriveOscillogram::save(const QString& filename) const
+{
+    QFile file(filename);
+
+    if(!file.open(QIODevice::WriteOnly)) return false;
+
+    QDataStream ds(&file);
+
+    ds.setVersion(QDataStream::Qt_5_0);
+
+    ds << data_file_magic << data_file_version
+       << (uint8_t)event_id << (uint8_t)channelsCount();
+
+    if(ds.status() != QDataStream::Ok){
+        file.close();
+        return false;
+    }
+
+    size_t size_to_write;
+    const Channel* ch;
+    for(size_t i = 0; i < channelsCount(); i ++){
+        ch = channel(i);
+
+        ds << (uint32_t)ch->size();
+
+        size_to_write = ch->size() * sizeof(float);
+        if(ds.writeRawData(reinterpret_cast<const char*>(ch->data()), size_to_write) != size_to_write){
+            file.close();
+            return false;
+        }
+    }
+
+    file.close();
+
+    return ds.status() == QDataStream::Ok;
+}
+
+bool DriveOscillogram::load(const QString& filename)
+{
+    QFile file(filename);
+
+    if(!file.open(QIODevice::ReadOnly)) return false;
+
+    QDataStream ds(&file);
+
+    ds.setVersion(QDataStream::Qt_5_0);
+
+    uint32_t magic, version;
+    uint8_t evid, count;
+
+    ds >> magic >> version >> evid >> count;
+
+    if(ds.status() != QDataStream::Ok){
+        file.close();
+        return false;
+    }
+
+    if(magic != data_file_magic) return false;
+    if(version != data_file_version) return false;
+    if(static_cast<size_t>(count) != channelsCount()) return false;
+
+    event_id = evid;
+
+    uint32_t ch_size;
+    size_t size_to_read;
+    Channel* ch;
+    for(size_t i = 0; i < channelsCount(); i ++){
+        ch = channel(i);
+
+        ds >> ch_size;
+        if(ch_size != ch->size()){
+            file.close();
+            return false;
+        }
+        size_to_read = ch->size() * sizeof(float);
+        if(ds.readRawData(reinterpret_cast<char*>(ch->data()), size_to_read) != size_to_read){
+            file.close();
+            return false;
+        }
+    }
+
+    file.close();
+
+    return ds.status() == QDataStream::Ok;
+}
+
 DriveOscillogram::Channel::Channel()
 {
     data_ptr = new float[DRIVE_POWER_OSC_CHANNEL_LEN];
@@ -109,6 +198,16 @@ void DriveOscillogram::Channel::setData(size_t index, const float* values, size_
     while(index != end){
         data_ptr[index ++] = *values ++;
     }
+}
+
+float* DriveOscillogram::Channel::data()
+{
+    return data_ptr;
+}
+
+const float* DriveOscillogram::Channel::data() const
+{
+    return data_ptr;
 }
 
 size_t DriveOscillogram::Channel::size() const

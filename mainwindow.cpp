@@ -13,10 +13,12 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QFileDialog>
 #include <QGridLayout>
 #include <QLayoutItem>
 #include <QString>
 #include <QItemSelectionModel>
+#include <QDir>
 #include <QDebug>
 
 
@@ -74,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tvEvent->setColumnWidth(0, TREEVIEW_EVENT_COL_NAME_WIDTH);
 
     settingsDlg = nullptr;
+
+    cur_dir = QDir::currentPath();
 
     drive = new Drive(this);
     connect(drive, &Drive::errorOccured, this, &MainWindow::errorOccured);
@@ -302,8 +306,6 @@ void MainWindow::on_pbSetTime_clicked()
 
 void MainWindow::on_pbReadOscs_clicked()
 {
-    ui->cbOscs->clear();
-
     QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
                                                     0, 0, this);
     progress->setWindowTitle(tr("Чтение осциллограмм"));
@@ -316,16 +318,49 @@ void MainWindow::on_pbReadOscs_clicked()
     connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
     connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
     connect(future, &Future::finished, future, [this](){
-        auto oscs = drive->oscillograms();
-        if(!oscs.empty()){
-            for(auto it = oscs.begin(); it != oscs.end(); ++ it){
-                ui->cbOscs->addItem(tr("Событие %1").arg(it->eventId()));
-            }
-            ui->cbOscs->setCurrentIndex(0);
-        }
+        refreshOscsList(0);
     });
 
     progress->show();
+}
+
+void MainWindow::on_pbSaveOsc_clicked()
+{
+    if(ui->cbOscs->currentIndex() == -1 ||
+       ui->cbOscs->currentIndex() >= static_cast<int>(drive->oscillogramsCount())){
+        QMessageBox::critical(this, tr("Сохранение осциллограммы"), tr("Не выбрана осциллограмма для сохранения"));
+        return;
+    }
+
+    QString filename = QFileDialog::getSaveFileName(this, tr("Сохранение осциллограммы"), cur_dir, tr("Осциллограммы (*.osc)"));
+
+    if(filename.isEmpty()) return;
+
+    cur_dir = QDir(filename).path();
+
+    DriveOscillogram osc = drive->oscillogram(static_cast<size_t>(ui->cbOscs->currentIndex()));
+
+    if(!osc.save(filename)){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка сохранения файла!"));
+    }
+}
+
+void MainWindow::on_pbReadOsc_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Загрузка осциллограммы"), cur_dir, tr("Осциллограммы (*.osc)"));
+
+    if(filename.isEmpty()) return;
+
+    cur_dir = QDir(filename).path();
+
+    DriveOscillogram osc;
+
+    if(!osc.load(filename)){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка загрузки файла!"));
+    }else{
+        drive->addOscillogram(osc);
+        refreshOscsList(static_cast<int>(drive->oscillogramsCount()) - 1);
+    }
 }
 
 void MainWindow::lvEvents_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
@@ -429,5 +464,22 @@ void MainWindow::refreshViewedParams()
         glMain->addWidget(paramView, n_widget / PARAM_ITEMS_COLS, n_widget % PARAM_ITEMS_COLS);
 
         n_widget ++;
+    }
+}
+
+void MainWindow::refreshOscsList(int set_index)
+{
+    ui->cbOscs->clear();
+    auto oscs = drive->oscillograms();
+    if(!oscs.empty()){
+        for(auto it = oscs.begin(); it != oscs.end(); ++ it){
+            ui->cbOscs->addItem(tr("Событие %1").arg(it->eventId()));
+        }
+        if(set_index >= 0){
+            if(set_index >= ui->cbOscs->count()){
+                set_index = ui->cbOscs->count() - 1;
+            }
+            ui->cbOscs->setCurrentIndex(set_index);
+        }
     }
 }

@@ -4,6 +4,11 @@
 
 #include "drive_types.h"
 #include <stddef.h>
+#include <stdint.h>
+
+
+class QString;
+
 
 
 /**
@@ -41,6 +46,18 @@ public:
          * @param count Число данных для установки.
          */
         void setData(size_t index, const float* values, size_t count);
+
+        /**
+         * @brief Получает данные канала осциллограммы.
+         * @return Данные канала осциллограммы.
+         */
+        float* data();
+
+        /**
+         * @brief Получает данные канала осциллограммы.
+         * @return Данные канала осциллограммы.
+         */
+        const float* data() const;
 
         /**
          * @brief Получает размер данных канала осциллограммы.
@@ -128,11 +145,30 @@ public:
      */
     Channel* channel(size_t index);
 
+    /**
+     * @brief Сохраняет осциллограмму в файл.
+     * @param filename Имя файла.
+     * @return Флаг успеха.
+     */
+    bool save(const QString& filename) const;
+
+    /**
+     * @brief Загружает осциллограмму из файла.
+     * @param filename Имя файла.
+     * @return Флаг успеха.
+     */
+    bool load(const QString& filename);
+
 private:
     //! Идентификатор события осциллограммы.
     drive_event_id_t event_id;
     //! Каналы осциллограммы.
     Channel* channels;//[DRIVE_POWER_OSC_CHANNELS_COUNT];
+
+    //! Magic файла осциллограмм.
+    static const uint32_t data_file_magic = 0x43534f2e;
+    //! Версия файла осциллограмм.
+    static const uint32_t data_file_version = 0x100;
 };
 
 #endif // DRIVEOSCILLOGRAM_H

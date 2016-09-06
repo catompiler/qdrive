@@ -105,6 +105,21 @@ QList<DriveOscillogram> Drive::oscillograms() const
     return worker->oscillograms();
 }
 
+size_t Drive::oscillogramsCount() const
+{
+    return worker->oscillogramsCount();
+}
+
+DriveOscillogram Drive::oscillogram(size_t index) const
+{
+    return worker->oscillogram(index);
+}
+
+void Drive::addOscillogram(const DriveOscillogram& osc)
+{
+    worker->addOscillogram(osc);
+}
+
 void Drive::addUpdParam(Parameter *param)
 {
     worker->addUpdParam(param);

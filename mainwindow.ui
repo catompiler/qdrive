@@ -39,7 +39,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabSensors">
        <attribute name="title">
@@ -415,6 +415,20 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pbSaveOsc">
+            <property name="text">
+             <string>Сохранить</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pbReadOsc">
+            <property name="text">
+             <string>Загрузить</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="pbReadOscs">

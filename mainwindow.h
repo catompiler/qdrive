@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 
 class QCloseEvent;
 
@@ -154,6 +155,16 @@ private slots:
     void on_pbReadOscs_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки сохранения осциллограммы.
+     */
+    void on_pbSaveOsc_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки чтения осциллограммы.
+     */
+    void on_pbReadOsc_clicked();
+
+    /**
      * @brief Обработчик выделения события.
      * @param current Текущий индекс.
      * @param previous Предыдущий индекс.
@@ -184,6 +195,10 @@ private:
      */
     void refreshViewedParams();
     /**
+     * @brief Обновляет список осциллограмм в списке.
+     */
+    void refreshOscsList(int set_index = -1);
+    /**
      * @brief Графический интерфейс.
      */
     Ui::MainWindow *ui;
@@ -212,6 +227,10 @@ private:
      * @brief Модель события.
      */
     EventModel* eventModel;
+    /**
+     * @brief Текущая папка для сохранения.
+     */
+    QString cur_dir;
 };
 
 #endif // MAINWINDOW_H

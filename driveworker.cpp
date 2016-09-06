@@ -288,7 +288,7 @@ bool DriveWorker::setup()
         return false;
     }
 
-    modbus_set_debug(modbus, false);
+    //modbus_set_debug(modbus, true);
 
     //modbus_set_error_recovery(modbus, static_cast<modbus_error_recovery_mode>(MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL));
     modbus_set_error_recovery(modbus, static_cast<modbus_error_recovery_mode>(MODBUS_ERROR_RECOVERY_NONE));
@@ -374,6 +374,22 @@ QList<DriveEvent> DriveWorker::events() const
 QList<DriveOscillogram> DriveWorker::oscillograms() const
 {
     return QList<DriveOscillogram>(*osc_list);
+}
+
+size_t DriveWorker::oscillogramsCount() const
+{
+    return osc_list->size();
+}
+
+DriveOscillogram DriveWorker::oscillogram(size_t index) const
+{
+    if(index >= osc_list->size()) return DriveOscillogram();
+    return osc_list->at(index);
+}
+
+void DriveWorker::addOscillogram(const DriveOscillogram& osc)
+{
+    osc_list->append(osc);
 }
 
 void DriveWorker::addUpdParam(Parameter *param)

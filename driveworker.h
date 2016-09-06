@@ -109,6 +109,25 @@ public:
     QList<DriveOscillogram> oscillograms() const;
 
     /**
+     * @brief Получает количество осциллограмм.
+     * @return Количество осциллограмм.
+     */
+    size_t oscillogramsCount() const;
+
+    /**
+     * @brief Получает осциллограмму с заданным индексом.
+     * @param index Индекс осциллограммы.
+     * @return Осциллограмма.
+     */
+    DriveOscillogram oscillogram(size_t index) const;
+
+    /**
+     * @brief Добавляет осциллограмму к осциллограммам привода.
+     * @param osc Осциллограмма.
+     */
+    void addOscillogram(const DriveOscillogram& osc);
+
+    /**
      * @brief Добавляет параметр для обновления.
      * @param param Параметр.
      */
