@@ -153,6 +153,9 @@ void MainWindow::updated()
     ui->lblErrsVal->setText(QString("0x%1").arg(drive->errors(), 0, 16));
     ui->lblPhErrsVal->setText(QString("0x%1").arg(drive->phaseErrors(), 0, 16));
     ui->lblPwrErrsVal->setText(QString("0x%1").arg(drive->powerErrors(), 0, 16));
+
+    ui->lblWarnsVal->setText(QString("0x%1").arg(drive->warnings(), 0, 16));
+    ui->lblPwrWarnsVal->setText(QString("0x%1").arg(drive->powerWarnings(), 0, 16));
 }
 
 void MainWindow::errorOccured(const QString &error_text)

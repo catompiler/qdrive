@@ -383,7 +383,7 @@ size_t DriveWorker::oscillogramsCount() const
 
 DriveOscillogram DriveWorker::oscillogram(size_t index) const
 {
-    if(index >= osc_list->size()) return DriveOscillogram();
+    if(index >= static_cast<size_t>(osc_list->size())) return DriveOscillogram();
     return osc_list->at(index);
 }
 
@@ -665,6 +665,8 @@ bool DriveWorker::readEvent(drive_event_t* event, size_t index)
         return false;
     }
 
+    //qDebug () << buf;
+
     if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*index*/ + 2/*crc*/){
         emit errorOccured(tr("Ошибочный ответ при начале чтения события.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
@@ -760,6 +762,8 @@ void DriveWorker::readEvents(Future* future)
     }
 
     size_t events_count = static_cast<size_t>(ba[REQ_DATA_OFFSET]);
+
+    //qDebug () << events_count;
 
     events_list->clear();
 

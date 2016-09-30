@@ -428,7 +428,7 @@ private:
     const size_t drive_modbus_retries = 10;
 
     //! Ожидание чтения данных.
-    const size_t drive_modbus_wait_time_us = 1000;
+    const size_t drive_modbus_wait_time_us = 100;
 
     /**
      * Шаблонная функция попыток
