@@ -41,6 +41,9 @@ public:
      */
     bool write();
 
+    const QString& lastPath() const;
+    void setLastPath(const QString& path);
+
     const QString& ioDeviceName() const;
     void setIODeviceName(const QString& name);
 
@@ -72,6 +75,7 @@ public slots:
 private:
     Settings();
 
+    QString last_path;
     QString io_dev_name;
     unsigned int io_baud;
     Parity io_parity;

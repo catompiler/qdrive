@@ -115,6 +115,16 @@ private slots:
     void on_pbCalibrate_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки импорта параметров.
+     */
+    void on_pbImportParams_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки экспорта параметров.
+     */
+    void on_pbExportParams_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки параметров по-умолчанию.
      */
     void on_pbDefaultParams_clicked();
@@ -227,10 +237,6 @@ private:
      * @brief Модель события.
      */
     EventModel* eventModel;
-    /**
-     * @brief Текущая папка для сохранения.
-     */
-    QString cur_dir;
 };
 
 #endif // MAINWINDOW_H

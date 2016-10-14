@@ -16,6 +16,7 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_U_NOM, "Ном. U сети, В", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_U_NOM_ALLOW_VAR, "Доп. отклон. U сети, %", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_U_NOM_CRIT_VAR, "Крит. отклон. U сети, %", 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_I_IN_CUTOFF, "Токовая отсечка по фазам, А", 0, 0, 0),
         MENU_DESCR(1, 0, "Шумы нуля", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_U_ZERO_NOISE, "Шум нулевого U, В", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_I_ZERO_NOISE, "Шум нулевого I, А", 0, 0, 0),
@@ -56,6 +57,8 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_TIME, "Возбужд.", 0, 0, 0),
     MENU_DESCR(0, 0, "Тепловая защита", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_6I, "Время работы при перегрузе 6x, с", 0, 0, 0),
+    MENU_DESCR(0, 0, "Вычисления", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_CALC_PHASE_CURRENT, "Вычислять ток для фазы", 0, 0, 0),
     MENU_DESCR(0, 0, "Коммуникация", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_MODBUS_BAUD, "Скорость Modbus RTU", 0, 0, 0),
     MENU_DESCR(0, 0, "Цифровые входа", 0, 0, 0),
@@ -293,6 +296,22 @@ QList<Parameter *> ParamsModel::getParamsList()
     }
 
     return res_list;
+}
+
+QHash<param_id_t, Parameter*> ParamsModel::getParamsHash()
+{
+    QHash<param_id_t, Parameter*> res_hash;
+
+    menu_item_t* item = nullptr;
+    Parameter* param = nullptr;
+
+    for(size_t i = 0; i < MENU_DESCRS_COUNT(menu_descrs); i ++){
+        item = &params_items[i];
+        param = static_cast<Parameter*>(menu_item_user_data(item));
+        if(param) res_hash.insert(param->id(), param);
+    }
+
+    return res_hash;
 }
 
 void ParamsModel::applyDefault()

@@ -3,10 +3,11 @@
 
 #include <QAbstractItemModel>
 #include <QList>
+#include <QHash>
+#include "parameter.h"
 
 typedef struct _Menu menu_t;
 typedef struct _MenuItem menu_item_t;
-class Parameter;
 
 
 class ParamsModel
@@ -29,6 +30,8 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
     QList<Parameter*> getParamsList();
+    QHash<param_id_t, Parameter*> getParamsHash();
+
 
 signals:
 

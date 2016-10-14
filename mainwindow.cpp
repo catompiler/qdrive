@@ -18,7 +18,8 @@
 #include <QLayoutItem>
 #include <QString>
 #include <QItemSelectionModel>
-#include <QDir>
+#include <QFileInfo>
+#include <QSettings>
 #include <QDebug>
 
 
@@ -37,7 +38,8 @@ static ParamItem default_params[] = {
     {"Ic", PARAM_ID_POWER_I_C, PARAM_TYPE_FRACT_100},
     {"Urot", PARAM_ID_POWER_U_ROT, PARAM_TYPE_FRACT_10},
     {"Irot", PARAM_ID_POWER_I_ROT, PARAM_TYPE_FRACT_10},
-    {"Iexc", PARAM_ID_POWER_I_EXC, PARAM_TYPE_FRACT_1000}
+    {"Iexc", PARAM_ID_POWER_I_EXC, PARAM_TYPE_FRACT_1000},
+    //{"PIDexc", PARAM_ID_DEBUG_6, PARAM_TYPE_FRACT_100}
 };
 
 #define PARAM_ITEMS_COLS 2
@@ -76,8 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tvEvent->setColumnWidth(0, TREEVIEW_EVENT_COL_NAME_WIDTH);
 
     settingsDlg = nullptr;
-
-    cur_dir = QDir::currentPath();
 
     drive = new Drive(this);
     connect(drive, &Drive::errorOccured, this, &MainWindow::errorOccured);
@@ -228,6 +228,65 @@ void MainWindow::on_pbCalibrate_clicked()
     drive->calibratePower();
 }
 
+void MainWindow::on_pbImportParams_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Импорт параметров"), Settings::get().lastPath(), tr("Файлы параметров (*.ini)"));
+
+    if(filename.isEmpty()) return;
+
+    Settings::get().setLastPath(QFileInfo(filename).path());
+
+    auto params = paramsModel->getParamsHash();
+
+    QSettings settings(filename, QSettings::IniFormat);
+
+    settings.beginGroup("Drive_parameters");
+
+    QStringList keys = settings.allKeys();
+
+    for(QString& str_key: keys){
+        bool is_ok = false;
+
+        param_id_t id = static_cast<param_id_t>(str_key.toUInt(&is_ok));
+        if(!is_ok) continue;
+
+        if(!params.contains(id)) continue;
+
+        uint16_t value = static_cast<uint16_t>(settings.value(str_key).toUInt(&is_ok));
+        if(!is_ok) continue;
+
+        params[id]->setRaw(value);
+    }
+
+    settings.endGroup();
+
+    paramsModel->paramsUpdated();
+}
+
+void MainWindow::on_pbExportParams_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Экспорт параметров"), Settings::get().lastPath(), tr("Файлы параметров (*.ini)"));
+
+    if(filename.isEmpty()) return;
+
+    Settings::get().setLastPath(QFileInfo(filename).path());
+
+    auto params = paramsModel->getParamsHash();
+
+    QSettings settings(filename, QSettings::IniFormat);
+
+    settings.clear();
+
+    settings.beginGroup("Drive_parameters");
+
+    for(auto it = params.begin(); it != params.end(); ++ it){
+        settings.setValue(QString::number(static_cast<unsigned int>(it.key())),
+                          static_cast<unsigned int>(it.value()->toRaw()));
+    }
+
+    settings.endGroup();
+}
+
 void MainWindow::on_pbDefaultParams_clicked()
 {
     paramsModel->applyDefault();
@@ -335,11 +394,11 @@ void MainWindow::on_pbSaveOsc_clicked()
         return;
     }
 
-    QString filename = QFileDialog::getSaveFileName(this, tr("Сохранение осциллограммы"), cur_dir, tr("Осциллограммы (*.osc)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Сохранение осциллограммы"), Settings::get().lastPath(), tr("Осциллограммы (*.osc)"));
 
     if(filename.isEmpty()) return;
 
-    cur_dir = QDir(filename).path();
+    Settings::get().setLastPath(QFileInfo(filename).path());
 
     DriveOscillogram osc = drive->oscillogram(static_cast<size_t>(ui->cbOscs->currentIndex()));
 
@@ -350,11 +409,11 @@ void MainWindow::on_pbSaveOsc_clicked()
 
 void MainWindow::on_pbReadOsc_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Загрузка осциллограммы"), cur_dir, tr("Осциллограммы (*.osc)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Загрузка осциллограммы"), Settings::get().lastPath(), tr("Осциллограммы (*.osc)"));
 
     if(filename.isEmpty()) return;
 
-    cur_dir = QDir(filename).path();
+    Settings::get().setLastPath(QFileInfo(filename).path());
 
     DriveOscillogram osc;
 

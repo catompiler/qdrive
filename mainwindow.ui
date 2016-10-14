@@ -39,7 +39,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabSensors">
        <attribute name="title">
@@ -74,11 +74,25 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>18</width>
               <height>20</height>
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pbImportParams">
+            <property name="text">
+             <string>Импорт</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pbExportParams">
+            <property name="text">
+             <string>Экспорт</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="pbReadParams">
@@ -451,7 +465,7 @@
      <x>0</x>
      <y>0</y>
      <width>656</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="mnuFile">

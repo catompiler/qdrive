@@ -18,6 +18,7 @@ bool Settings::read()
 {
     QSettings settings(company_name, app_name);
 
+    last_path = settings.value("last_path", "").toString();
 #ifdef Q_OS_WIN
     io_dev_name = settings.value("io_dev_name", "COM1").toString();
 #else
@@ -38,6 +39,7 @@ bool Settings::write()
 {
     QSettings settings(company_name, app_name);
 
+    settings.setValue("last_path", last_path);
     settings.setValue("io_dev_name", io_dev_name);
     settings.setValue("io_baud", io_baud);
     settings.setValue("io_parity", static_cast<unsigned int>(io_parity));
@@ -48,6 +50,16 @@ bool Settings::write()
     settings.setValue("dev_period", dev_period);
 
     return true;
+}
+
+const QString&Settings::lastPath() const
+{
+    return last_path;
+}
+
+void Settings::setLastPath(const QString& path)
+{
+    last_path = path;
 }
 
 const QString &Settings::ioDeviceName() const
