@@ -20,6 +20,7 @@
 #include <QItemSelectionModel>
 #include <QFileInfo>
 #include <QSettings>
+#include <QColor>
 #include <QDebug>
 
 
@@ -27,19 +28,20 @@ struct ParamItem {
     QString name;
     param_id_t id;
     param_type_t type;
+    QColor color;
 };
 
 static ParamItem default_params[] = {
-    {"Ua", PARAM_ID_POWER_U_A, PARAM_TYPE_FRACT_100},
-    {"Ia", PARAM_ID_POWER_I_A, PARAM_TYPE_FRACT_100},
-    {"Ub", PARAM_ID_POWER_U_B, PARAM_TYPE_FRACT_100},
-    {"Ib", PARAM_ID_POWER_I_B, PARAM_TYPE_FRACT_100},
-    {"Uc", PARAM_ID_POWER_U_C, PARAM_TYPE_FRACT_100},
-    {"Ic", PARAM_ID_POWER_I_C, PARAM_TYPE_FRACT_100},
-    {"Urot", PARAM_ID_POWER_U_ROT, PARAM_TYPE_FRACT_10},
-    {"Irot", PARAM_ID_POWER_I_ROT, PARAM_TYPE_FRACT_10},
-    {"Iexc", PARAM_ID_POWER_I_EXC, PARAM_TYPE_FRACT_1000},
-    //{"PIDexc", PARAM_ID_DEBUG_6, PARAM_TYPE_FRACT_100}
+    {"Ua", PARAM_ID_POWER_U_A, PARAM_TYPE_FRACT_100, Qt::yellow},
+    {"Ia", PARAM_ID_POWER_I_A, PARAM_TYPE_FRACT_100, Qt::yellow},
+    {"Ub", PARAM_ID_POWER_U_B, PARAM_TYPE_FRACT_100, Qt::green},
+    {"Ib", PARAM_ID_POWER_I_B, PARAM_TYPE_FRACT_100, Qt::green},
+    {"Uc", PARAM_ID_POWER_U_C, PARAM_TYPE_FRACT_100, Qt::red},
+    {"Ic", PARAM_ID_POWER_I_C, PARAM_TYPE_FRACT_100, Qt::red},
+    {"Urot", PARAM_ID_POWER_U_ROT, PARAM_TYPE_FRACT_10, Qt::blue},
+    {"Irot", PARAM_ID_POWER_I_ROT, PARAM_TYPE_FRACT_10, Qt::blue},
+    {"Iexc", PARAM_ID_POWER_I_EXC, PARAM_TYPE_FRACT_1000, Qt::magenta},
+    //{"PIDexc", PARAM_ID_DEBUG_6, PARAM_TYPE_FRACT_100, Qt::black}
 };
 
 #define PARAM_ITEMS_COLS 2
@@ -522,6 +524,8 @@ void MainWindow::refreshViewedParams()
         connect(drive, &Drive::updated, paramView, &ParamView::updated);
 
         paramView->viewParam(paramItem.name, param);
+
+        paramView->setColor(paramItem.color);
 
         glMain->addWidget(paramView, n_widget / PARAM_ITEMS_COLS, n_widget % PARAM_ITEMS_COLS);
 

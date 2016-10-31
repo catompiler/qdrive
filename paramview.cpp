@@ -1,31 +1,41 @@
 #include "paramview.h"
 #include <QPaintEvent>
+#include <QResizeEvent>
 #include <QMouseEvent>
 #include <QToolTip>
 #include <QPainter>
+#include <QPalette>
+#include <QPen>
+#include <QBrush>
 #include <QRect>
 #include <QSize>
 #include <algorithm>
+#include <utility>
 #include "utils.h"
+#include <QDebug>
 
 
 using namespace utils::paint;
 
 
-ParamView::ParamView(QWidget *parent) : QFrame(parent)
+ParamView::ParamView(QWidget *parent) : QWidget(parent)
 {
     setMouseTracking(true);
 
+    param_color = palette().mid().color();
+
+    main_pixmap = new QPixmap();
+
     param = nullptr;
-    setFrameShadow(QFrame::Sunken);
-    setFrameShape(QFrame::StyledPanel);
 
     buffer = new QQueue<float>();
+    buffer_min = 0.0f;
     buffer_max = 0.0f;
 }
 
 ParamView::~ParamView()
 {
+    delete main_pixmap;
     delete buffer;
 }
 
@@ -40,30 +50,47 @@ Parameter *ParamView::parameter()
     return param;
 }
 
+void ParamView::setColor(const QColor& c)
+{
+    param_color = c;
+
+    updatePixmap();
+    update();
+}
+
 void ParamView::updated()
 {
     buffer->append(param->toFloat());
     while(buffer->length() > width()) buffer->removeFirst();
 
-    buffer_max = *std::max_element(buffer->begin(), buffer->end());
+    auto buf_minmax = std::minmax_element(buffer->begin(), buffer->end());
 
+    buffer_min = *buf_minmax.first;
+    buffer_max = *buf_minmax.second;
+
+    updatePixmap();
     update();
 }
 
-void ParamView::paintEvent(QPaintEvent *event)
+void ParamView::paintEvent(QPaintEvent *)
 {
-    QFrame::paintEvent(event);
-
     QPainter painter(this);
+    painter.drawPixmap(0, 0, *main_pixmap);
+}
 
-    //painter.drawRect(QRect(0, 0, width()-1, height()-1));
+void ParamView::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
 
-    drawParameter(painter);
+    delete main_pixmap;
+    main_pixmap = new QPixmap(event->size());
+
+    updatePixmap();
 }
 
 void ParamView::mouseMoveEvent(QMouseEvent *event)
 {
-    QFrame::mouseMoveEvent(event);
+    QWidget::mouseMoveEvent(event);
 
     int index = event->x();
 
@@ -76,8 +103,19 @@ void ParamView::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void ParamView::drawParameter(QPainter &painter)
+void ParamView::updatePixmap()
 {
+    if(main_pixmap->width() == 0 || main_pixmap->height() == 0) return;
+
+    QPainter painter(main_pixmap);
+
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+
+    painter.fillRect(main_pixmap->rect(), palette().dark());
+
+    float top_value = getNearestMax(buffer_max);
+    float bottom_value = getNearestMin(buffer_min);
+
     QFont name_font(font());
     scaleFont(name_font, height()/5, 8, 12);
 
@@ -85,37 +123,37 @@ void ParamView::drawParameter(QPainter &painter)
 
     int delta = fm.height() / 2;
 
-    QString value_str = param ? param->toString() : QString();
-
-    painter.setFont(name_font);
-    drawTextAt(&painter, param_name, delta, delta, TEXT_POS_BOTTOM_RIGHT);
-
-    painter.setFont(name_font);
-    drawTextAt(&painter, value_str, delta, height() - delta, TEXT_POS_TOP_RIGHT);
+    painter.setPen(param_color);
 
     if(!buffer->isEmpty()){
-        float top_value = getNearestMax(buffer_max);
 
-        auto calc_y = [top_value, this](float value) -> int{
-            return static_cast<int>((1.0f - value / top_value) * height());
+        auto calc_y = [top_value, bottom_value, this](float value) -> int{
+            return static_cast<int>((1.0f - (value - bottom_value) / (top_value - bottom_value)) * height());
         };
 
-        int x_old = width() - buffer->size();
-        int y_old = calc_y(buffer->first());
-
-        int x = 0, y = 0;
+        int x = width() - buffer->size(), y = 0;
 
         auto iter = buffer->begin();
         ++ iter;
 
         for(; iter != buffer->end(); ++ iter){
-            x = x_old + 1;
+            x = x + 1;
             y = calc_y(*iter);
-            painter.drawLine(x_old, y_old, x, y);
-            x_old = x;
-            y_old = y;
+            painter.drawLine(x, y, x, height() - 1);
         }
     }
+
+    QString value_str = param ? param->toString() : QString();
+    QString top_str = param ? Parameter::number(param->type(), top_value) : QString();
+    QString bottom_str = param ? Parameter::number(param->type(), bottom_value) : QString();
+
+    painter.setPen(palette().light().color());
+    painter.setFont(name_font);
+
+    drawTextAt(&painter, param_name, delta, delta, TEXT_POS_BOTTOM_RIGHT);
+    drawTextAt(&painter, value_str, delta, height() - delta, TEXT_POS_TOP_RIGHT);
+    drawTextAt(&painter, top_str, width() - delta, delta, TEXT_POS_BOTTOM_LEFT);
+    drawTextAt(&painter, bottom_str, width() - delta, height() - delta, TEXT_POS_TOP_LEFT);
 }
 
 void ParamView::scaleFont(QFont& scale_font, int needed_height, int min_size, int max_size)
@@ -135,7 +173,7 @@ void ParamView::scaleFont(QFont& scale_font, int needed_height, int min_size, in
 
 float ParamView::getNearestMax(float value)
 {
-    if(value == 0.0f) return 1;
+    if(value == 0.0f) return 1.0f;
     //const int base = 10;
     //return static_cast<int>(ceil(1.618f / base * value)) * base;
     //return static_cast<int>(pow(10.0f, floor(log10(value)) + 1.0f));
@@ -149,6 +187,21 @@ float ParamView::getNearestMax(float value)
     if(value >= res) res += cur_base;
 
     if(res < min_upper_bound) res = min_upper_bound;
+
+    return res;
+}
+
+float ParamView::getNearestMin(float value)
+{
+    if(value == 0.0f) return 0.0f;
+
+    float cur_base = copysign(pow(10.0f, floor(log10(fabs(value)))), value);
+    float n = floor(value / cur_base);
+    float res = cur_base * n;
+
+    //qDebug() << value << cur_base << n << res;
+
+    if(value <= res) res += cur_base;
 
     return res;
 }

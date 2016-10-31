@@ -29,6 +29,7 @@ typedef struct _DriveModbusId {
 } drive_modbus_id_t;
 #pragma pack(pop)
 
+#define DRIVE_ID 0xAA
 #define DRIVE_ID_MAGIC 0x4702
 
 //! Начало адресов регистров хранения.
@@ -464,6 +465,14 @@ void DriveWorker::connectToDevice()
         emit errorOccured(tr("Неправильный идентификатор устройства."));
         return;
     }
+
+    /*uint8_t id = response[0];
+    drive_modbus_id_t* drive_id = reinterpret_cast<drive_modbus_id_t*>(&response[2]);
+
+    if(id != DRIVE_ID || drive_id->magic != DRIVE_ID_MAGIC){
+        emit errorOccured(tr("Неправильный идентификатор устройства."));
+        return;
+    }*/
 
     QString dev_name = tr("%1 ver %2.%3").arg(drive_id->name).arg(drive_id->major).arg(drive_id->minor);
 
