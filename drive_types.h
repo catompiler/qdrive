@@ -16,7 +16,8 @@ typedef enum _Parameter_Type {
     PARAM_TYPE_UINT = 1,
     PARAM_TYPE_FRACT_10 = 2,
     PARAM_TYPE_FRACT_100 = 3,
-    PARAM_TYPE_FRACT_1000 = 4
+    PARAM_TYPE_FRACT_1000 = 4,
+    PARAM_TYPE_FRACT_10000 = 5
 } param_type_t;
 
 

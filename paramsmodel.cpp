@@ -51,6 +51,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_ROT_STOP_TIME, "Время останова якоря, с", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_EXC_STOP_TIME, "Время останова возбужд., с", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_EXC_START_TIME, "Время запуска возбужд., с", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_PHASES_CHECK_TIME, "Время ожидания фаз, мс", 0, 0, 0),
     MENU_DESCR(0, 0, "Тиристоры", 0, 0, 0),
         MENU_DESCR(1, 0, "Время открытия, мкс", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_TIME, "Силовые", 0, 0, 0),
@@ -90,6 +91,18 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, 0, "Выход 4", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_4_TYPE, "Тип", 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_4_INVERSION, "Инверсия", 0, 0, 0),
+    MENU_DESCR(0, 0, "Коэффициенты АЦП", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ua, "Коэффициент Ua", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ub, "Коэффициент Ub", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Uc, "Коэффициент Uc", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Urot, "Коэффициент Urot", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ia, "Коэффициент Ia", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ib, "Коэффициент Ib", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ic, "Коэффициент Ic", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Irot, "Коэффициент Irot", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iexc, "Коэффициент Iexc", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iref, "Коэффициент Iref", 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ifan, "Коэффициент Ifan", 0, 0, 0),
     MENU_DESCR(0, 0, "Калибровочные данные", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ua, "Значение калибровки Ua", 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ub, "Значение калибровки Ub", 0, 0, 0),
@@ -202,6 +215,7 @@ bool ParamsModel::setData(const QModelIndex &index, const QVariant &value, int r
     case PARAM_TYPE_FRACT_10:
     case PARAM_TYPE_FRACT_100:
     case PARAM_TYPE_FRACT_1000:
+    case PARAM_TYPE_FRACT_10000:
         if(!param->validate(value.toFloat(&is_ok)))
             return false;
         if(is_ok) param->setFloat(value.toFloat());

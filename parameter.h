@@ -505,4 +505,22 @@ public:
         { value = static_cast<float>(static_cast<int16_t>(val)) / 1000.0f; }
 };
 
+
+/**
+ * @brief Класс параметра со значение с плавающей запятой и точностью 0.0001.
+ */
+class ParameterFract10000
+        :public ParameterImpl<float>
+{
+public:
+    ParameterFract10000() :ParameterImpl<float>() {}
+    ~ParameterFract10000() {}
+
+    uint16_t toRaw() const
+        { return static_cast<uint16_t>(floor(value * 10000.0f + 0.5f)); }
+
+    void setRaw(uint16_t val)
+        { value = static_cast<float>(static_cast<int16_t>(val)) / 10000.0f; }
+};
+
 #endif // PARAMETER_H

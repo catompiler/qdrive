@@ -93,7 +93,8 @@ bool DriveOscillogram::save(const QString& filename) const
         ds << (uint32_t)ch->size();
 
         size_to_write = ch->size() * sizeof(float);
-        if(ds.writeRawData(reinterpret_cast<const char*>(ch->data()), size_to_write) != size_to_write){
+        if(ds.writeRawData(reinterpret_cast<const char*>(ch->data()), size_to_write)
+                != static_cast<int>(size_to_write)){
             file.close();
             return false;
         }
@@ -142,7 +143,8 @@ bool DriveOscillogram::load(const QString& filename)
             return false;
         }
         size_to_read = ch->size() * sizeof(float);
-        if(ds.readRawData(reinterpret_cast<char*>(ch->data()), size_to_read) != size_to_read){
+        if(ds.readRawData(reinterpret_cast<char*>(ch->data()), size_to_read)
+                != static_cast<int>(size_to_read)){
             file.close();
             return false;
         }

@@ -116,6 +116,15 @@ void ParamView::updatePixmap()
     float top_value = getNearestMax(buffer_max);
     float bottom_value = getNearestMin(buffer_min);
 
+    if(top_value == bottom_value){
+        if(top_value == 0.0f){
+            top_value = 1.0f;
+        }else{
+            top_value += 0.5f;
+            bottom_value -= 0.5f;
+        }
+    }
+
     QFont name_font(font());
     scaleFont(name_font, height()/5, 8, 12);
 
@@ -173,20 +182,15 @@ void ParamView::scaleFont(QFont& scale_font, int needed_height, int min_size, in
 
 float ParamView::getNearestMax(float value)
 {
-    if(value == 0.0f) return 1.0f;
-    //const int base = 10;
-    //return static_cast<int>(ceil(1.618f / base * value)) * base;
-    //return static_cast<int>(pow(10.0f, floor(log10(value)) + 1.0f));
+    if(value == 0.0f) return 0.0f;
 
-    const float min_upper_bound = 10.0f;
-
-    float cur_base = pow(10.0f, floor(log10(value)));
+    float cur_base = pow(10.0f, floor(log10(fabs(value))));
     float n = ceil(value / cur_base);
     float res = cur_base * n;
 
-    if(value >= res) res += cur_base;
+    //qDebug() << value << cur_base << n << res;
 
-    if(res < min_upper_bound) res = min_upper_bound;
+    if(value >= res) res += cur_base;
 
     return res;
 }
@@ -195,13 +199,13 @@ float ParamView::getNearestMin(float value)
 {
     if(value == 0.0f) return 0.0f;
 
-    float cur_base = copysign(pow(10.0f, floor(log10(fabs(value)))), value);
+    float cur_base = pow(10.0f, floor(log10(fabs(value))));
     float n = floor(value / cur_base);
     float res = cur_base * n;
 
     //qDebug() << value << cur_base << n << res;
 
-    if(value <= res) res += cur_base;
+    if(value <= res) res -= cur_base;
 
     return res;
 }

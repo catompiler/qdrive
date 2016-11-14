@@ -27,21 +27,20 @@
 struct ParamItem {
     QString name;
     param_id_t id;
-    param_type_t type;
     QColor color;
 };
 
 static ParamItem default_params[] = {
-    {"Ua", PARAM_ID_POWER_U_A, PARAM_TYPE_FRACT_100, Qt::yellow},
-    {"Ia", PARAM_ID_POWER_I_A, PARAM_TYPE_FRACT_100, Qt::yellow},
-    {"Ub", PARAM_ID_POWER_U_B, PARAM_TYPE_FRACT_100, Qt::green},
-    {"Ib", PARAM_ID_POWER_I_B, PARAM_TYPE_FRACT_100, Qt::green},
-    {"Uc", PARAM_ID_POWER_U_C, PARAM_TYPE_FRACT_100, Qt::red},
-    {"Ic", PARAM_ID_POWER_I_C, PARAM_TYPE_FRACT_100, Qt::red},
-    {"Urot", PARAM_ID_POWER_U_ROT, PARAM_TYPE_FRACT_10, Qt::blue},
-    {"Irot", PARAM_ID_POWER_I_ROT, PARAM_TYPE_FRACT_10, Qt::blue},
-    {"Iexc", PARAM_ID_POWER_I_EXC, PARAM_TYPE_FRACT_1000, Qt::magenta},
-    //{"PIDexc", PARAM_ID_DEBUG_6, PARAM_TYPE_FRACT_100, Qt::black}
+    {"Ua", PARAM_ID_POWER_U_A, Qt::yellow},
+    {"Ia", PARAM_ID_POWER_I_A, Qt::yellow},
+    {"Ub", PARAM_ID_POWER_U_B, Qt::green},
+    {"Ib", PARAM_ID_POWER_I_B, Qt::green},
+    {"Uc", PARAM_ID_POWER_U_C, Qt::red},
+    {"Ic", PARAM_ID_POWER_I_C, Qt::red},
+    {"Urot", PARAM_ID_POWER_U_ROT, Qt::blue},
+    {"Irot", PARAM_ID_POWER_I_ROT, Qt::blue},
+    {"Iexc", PARAM_ID_POWER_I_EXC, Qt::magenta},
+    //{"PIDexc", PARAM_ID_DEBUG_6, Qt::black}
 };
 
 #define PARAM_ITEMS_COLS 2
@@ -518,7 +517,7 @@ void MainWindow::refreshViewedParams()
     size_t n_widget = 0;
     for(ParamItem& paramItem : default_params){
         paramView = new ParamView();
-        param = new Parameter(paramItem.type, paramItem.id);
+        param = Parameter::byId(paramItem.id);
 
         drive->addUpdParam(param);
         connect(drive, &Drive::updated, paramView, &ParamView::updated);

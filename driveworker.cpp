@@ -459,20 +459,20 @@ void DriveWorker::connectToDevice()
         return;
     }
 
-    drive_modbus_id_t* drive_id = reinterpret_cast<drive_modbus_id_t*>(&response[0]);
+    /*drive_modbus_id_t* drive_id = reinterpret_cast<drive_modbus_id_t*>(&response[0]);
 
     if(drive_id->magic != DRIVE_ID_MAGIC){
         emit errorOccured(tr("Неправильный идентификатор устройства."));
         return;
-    }
+    }*/
 
-    /*uint8_t id = response[0];
+    uint8_t id = response[0];
     drive_modbus_id_t* drive_id = reinterpret_cast<drive_modbus_id_t*>(&response[2]);
 
     if(id != DRIVE_ID || drive_id->magic != DRIVE_ID_MAGIC){
         emit errorOccured(tr("Неправильный идентификатор устройства."));
         return;
-    }*/
+    }
 
     QString dev_name = tr("%1 ver %2.%3").arg(drive_id->name).arg(drive_id->major).arg(drive_id->minor);
 
@@ -670,7 +670,6 @@ bool DriveWorker::readEvent(drive_event_t* event, size_t index)
     res = modbusTryRaw(read_event_req, sizeof(read_event_req), &buf[0]);
     if(res == -1){
         emit errorOccured(tr("Невозможно начать чтение события.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
@@ -678,7 +677,6 @@ bool DriveWorker::readEvent(drive_event_t* event, size_t index)
 
     if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*index*/ + 2/*crc*/){
         emit errorOccured(tr("Ошибочный ответ при начале чтения события.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
@@ -686,13 +684,11 @@ bool DriveWorker::readEvent(drive_event_t* event, size_t index)
         res = modbusTryRaw(read_status_req, sizeof(read_status_req), &buf[0]);
         if(res == -1){
             emit errorOccured(tr("Невозможно запросить состояние чтения события.(%1)").arg(modbus_strerror(errno)));
-            disconnectFromDevice();
             return false;
         }
 
         if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*status*/ + 2/*crc*/){
             emit errorOccured(tr("Ошибочный ответ при чтении статуса чтения события.(%1)").arg(modbus_strerror(errno)));
-            disconnectFromDevice();
             return false;
         }
 
@@ -700,8 +696,7 @@ bool DriveWorker::readEvent(drive_event_t* event, size_t index)
 
         if(status == DRIVE_MODBUS_ASYNC_OP_DONE) break;
         else if(status >= DRIVE_MODBUS_ASYNC_OP_ERROR){
-            emit errorOccured(tr("Ошибка чтения события."));
-            disconnectFromDevice();
+            emit errorOccured(tr("Ошибка чтения события (%1).").arg(status - DRIVE_MODBUS_ASYNC_OP_ERROR));
             return false;
         }
         // wait
@@ -711,19 +706,16 @@ bool DriveWorker::readEvent(drive_event_t* event, size_t index)
     res = modbusTryRaw(get_event_req, sizeof(get_event_req), &buf[0]);
     if(res == -1){
         emit errorOccured(tr("Невозможно получить событие.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
     if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*size*/ + sizeof(drive_event_t) + 2/*crc*/){
         emit errorOccured(tr("Ошибочный ответ при получении события.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
     if(buf[REQ_DATA_OFFSET] != sizeof(drive_event_t)){
         emit errorOccured(tr("Ошибочный размер полученного события.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
@@ -783,8 +775,6 @@ void DriveWorker::readEvents(Future* future)
     for(size_t index = 0; index < events_count; index ++){
         if(readEvent(&event, index)){
             events_list->append(DriveEvent(event));
-        }else{
-            break;
         }
         if(future->needCancel()) break;
         future->setProgress(static_cast<int>(index + 1));
@@ -834,13 +824,11 @@ bool DriveWorker::readOscillogramChannel(DriveOscillogram::Channel *channel, siz
     res = modbusTryRaw(read_osc_req, sizeof(read_osc_req), &buf[0]);
     if(res == -1){
         emit errorOccured(tr("Невозможно начать чтение канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
     if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*index*/ + 1/*channel*/ + 2/*crc*/){
         emit errorOccured(tr("Ошибочный ответ при начале чтения канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
@@ -848,13 +836,11 @@ bool DriveWorker::readOscillogramChannel(DriveOscillogram::Channel *channel, siz
         res = modbusTryRaw(read_status_req, sizeof(read_status_req), &buf[0]);
         if(res == -1){
             emit errorOccured(tr("Невозможно запросить состояние чтения канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
-            disconnectFromDevice();
             return false;
         }
 
         if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*status*/ + 2/*crc*/){
             emit errorOccured(tr("Ошибочный ответ при чтении статуса чтения канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
-            disconnectFromDevice();
             return false;
         }
 
@@ -863,7 +849,6 @@ bool DriveWorker::readOscillogramChannel(DriveOscillogram::Channel *channel, siz
         if(status == DRIVE_MODBUS_ASYNC_OP_DONE) break;
         else if(status >= DRIVE_MODBUS_ASYNC_OP_ERROR){
             emit errorOccured(tr("Ошибка чтения канала осциллограммы."));
-            disconnectFromDevice();
             return false;
         }
         // wait
@@ -888,13 +873,11 @@ bool DriveWorker::readOscillogramChannel(DriveOscillogram::Channel *channel, siz
         res = modbusTryRaw(get_osc_req, sizeof(get_osc_req), &buf[0]);
         if(res == -1){
             emit errorOccured(tr("Невозможно получить данные канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
-            disconnectFromDevice();
             return false;
         }
 
         if(static_cast<unsigned int>(res) != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*size*/ + size + 2/*crc*/){
             emit errorOccured(tr("Ошибочный ответ при получении данных канала осциллограммы.(%1)").arg(modbus_strerror(errno)));
-            disconnectFromDevice();
             return false;
         }
         std::copy(buf.begin() + REQ_DATA_OFFSET + 1, buf.begin() + REQ_DATA_OFFSET + 1 + size, std::back_inserter(osc_data));
@@ -1002,8 +985,6 @@ void DriveWorker::readOscillograms(Future *future)
     for(size_t index = 0; index < osc_count; index ++){
         if(readOscillogram(&osc, index, future)){
             osc_list->append(osc);
-        }else{
-            break;
         }
         if(future->needCancel()) break;
         //future->setProgress(static_cast<int>(index + 1));

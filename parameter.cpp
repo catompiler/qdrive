@@ -27,6 +27,9 @@ Parameter::Parameter(param_type_t parameter_type)
     case PARAM_TYPE_FRACT_1000:
         param = new ParameterFract1000();
         break;
+    case PARAM_TYPE_FRACT_10000:
+        param = new ParameterFract10000();
+        break;
     default:
         param = nullptr;
     }
@@ -55,6 +58,7 @@ Parameter::Parameter(const param_descr_t *parameter_descr)
     case PARAM_TYPE_FRACT_10:
     case PARAM_TYPE_FRACT_100:
     case PARAM_TYPE_FRACT_1000:
+    case PARAM_TYPE_FRACT_10000:
         setRange(fixed32_to_float(parameter_descr->min.fixed_value),
                  fixed32_to_float(parameter_descr->max.fixed_value));
         setDefault(fixed32_to_float(parameter_descr->def.fixed_value));
@@ -107,6 +111,8 @@ QString Parameter::toString() const
         return QString::number(toFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(toFloat(), 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(toFloat(), 'f', 4);
     default:
         break;
     }
@@ -126,6 +132,8 @@ QString Parameter::minToString() const
         return QString::number(minToFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(minToFloat(), 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(minToFloat(), 'f', 4);
     default:
         break;
     }
@@ -145,6 +153,8 @@ QString Parameter::maxToString() const
         return QString::number(maxToFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(maxToFloat(), 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(maxToFloat(), 'f', 4);
     default:
         break;
     }
@@ -164,6 +174,8 @@ QString Parameter::defToString() const
         return QString::number(defToFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(defToFloat(), 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(defToFloat(), 'f', 4);
     default:
         break;
     }
@@ -357,6 +369,8 @@ QString Parameter::number(param_type_t param_type, int val)
         return QString::number(static_cast<float>(val), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(static_cast<float>(val), 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(static_cast<float>(val), 'f', 4);
     default:
         break;
     }
@@ -376,6 +390,8 @@ QString Parameter::number(param_type_t param_type, unsigned int val)
         return QString::number(static_cast<float>(val), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(static_cast<float>(val), 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(static_cast<float>(val), 'f', 4);
     default:
         break;
     }
@@ -395,6 +411,8 @@ QString Parameter::number(param_type_t param_type, float val)
         return QString::number(val, 'f', 2);
     case PARAM_TYPE_FRACT_1000:
         return QString::number(val, 'f', 3);
+    case PARAM_TYPE_FRACT_10000:
+        return QString::number(val, 'f', 4);
     default:
         break;
     }
