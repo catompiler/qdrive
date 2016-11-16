@@ -141,7 +141,10 @@ void MainWindow::disconnected()
 
 void MainWindow::updated()
 {
+    bool connected = drive->connectedToDevice();
     bool running = drive->running();
+
+    ui->pbCalibrate->setEnabled(connected && !running);
 
     ui->sbReference->blockSignals(true);
 
