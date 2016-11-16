@@ -253,6 +253,11 @@ signals:
     void clearEvents();
 
     /**
+     * @brief Создаёт событие состояния.
+     */
+    void makeStatusEvent();
+
+    /**
      * @brief Калибрует питание.
      */
     void calibratePower();

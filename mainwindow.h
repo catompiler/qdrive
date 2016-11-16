@@ -155,6 +155,11 @@ private slots:
     void on_pbClearEvents_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки сохранения состояния.
+     */
+    void on_pbMakeStatusEvent_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки установки времени.
      */
     void on_pbSetTime_clicked();

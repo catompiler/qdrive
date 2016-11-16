@@ -229,6 +229,11 @@ public slots:
     void clearEvents();
 
     /**
+     * @brief Создаёт событие состояния.
+     */
+    void makeStatusEvent();
+
+    /**
      * @brief Калибрует питание.
      */
     void calibratePower();

@@ -23,6 +23,7 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::setReference, worker, &DriveWorker::setReference);
     connect(this, &Drive::clearErrors, worker, &DriveWorker::clearErrors);
     connect(this, &Drive::clearEvents, worker, &DriveWorker::clearEvents);
+    connect(this, &Drive::makeStatusEvent, worker, &DriveWorker::makeStatusEvent);
     connect(this, &Drive::calibratePower, worker, &DriveWorker::calibratePower);
     connect(this, &Drive::saveParams, worker, &DriveWorker::saveParams);
     connect(this, &Drive::setDateTime, worker, &DriveWorker::setDateTime);

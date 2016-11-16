@@ -88,6 +88,8 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_CALIBRATE_POWER (DRIVE_MODBUS_COILS_START + 4)
 //! Очистка событий.
 #define DRIVE_MODBUS_COIL_CLEAR_EVENTS (DRIVE_MODBUS_COILS_START + 5)
+//! Создаёт событие с записью состояния.
+#define DRIVE_MODBUS_COIL_MAKE_STATUS_EVENT (DRIVE_MODBUS_COILS_START + 6)
 
 
 // Пользовательские функции и коды.
@@ -574,6 +576,21 @@ void DriveWorker::clearEvents()
         return;
     }
     emit information(tr("События очищены."));
+}
+
+void DriveWorker::makeStatusEvent()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_MAKE_STATUS_EVENT, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно создать сыбытие состояния привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Событие состояния создано."));
 }
 
 void DriveWorker::calibratePower()

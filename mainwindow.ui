@@ -186,6 +186,13 @@
            </spacer>
           </item>
           <item>
+           <widget class="QPushButton" name="pbMakeStatusEvent">
+            <property name="text">
+             <string>Записать состояние</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="pbReadEvents">
             <property name="text">
              <string>Прочитать</string>

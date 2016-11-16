@@ -365,6 +365,11 @@ void MainWindow::on_pbClearEvents_clicked()
     drive->clearEvents();
 }
 
+void MainWindow::on_pbMakeStatusEvent_clicked()
+{
+    drive->makeStatusEvent();
+}
+
 void MainWindow::on_pbSetTime_clicked()
 {
     drive->setDateTime(QDateTime::currentDateTime());
