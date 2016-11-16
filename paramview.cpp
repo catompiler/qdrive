@@ -114,7 +114,7 @@ void ParamView::updatePixmap()
     painter.fillRect(main_pixmap->rect(), palette().dark());
 
     float top_value = getNearestMax(buffer_max);
-    float bottom_value = getNearestMin(buffer_min);
+    float bottom_value = (buffer_min >= 0.0f) ? 0.0f : getNearestMin(buffer_min);
 
     if(top_value == bottom_value){
         if(top_value == 0.0f){
