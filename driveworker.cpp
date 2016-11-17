@@ -202,6 +202,8 @@ typedef struct _DriveModbusId {
 
 DriveWorker::DriveWorker() : QThread()
 {
+    qRegisterMetaType<QList<size_t>>("QList<size_t>");
+
     moveToThread(this);
 
     timer = new QTimer();
@@ -220,7 +222,9 @@ DriveWorker::DriveWorker() : QThread()
 
     events_list = new QList<DriveEvent>();
 
-    osc_list = new QList<DriveOscillogram>();
+    readed_osc_list = new QList<DriveOscillogram>();
+
+    osc_list = new QList<drive_event_id_t>();
 
     modbus = nullptr;
 
@@ -240,6 +244,8 @@ DriveWorker::~DriveWorker()
     cleanup_modbus();
 
     delete osc_list;
+
+    delete readed_osc_list;
 
     delete events_list;
 
@@ -376,23 +382,28 @@ QList<DriveEvent> DriveWorker::events() const
 
 QList<DriveOscillogram> DriveWorker::oscillograms() const
 {
-    return QList<DriveOscillogram>(*osc_list);
+    return QList<DriveOscillogram>(*readed_osc_list);
+}
+
+QList<drive_event_id_t> DriveWorker::oscillogramsList() const
+{
+    return QList<drive_event_id_t>(*osc_list);
 }
 
 size_t DriveWorker::oscillogramsCount() const
 {
-    return osc_list->size();
+    return readed_osc_list->size();
 }
 
 DriveOscillogram DriveWorker::oscillogram(size_t index) const
 {
-    if(index >= static_cast<size_t>(osc_list->size())) return DriveOscillogram();
-    return osc_list->at(index);
+    if(index >= static_cast<size_t>(readed_osc_list->size())) return DriveOscillogram();
+    return readed_osc_list->at(index);
 }
 
 void DriveWorker::addOscillogram(const DriveOscillogram& osc)
 {
-    osc_list->append(osc);
+    readed_osc_list->append(osc);
 }
 
 void DriveWorker::addUpdParam(Parameter *param)
@@ -906,9 +917,11 @@ bool DriveWorker::readOscillogramChannel(DriveOscillogram::Channel *channel, siz
     return true;
 }
 
-bool DriveWorker::readOscillogram(DriveOscillogram* oscillogram, size_t index, Future* future)
+bool DriveWorker::readOscillogramEventId(size_t index, drive_event_id_t* event_id)
 {
     if(!connected_to_device) return false;
+
+    if(event_id == nullptr) return false;
 
     QVector<uint8_t> buf(MODBUS_RTU_MAX_ADU_LENGTH);
 
@@ -928,19 +941,34 @@ bool DriveWorker::readOscillogram(DriveOscillogram* oscillogram, size_t index, F
     res = modbusTryRaw(read_osc_event_id_req, sizeof(read_osc_event_id_req), &buf[0]);
     if(res == -1){
         emit errorOccured(tr("Невозможно получить идентификатор события осциллограммы.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
     if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*id*/ + 2/*crc*/){
         emit errorOccured(tr("Ошибочный ответ при получении идентификатора события осциллограммы.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
         return false;
     }
 
     //qDebug() << "ev_id:" << buf[REQ_DATA_OFFSET];
 
-    oscillogram->setEventId(static_cast<drive_event_id_t>(buf[REQ_DATA_OFFSET]));
+    *event_id = static_cast<drive_event_id_t>(buf[REQ_DATA_OFFSET]);
+
+#undef REQ_DATA_OFFSET
+
+    return true;
+}
+
+bool DriveWorker::readOscillogram(DriveOscillogram* oscillogram, size_t index, Future* future)
+{
+    if(!connected_to_device) return false;
+
+    drive_event_id_t event_id = 0;
+
+    if(!readOscillogramEventId(index, &event_id)){
+        return false;
+    }
+
+    oscillogram->setEventId(event_id);
 
     for(size_t i = 0; i < oscillogram->channelsCount(); i ++){
         if(!readOscillogramChannel(oscillogram->channel(i), index, i)) return false;
@@ -953,47 +981,61 @@ bool DriveWorker::readOscillogram(DriveOscillogram* oscillogram, size_t index, F
     return true;
 }
 
-void DriveWorker::readOscillograms(Future *future)
+bool DriveWorker::readOscillogramsCount(size_t* count)
 {
-    if(!connected_to_device) return;
+    if(!connected_to_device) return false;
+
+    if(count == nullptr) return false;
+
+    QVector<uint8_t> buf(MODBUS_RTU_MAX_ADU_LENGTH);
+
+    uint8_t dev_addr = Settings::get().deviceAddress();
 
     int res = 0;
 
 #define REQ_DATA_OFFSET 3
 
-    QByteArray ba(MODBUS_RTU_MAX_ADU_LENGTH, 0x0);
-    QDataStream ds(&ba, QIODevice::ReadWrite);
+    uint8_t read_oscs_count_req[] = {
+        dev_addr,
+        DRIVE_MODBUS_FUNC_OSC_ACCESS,
+        DRIVE_MODBUS_CODE_OSC_COUNT
+    };
 
-    ds.setVersion(QDataStream::Qt_DefaultCompiledVersion);
-
-    uint8_t dev_addr = Settings::get().deviceAddress();
-
-    ds << dev_addr
-       << static_cast<uint8_t>(DRIVE_MODBUS_FUNC_OSC_ACCESS)
-       << static_cast<uint8_t>(DRIVE_MODBUS_CODE_OSC_COUNT);
-
-    future->start();
-
-    res = modbusTryRaw(ba.data(), static_cast<int>(ds.device()->pos()), ba.data());
+    res = modbusTryRaw(read_oscs_count_req, sizeof(read_oscs_count_req), &buf[0]);
     if(res == -1){
         emit errorOccured(tr("Невозможно получить число осциллограмм.(%1)").arg(modbus_strerror(errno)));
-        future->finish();
-        disconnectFromDevice();
-        return;
+        return false;
     }
 
     if(res != 1/*addr*/ + 1/*func*/ + 1/*code*/ + 1/*count*/ + 2/*crc*/){
         emit errorOccured(tr("Ошибочный ответ при получении числа осциллограмм.(%1)").arg(modbus_strerror(errno)));
+        return false;
+    }
+
+    *count = static_cast<size_t>(buf[REQ_DATA_OFFSET]);
+
+    return true;
+
+#undef REQ_DATA_OFFSET
+}
+
+void DriveWorker::readOscillograms(Future *future)
+{
+    if(!connected_to_device) return;
+
+    size_t osc_count = 0;
+
+    future->start();
+
+    if(!readOscillogramsCount(&osc_count)){
         future->finish();
         disconnectFromDevice();
         return;
     }
 
-    size_t osc_count = static_cast<size_t>(ba[REQ_DATA_OFFSET]);
-
     //qDebug() << osc_count;
 
-    osc_list->clear();
+    readed_osc_list->clear();
 
     DriveOscillogram osc;
 
@@ -1001,15 +1043,71 @@ void DriveWorker::readOscillograms(Future *future)
 
     for(size_t index = 0; index < osc_count; index ++){
         if(readOscillogram(&osc, index, future)){
-            osc_list->append(osc);
+            readed_osc_list->append(osc);
         }
         if(future->needCancel()) break;
         //future->setProgress(static_cast<int>(index + 1));
     }
 
     future->finish();
+}
 
-#undef REQ_DATA_OFFSET
+void DriveWorker::readSelectedOscillograms(Future* future, QList<size_t> osc_list)
+{
+    if(!connected_to_device) return;
+
+    if(osc_list.empty()) return;
+
+    future->start();
+
+    //qDebug() << osc_count;
+
+    readed_osc_list->clear();
+
+    DriveOscillogram osc;
+
+    future->setProgressRange(0, osc_list.count() * osc.channelsCount());
+
+    for(size_t index = 0; index < static_cast<size_t>(osc_list.count()); index ++){
+        if(readOscillogram(&osc, osc_list.at(static_cast<int>(index)), future)){
+            readed_osc_list->append(osc);
+        }
+        if(future->needCancel()) break;
+        //future->setProgress(static_cast<int>(index + 1));
+    }
+
+    future->finish();
+}
+
+void DriveWorker::readOscillogramsList(Future* future)
+{
+    if(!connected_to_device) return;
+
+    size_t osc_count = 0;
+
+    future->start();
+
+    if(!readOscillogramsCount(&osc_count)){
+        future->finish();
+        disconnectFromDevice();
+        return;
+    }
+
+    osc_list->clear();
+
+    drive_event_id_t event_id = 0;
+
+    future->setProgressRange(0, static_cast<int>(osc_count));
+
+    for(size_t index = 0; index < osc_count; index ++){
+        if(readOscillogramEventId(index, &event_id)){
+            osc_list->append(event_id);
+        }
+        if(future->needCancel()) break;
+        future->setProgress(static_cast<int>(index + 1));
+    }
+
+    future->finish();
 }
 
 void DriveWorker::readNextParams()

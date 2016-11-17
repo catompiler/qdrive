@@ -101,6 +101,12 @@ public:
     QList<DriveOscillogram> oscillograms() const;
 
     /**
+     * @brief Получает список осциллограмм.
+     * @return Список осциллограмм.
+     */
+    QList<drive_event_id_t> oscillogramsList() const;
+
+    /**
      * @brief Получает количество осциллограмм.
      * @return Количество осциллограмм.
      */
@@ -164,6 +170,22 @@ public:
      * @return Будущее.
      */
     Future* readOscillograms();
+
+    /**
+     * @brief Читает осциллограммы.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @return Будущее.
+     */
+    Future* readSelectedOscillograms(QList<size_t> osc_list);
+
+    /**
+     * @brief Читает осциллограммы.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @return Будущее.
+     */
+    Future* readOscillogramsList();
 
     /**
      * @brief Получает строковое представление ошибки привода.
@@ -293,6 +315,16 @@ signals:
      * @brief Читает осциллограммы.
      */
     void doReadOscillograms(Future* future);
+
+    /**
+     * @brief Читает осциллограммы.
+     */
+    void doReadSelectedOscillograms(Future* future, QList<size_t> osc_list);
+
+    /**
+     * @brief Читает осциллограммы.
+     */
+    void doReadOscillogramsList(Future* future);
 
 private:
     /**

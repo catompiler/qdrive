@@ -7,6 +7,7 @@
 class QCloseEvent;
 
 class SettingsDlg;
+class SelectOscsDlg;
 class Drive;
 class ParamsModel;
 class EventsModel;
@@ -165,6 +166,11 @@ private slots:
     void on_pbSetTime_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки чтения всех осциллограмм.
+     */
+    void on_pbReadAllOscs_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки чтения осциллограмм.
      */
     void on_pbReadOscs_clicked();
@@ -191,6 +197,11 @@ private slots:
      * @param index Индекс осциллограммы.
      */
     void on_cbOscs_currentIndexChanged(int index);
+
+    /**
+     * @brief Выбирает и читает осциллограммы.
+     */
+    void selectAndReadOscs();
 
 protected:
     /**
@@ -221,6 +232,10 @@ private:
      * @brief Диалог настроек.
      */
     SettingsDlg* settingsDlg;
+    /**
+     * @brief Диалог выбора осциллограмм.
+     */
+    SelectOscsDlg* selectOscsDlg;
     /**
      * @brief Интерфейс взаимодействия с
      * устройством привода.

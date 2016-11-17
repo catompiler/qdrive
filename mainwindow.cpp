@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "settings.h"
 #include "settingsdlg.h"
+#include "selectoscsdlg.h"
 #include "drive.h"
 #include "parameter.h"
 #include "paramview.h"
@@ -80,6 +81,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     settingsDlg = nullptr;
 
+    selectOscsDlg = nullptr;
+
     drive = new Drive(this);
     connect(drive, &Drive::errorOccured, this, &MainWindow::errorOccured);
     connect(drive, &Drive::information, this, &MainWindow::information);
@@ -100,6 +103,7 @@ MainWindow::~MainWindow()
     delete eventModel;
     delete eventsModel;
     delete paramsModel;
+    delete selectOscsDlg;
     delete settingsDlg;
     delete glMain;
     delete ui;
@@ -126,6 +130,7 @@ void MainWindow::refreshUi()
     ui->pbSaveParams->setEnabled(connected);
     ui->pbSetTime->setEnabled(connected);
     ui->pbReadEvents->setEnabled(connected);
+    ui->pbReadAllOscs->setEnabled(connected);
     ui->pbReadOscs->setEnabled(connected);
 }
 
@@ -375,7 +380,7 @@ void MainWindow::on_pbSetTime_clicked()
     drive->setDateTime(QDateTime::currentDateTime());
 }
 
-void MainWindow::on_pbReadOscs_clicked()
+void MainWindow::on_pbReadAllOscs_clicked()
 {
     QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
                                                     0, 0, this);
@@ -391,6 +396,24 @@ void MainWindow::on_pbReadOscs_clicked()
     connect(future, &Future::finished, future, [this](){
         refreshOscsList(0);
     });
+
+    progress->show();
+}
+
+void MainWindow::on_pbReadOscs_clicked()
+{
+    QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                    0, 0, this);
+    progress->setWindowTitle(tr("Чтение осциллограмм"));
+    progress->setModal(true);
+    Future* future = drive->readOscillogramsList();
+
+    connect(future, &Future::finished, future, &Future::deleteLater);
+    connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+    connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+    connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+    connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+    connect(future, &Future::finished, this, &MainWindow::selectAndReadOscs);
 
     progress->show();
 }
@@ -554,5 +577,35 @@ void MainWindow::refreshOscsList(int set_index)
             }
             ui->cbOscs->setCurrentIndex(set_index);
         }
+    }
+}
+
+void MainWindow::selectAndReadOscs()
+{
+    auto oscs_list = drive->oscillogramsList();
+
+    if(selectOscsDlg == nullptr){
+        selectOscsDlg = new SelectOscsDlg(this);
+    }
+
+    selectOscsDlg->setOscillograms(drive->oscillogramsList());
+
+    if(selectOscsDlg->exec()){
+        QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                        0, 0, this);
+        progress->setWindowTitle(tr("Чтение выбранных осциллограмм"));
+        progress->setModal(true);
+        Future* future = drive->readSelectedOscillograms(selectOscsDlg->selectedOscillograms());
+
+        connect(future, &Future::finished, future, &Future::deleteLater);
+        connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+        connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+        connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+        connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+        connect(future, &Future::finished, future, [this](){
+            refreshOscsList(0);
+        });
+
+        progress->show();
     }
 }

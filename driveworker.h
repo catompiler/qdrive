@@ -109,6 +109,12 @@ public:
     QList<DriveOscillogram> oscillograms() const;
 
     /**
+     * @brief Получает список осциллограмм.
+     * @return Список осциллограмм.
+     */
+    QList<drive_event_id_t> oscillogramsList() const;
+
+    /**
      * @brief Получает количество осциллограмм.
      * @return Количество осциллограмм.
      */
@@ -259,6 +265,16 @@ public slots:
      */
     void readOscillograms(Future* future);
 
+    /**
+     * @brief Читает осциллограммы.
+     */
+    void readSelectedOscillograms(Future* future, QList<size_t> osc_list);
+
+    /**
+     * @brief Читает список осциллограмм.
+     */
+    void readOscillogramsList(Future* future);
+
 private slots:
 
     /**
@@ -333,6 +349,21 @@ private:
      * @return Флаг успешного чтения канала осциллограммы.
      */
     bool readOscillogramChannel(DriveOscillogram::Channel* channel, size_t index, size_t ch_index);
+
+    /**
+     * @brief Читает идентификатор события осциллограммы.
+     * @param index Индекс осциллограммы.
+     * @param event_id Номер события осциллограммы.
+     * @return Флаг успеха.
+     */
+    bool readOscillogramEventId(size_t index, drive_event_id_t* event_id);
+
+    /**
+     * @brief Читает число осциллограмм.
+     * @param count Число осциллограмм.
+     * @return Флаг успеха.
+     */
+    bool readOscillogramsCount(size_t* count);
 
     /**
      * @brief Читает осциллограмму.
@@ -425,9 +456,15 @@ private:
     QList<DriveEvent>* events_list;
 
     /**
-     * @brief Список осциллограмм.
+     * @brief Список считанных осциллограмм.
      */
-    QList<DriveOscillogram>* osc_list;
+    QList<DriveOscillogram>* readed_osc_list;
+
+    /**
+     * @brief Список заголовков осциллограмм.
+     * Индекс в списке == индекс осциллограммы.
+     */
+    QList<drive_event_id_t>* osc_list;
 
     //! Число попыток чтения данных.
     const size_t drive_modbus_retries = 10;

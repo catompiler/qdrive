@@ -31,6 +31,8 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::writeNextParams, worker, &DriveWorker::writeNextParams);
     connect(this, &Drive::doReadEvents, worker, &DriveWorker::readEvents);
     connect(this, &Drive::doReadOscillograms, worker, &DriveWorker::readOscillograms);
+    connect(this, &Drive::doReadSelectedOscillograms, worker, &DriveWorker::readSelectedOscillograms);
+    connect(this, &Drive::doReadOscillogramsList, worker, &DriveWorker::readOscillogramsList);
 }
 
 Drive::~Drive()
@@ -106,6 +108,11 @@ QList<DriveOscillogram> Drive::oscillograms() const
     return worker->oscillograms();
 }
 
+QList<drive_event_id_t> Drive::oscillogramsList() const
+{
+    return worker->oscillogramsList();
+}
+
 size_t Drive::oscillogramsCount() const
 {
     return worker->oscillogramsCount();
@@ -177,6 +184,30 @@ Future *Drive::readOscillograms()
     connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
 
     emit doReadOscillograms(future);
+
+    return future;
+}
+
+Future*Drive::readSelectedOscillograms(QList<size_t> osc_list)
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit doReadSelectedOscillograms(future, osc_list);
+
+    return future;
+}
+
+Future *Drive::readOscillogramsList()
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit doReadOscillogramsList(future);
 
     return future;
 }

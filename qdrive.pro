@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     driveevent.cpp \
     driveoscillogram.cpp \
     oscview.cpp \
-    utils.cpp
+    utils.cpp \
+    selectoscsdlg.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
@@ -53,10 +54,12 @@ HEADERS  += mainwindow.h \
     driveevent.h \
     driveoscillogram.h \
     oscview.h \
-    utils.h
+    utils.h \
+    selectoscsdlg.h
 
 FORMS    += mainwindow.ui \
-    settingsdlg.ui
+    settingsdlg.ui \
+    selectoscsdlg.ui
 
 RESOURCES += \
     res.qrc
