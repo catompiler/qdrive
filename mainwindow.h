@@ -65,6 +65,11 @@ private slots:
     void errorOccured(const QString& error_text);
 
     /**
+     * @brief Обработчик возникновения ошибки привода.
+     */
+    void driveErrorOccured();
+
+    /**
      * @brief Обработчик информации о событиях.
      * @param info_text Информация о событии.
      */

@@ -1237,11 +1237,16 @@ void DriveWorker::update()
         disconnectFromDevice();
         return;
     }
+
+    drive_errors_t old_errs = dev_errors;
+
     dev_errors = (static_cast<drive_errors_t>(drive_flags_data[1]) << 16) | drive_flags_data[0];
     dev_warnings = (static_cast<drive_warnings_t>(drive_flags_data[3]) << 16) | drive_flags_data[2];
     dev_power_errors = (static_cast<drive_power_errors_t>(drive_flags_data[5]) << 16) | drive_flags_data[4];
     dev_power_warnings = (static_cast<drive_power_warnings_t>(drive_flags_data[7]) << 16) | drive_flags_data[6];
     dev_phase_errors = (static_cast<drive_phase_errors_t>(drive_flags_data[9]) << 16) | drive_flags_data[8];
+
+    if(old_errs == DRIVE_ERROR_NONE && dev_errors != DRIVE_ERROR_NONE) emit driveErrorOccured();
 
     upd_mutex->lock();
 

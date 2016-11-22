@@ -188,6 +188,11 @@ signals:
      */
     void disconnected();
 
+    /**
+     * @brief Сигнал ошибки привода.
+     */
+    void driveErrorOccured();
+
 public slots:
 
     /**

@@ -15,6 +15,7 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(worker, &DriveWorker::connected, this, &Drive::connected);
     connect(worker, &DriveWorker::disconnected, this, &Drive::disconnected);
     connect(worker, &DriveWorker::updated, this, &Drive::updated);
+    connect(worker, &DriveWorker::driveErrorOccured, this, &Drive::driveErrorOccured);
     connect(this, &Drive::connectToDevice, worker, &DriveWorker::connectToDevice);
     connect(this, &Drive::disconnectFromDevice, worker, &DriveWorker::disconnectFromDevice);
     connect(this, &Drive::setRunning, worker, &DriveWorker::setRunning);

@@ -231,6 +231,11 @@ signals:
     void disconnected();
 
     /**
+     * @brief Сигнал ошибки привода.
+     */
+    void driveErrorOccured();
+
+    /**
      * @brief Соединяется с устройством.
      * Вызывает сигнал connected() в случае успеха.
      */

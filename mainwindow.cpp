@@ -94,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(drive, &Drive::connected, this, &MainWindow::connected);
     connect(drive, &Drive::disconnected, this, &MainWindow::disconnected);
     connect(drive, &Drive::updated, this, &MainWindow::updated);
+    connect(drive, &Drive::driveErrorOccured, this, &MainWindow::driveErrorOccured);
 
     setup();
 
@@ -179,6 +180,13 @@ void MainWindow::errorOccured(const QString &error_text)
 {
     QMessageBox::critical(this, tr("Ошибка!"), error_text);
     refreshUi();
+}
+
+void MainWindow::driveErrorOccured()
+{
+    trayIcon->showMessage(tr("QDrive"),
+                          tr("Ошибка привода 0x%1").arg(drive->errors(), 0, 16),
+                          QSystemTrayIcon::Critical);
 }
 
 void MainWindow::information(const QString &info_text)
