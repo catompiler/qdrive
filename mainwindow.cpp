@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 #include <QProgressDialog>
 #include <QFileDialog>
 #include <QGridLayout>
@@ -41,7 +42,7 @@ static ParamItem default_params[] = {
     {"Urot", PARAM_ID_POWER_U_ROT, Qt::blue},
     {"Irot", PARAM_ID_POWER_I_ROT, Qt::blue},
     {"Iexc", PARAM_ID_POWER_I_EXC, Qt::darkMagenta},
-    //{"PIDexc", PARAM_ID_DEBUG_6, Qt::black},
+    {"PIDexc", PARAM_ID_DEBUG_6, Qt::black},
     //{"Exc Angle", PARAM_ID_DEBUG_2, Qt::magenta}
 };
 
@@ -58,6 +59,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setIcon(QIcon(":/images/qdrive.png"));
 
     glMain = new QGridLayout();
     ui->tabSensors->setLayout(glMain);
@@ -96,6 +100,8 @@ MainWindow::MainWindow(QWidget *parent) :
     refreshViewedParams();
 
     refreshUi();
+
+    trayIcon->show();
 }
 
 MainWindow::~MainWindow()
@@ -107,6 +113,7 @@ MainWindow::~MainWindow()
     delete selectOscsDlg;
     delete settingsDlg;
     delete glMain;
+    delete trayIcon;
     delete ui;
 }
 

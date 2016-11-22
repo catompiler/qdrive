@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Управление приводом</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/images/qdrive.png</normaloff>:/images/qdrive.png</iconset>
+  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
   </property>

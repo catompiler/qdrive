@@ -18,6 +18,7 @@ class MainWindow;
 }
 
 class QGridLayout;
+class QSystemTrayIcon;
 
 
 /**
@@ -228,6 +229,10 @@ private:
      * @brief Графический интерфейс.
      */
     Ui::MainWindow *ui;
+    /**
+     * @brief Иконка в трее.
+     */
+    QSystemTrayIcon* trayIcon;
     /**
      * @brief Диалог настроек.
      */
