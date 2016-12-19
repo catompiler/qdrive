@@ -192,6 +192,21 @@ private slots:
     void on_pbReadOsc_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки включения пользовательских цифровых выходов.
+     */
+    void on_pbDoutUserOn_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки выключения пользовательских цифровых выходов.
+     */
+    void on_pbDoutUserOff_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки переключения пользовательских цифровых выходов.
+     */
+    void on_pbDoutUserToggle_clicked();
+
+    /**
      * @brief Обработчик выделения события.
      * @param current Текущий индекс.
      * @param previous Предыдущий индекс.

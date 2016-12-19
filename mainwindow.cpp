@@ -141,6 +141,9 @@ void MainWindow::refreshUi()
     ui->pbReadEvents->setEnabled(connected);
     ui->pbReadAllOscs->setEnabled(connected);
     ui->pbReadOscs->setEnabled(connected);
+    ui->pbDoutUserOn->setEnabled(connected);
+    ui->pbDoutUserOff->setEnabled(connected);
+    ui->pbDoutUserToggle->setEnabled(connected);
 }
 
 void MainWindow::connected()
@@ -471,6 +474,21 @@ void MainWindow::on_pbReadOsc_clicked()
         drive->addOscillogram(osc);
         refreshOscsList(static_cast<int>(drive->oscillogramsCount()) - 1);
     }
+}
+
+void MainWindow::on_pbDoutUserOn_clicked()
+{
+    drive->doutUserOn();
+}
+
+void MainWindow::on_pbDoutUserOff_clicked()
+{
+    drive->doutUserOff();
+}
+
+void MainWindow::on_pbDoutUserToggle_clicked()
+{
+    drive->doutUserToggle();
 }
 
 void MainWindow::lvEvents_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)

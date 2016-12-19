@@ -28,6 +28,9 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::calibratePower, worker, &DriveWorker::calibratePower);
     connect(this, &Drive::saveParams, worker, &DriveWorker::saveParams);
     connect(this, &Drive::setDateTime, worker, &DriveWorker::setDateTime);
+    connect(this, &Drive::doutUserOn, worker, &DriveWorker::doutUserOn);
+    connect(this, &Drive::doutUserOff, worker, &DriveWorker::doutUserOff);
+    connect(this, &Drive::doutUserToggle, worker, &DriveWorker::doutUserToggle);
     connect(this, &Drive::readNextParams, worker, &DriveWorker::readNextParams);
     connect(this, &Drive::writeNextParams, worker, &DriveWorker::writeNextParams);
     connect(this, &Drive::doReadEvents, worker, &DriveWorker::readEvents);

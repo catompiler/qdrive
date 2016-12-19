@@ -90,6 +90,10 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_CLEAR_EVENTS (DRIVE_MODBUS_COILS_START + 5)
 //! Создаёт событие с записью состояния.
 #define DRIVE_MODBUS_COIL_MAKE_STATUS_EVENT (DRIVE_MODBUS_COILS_START + 6)
+//! Устанавливает пользовательские цифровые выхода.
+#define DRIVE_MODBUS_COIL_DOUT_USER_SET_VALUE (DRIVE_MODBUS_COILS_START + 7)
+//! Переключает пользовательские цифровые выхода.
+#define DRIVE_MODBUS_COIL_DOUT_USER_TOGGLE (DRIVE_MODBUS_COILS_START + 8)
 
 
 // Пользовательские функции и коды.
@@ -1108,6 +1112,51 @@ void DriveWorker::readOscillogramsList(Future* future)
     }
 
     future->finish();
+}
+
+void DriveWorker::doutUserOn()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_DOUT_USER_SET_VALUE, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно установить пользовательские цифровые выхода привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Пользовательские выхода установлены."));
+}
+
+void DriveWorker::doutUserOff()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_DOUT_USER_SET_VALUE, 0);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно установить пользовательские цифровые выхода привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Пользовательские выхода установлены."));
+}
+
+void DriveWorker::doutUserToggle()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_DOUT_USER_TOGGLE, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно переключить пользовательские цифровые выхода привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Пользовательские выхода переключены."));
 }
 
 void DriveWorker::readNextParams()

@@ -280,6 +280,21 @@ public slots:
      */
     void readOscillogramsList(Future* future);
 
+    /**
+     * @brief Включает пользовательские цифровые выхода.
+     */
+    void doutUserOn();
+
+    /**
+     * @brief Выключает пользовательские цифровые выхода.
+     */
+    void doutUserOff();
+
+    /**
+     * @brief Переключает пользовательские цифровые выхода.
+     */
+    void doutUserToggle();
+
 private slots:
 
     /**

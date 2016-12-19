@@ -300,6 +300,21 @@ signals:
      */
     void setDateTime(QDateTime datetime);
 
+    /**
+     * @brief Включает пользовательские цифровые выхода.
+     */
+    void doutUserOn();
+
+    /**
+     * @brief Выключает пользовательские цифровые выхода.
+     */
+    void doutUserOff();
+
+    /**
+     * @brief Переключает пользовательские цифровые выхода.
+     */
+    void doutUserToggle();
+
 //private signals:
     /**
      * @brief Читает следующий список параметров.
