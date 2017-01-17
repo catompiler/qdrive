@@ -80,10 +80,10 @@ typedef int32_t ramp_time_t;
 #define RAMP_TIME_MIN 1
 
 //! Максимальное время разгона.
-#define RAMP_TIME_MAX 0x20000
+#define RAMP_TIME_MAX 300
 
 //! Время разгона по-умолчанию.
-#define RAMP_TIME_DEFAULT 10
+#define RAMP_TIME_DEFAULT 30
 
 //! Тип задания разгона.
 typedef uint32_t ramp_reference_t;
@@ -107,18 +107,7 @@ typedef ramp_reference_t reference_t;
 typedef enum _Drive_Flag {
     DRIVE_FLAG_NONE             = 0x0,
     DRIVE_FLAG_POWER_CALIBRATED = 0x1,
-    DRIVE_FLAG_POWER_DATA_AVAIL = 0x2,
-    DRIVE_FLAG_POWER_GOOD_Ua    = 0x4,
-    DRIVE_FLAG_POWER_GOOD_Ub    = 0x8,
-    DRIVE_FLAG_POWER_GOOD_Uc    = 0x10,
-    DRIVE_FLAG_POWER_GOOD_Urot  = 0x20,
-    DRIVE_FLAG_POWER_GOOD_Ia    = 0x40,
-    DRIVE_FLAG_POWER_GOOD_Ib    = 0x80,
-    DRIVE_FLAG_POWER_GOOD_Ic    = 0x100,
-    DRIVE_FLAG_POWER_GOOD_Irot  = 0x200,
-    DRIVE_FLAG_POWER_GOOD_Iexc  = 0x400,
-    DRIVE_FLAG_POWER_GOOD_Ifan  = 0x800,
-    DRIVE_FLAG_POWER_GOOD_Iref  = 0x1000
+    DRIVE_FLAG_POWER_DATA_AVAIL = 0x2
 } drive_flag_t;
 
 //! Тип флагов привода.
@@ -195,7 +184,9 @@ typedef enum _Drive_Error {
     DRIVE_ERROR_POWER_DATA_NOT_AVAIL = 0x1, //!< Данные питания не поступают с АЦП.
     DRIVE_ERROR_POWER_INVALID        = 0x2, //!< Неправильные значения питания, см. drive_power_error_t.
     DRIVE_ERROR_EMERGENCY_STOP       = 0x4, //!< Аварийный останов (Грибок).
-    DRIVE_ERROR_PHASE                = 0x8  //!< Ошибка фаз.
+    DRIVE_ERROR_PHASE                = 0x8, //!< Ошибка фаз.
+    DRIVE_ERROR_THERMAL_OVERLOAD     = 0x10, //!< Тепловая защита.
+    DRIVE_ERROR_ROT_BREAK            = 0x20 //!< Обрыв якоря.
 } drive_error_t;
 
 //! Тип ошибок привода.
@@ -212,28 +203,27 @@ typedef enum _Drive_Power_Error {
     DRIVE_POWER_ERROR_OVERFLOW_Uc    = 0x20,
     DRIVE_POWER_ERROR_UNDERFLOW_Urot = 0x40,
     DRIVE_POWER_ERROR_OVERFLOW_Urot  = 0x80,
-    DRIVE_POWER_ERROR_IDLE_Urot      = 0x100,
-    DRIVE_POWER_ERROR_UNDERFLOW_Ia   = 0x200,
-    DRIVE_POWER_ERROR_OVERFLOW_Ia    = 0x400,
-    DRIVE_POWER_ERROR_IDLE_Ia        = 0x800,
-    DRIVE_POWER_ERROR_UNDERFLOW_Ib   = 0x1000,
-    DRIVE_POWER_ERROR_OVERFLOW_Ib    = 0x2000,
-    DRIVE_POWER_ERROR_IDLE_Ib        = 0x4000,
-    DRIVE_POWER_ERROR_UNDERFLOW_Ic   = 0x8000,
-    DRIVE_POWER_ERROR_OVERFLOW_Ic    = 0x10000,
-    DRIVE_POWER_ERROR_IDLE_Ic        = 0x20000,
-    DRIVE_POWER_ERROR_UNDERFLOW_Irot = 0x40000,
-    DRIVE_POWER_ERROR_OVERFLOW_Irot  = 0x80000,
-    DRIVE_POWER_ERROR_IDLE_Irot      = 0x100000,
-    DRIVE_POWER_ERROR_UNDERFLOW_Iexc = 0x200000,
-    DRIVE_POWER_ERROR_OVERFLOW_Iexc  = 0x400000,
-    DRIVE_POWER_ERROR_IDLE_Iexc      = 0x800000,
-    DRIVE_POWER_ERROR_UNDERFLOW_Ifan = 0x1000000,
-    DRIVE_POWER_ERROR_OVERFLOW_Ifan  = 0x2000000,
-    DRIVE_POWER_ERROR_UNDERFLOW_Iref = 0x4000000,
-    DRIVE_POWER_ERROR_OVERFLOW_Iref  = 0x8000000,
-    DRIVE_POWER_ERROR_THERMAL_OVERLOAD = 0x10000000, //!< Тепловая защита.
-    DRIVE_POWER_ERROR_ROT_BREAK      = 0x20000000 //!< Обрыв якоря.
+    DRIVE_POWER_ERROR_UNDERFLOW_Ia   = 0x100,
+    DRIVE_POWER_ERROR_OVERFLOW_Ia    = 0x200,
+    DRIVE_POWER_ERROR_UNDERFLOW_Ib   = 0x400,
+    DRIVE_POWER_ERROR_OVERFLOW_Ib    = 0x800,
+    DRIVE_POWER_ERROR_UNDERFLOW_Ic   = 0x1000,
+    DRIVE_POWER_ERROR_OVERFLOW_Ic    = 0x2000,
+    DRIVE_POWER_ERROR_UNDERFLOW_Irot = 0x4000,
+    DRIVE_POWER_ERROR_OVERFLOW_Irot  = 0x8000,
+    DRIVE_POWER_ERROR_UNDERFLOW_Iexc = 0x10000,
+    DRIVE_POWER_ERROR_OVERFLOW_Iexc  = 0x20000,
+    DRIVE_POWER_ERROR_UNDERFLOW_Ifan = 0x40000,
+    DRIVE_POWER_ERROR_OVERFLOW_Ifan  = 0x80000,
+    DRIVE_POWER_ERROR_UNDERFLOW_Iref = 0x100000,
+    DRIVE_POWER_ERROR_OVERFLOW_Iref  = 0x200000,
+    DRIVE_POWER_ERROR_IDLE_Ia        = 0x400000,
+    DRIVE_POWER_ERROR_IDLE_Ib        = 0x800000,
+    DRIVE_POWER_ERROR_IDLE_Ic        = 0x1000000,
+    DRIVE_POWER_ERROR_IDLE_Urot      = 0x2000000,
+    DRIVE_POWER_ERROR_IDLE_Irot      = 0x4000000,
+    DRIVE_POWER_ERROR_IDLE_Iexc      = 0x8000000,
+    DRIVE_POWER_ERROR_ALL            = 0xfffffff
 } drive_power_error_t;
 
 //! Тип ошибок питания привода.
@@ -241,7 +231,8 @@ typedef uint32_t drive_power_errors_t;
 
 typedef enum _Drive_Warning {
     DRIVE_WARNING_NONE  = 0x0, //!< Нет предупреждений.
-    DRIVE_WARNING_POWER = 0x1  //!< Предупреждение по питанию.
+    DRIVE_WARNING_POWER = 0x1,  //!< Предупреждение по питанию.
+    DRIVE_WARNING_THERMAL_OVERLOAD = 0x400000 //!< Перегрев.
 } drive_warning_t;
 
 //! Тип предупреждений привода.
@@ -271,7 +262,13 @@ typedef enum _Drive_Power_Warning {
     DRIVE_POWER_WARNING_OVERFLOW_Ifan  = 0x80000,
     DRIVE_POWER_WARNING_UNDERFLOW_Iref = 0x100000,
     DRIVE_POWER_WARNING_OVERFLOW_Iref  = 0x200000,
-    DRIVE_POWER_WARNING_THERMAL_OVERLOAD = 0x400000 //!< Перегрев.
+    DRIVE_POWER_WARNING_IDLE_Ia        = 0x400000,
+    DRIVE_POWER_WARNING_IDLE_Ib        = 0x800000,
+    DRIVE_POWER_WARNING_IDLE_Ic        = 0x1000000,
+    DRIVE_POWER_WARNING_IDLE_Urot      = 0x2000000,
+    DRIVE_POWER_WARNING_IDLE_Irot      = 0x4000000,
+    DRIVE_POWER_WARNING_IDLE_Iexc      = 0x8000000,
+    DRIVE_POWER_WARNING_ALL            = 0xfffffff
 } drive_power_warning_t;
 
 //! Тип предупреждений питания привода.
