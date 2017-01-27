@@ -10,6 +10,7 @@ class SettingsDlg;
 class SelectOscsDlg;
 class Drive;
 class ParamsModel;
+class ParamsDelegate;
 class EventsModel;
 class EventModel;
 
@@ -104,6 +105,11 @@ private slots:
      * @brief Обработчик кнопки останова.
      */
     void on_pbStop_clicked();
+
+    /**
+     * @brief Обработчик кнопки останова экстренного останова.
+     */
+    void on_tbEmStop_clicked();
 
     /**
      * @brief Обработчик изменения значения задания.
@@ -274,6 +280,10 @@ private:
      * @brief Модель списка параметров.
      */
     ParamsModel* paramsModel;
+    /**
+     * @brief Делегат списка параметров.
+     */
+    ParamsDelegate* paramsDelegate;
     /**
      * @brief Модель списка событий.
      */

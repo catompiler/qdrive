@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     driveoscillogram.cpp \
     oscview.cpp \
     utils.cpp \
-    selectoscsdlg.cpp
+    selectoscsdlg.cpp \
+    paramsdelegate.cpp
 
 HEADERS  += mainwindow.h \
     settings.h \
@@ -55,7 +56,8 @@ HEADERS  += mainwindow.h \
     driveoscillogram.h \
     oscview.h \
     utils.h \
-    selectoscsdlg.h
+    selectoscsdlg.h \
+    paramsdelegate.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui \

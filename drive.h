@@ -59,6 +59,12 @@ public:
     bool running() const;
 
     /**
+     * @brief Получает состояние.
+     * @return Состояние.
+     */
+    drive_state_t state() const;
+
+    /**
      * @brief Получает ошибки.
      * @return Ошибки.
      */
@@ -262,6 +268,11 @@ signals:
      * @brief останавливает устройство.
      */
     void stop();
+
+    /**
+     * @brief Экстренно останавливает устройство.
+     */
+    void emergencyStop();
 
     /**
      * @brief Устанавливает задание.

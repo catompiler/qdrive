@@ -1,5 +1,6 @@
 #include "parameter.h"
 #include <algorithm>
+#include <QLocale>
 
 
 Parameter::Parameter(param_type_t parameter_type)
@@ -98,21 +99,39 @@ void Parameter::setFlags(param_flags_t parameter_flags)
     param_flags = parameter_flags;
 }
 
+QVariant Parameter::toVariant() const
+{
+    switch(param_type){
+    case PARAM_TYPE_INT:
+        return QVariant(toInt());
+    case PARAM_TYPE_UINT:
+        return QVariant(toUInt());
+    case PARAM_TYPE_FRACT_10:
+    case PARAM_TYPE_FRACT_100:
+    case PARAM_TYPE_FRACT_1000:
+    case PARAM_TYPE_FRACT_10000:
+        return QVariant(toFloat());
+    default:
+        break;
+    }
+    return QVariant();
+}
+
 QString Parameter::toString() const
 {
     switch(param_type){
     case PARAM_TYPE_INT:
-        return QString::number(toInt());
+        return QLocale().toString(toInt());
     case PARAM_TYPE_UINT:
-        return QString::number(toUInt());
+        return QLocale().toString(toUInt());
     case PARAM_TYPE_FRACT_10:
-        return QString::number(toFloat(), 'f', 1);
+        return QLocale().toString(toFloat(), 'f', 1);
     case PARAM_TYPE_FRACT_100:
-        return QString::number(toFloat(), 'f', 2);
+        return QLocale().toString(toFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
-        return QString::number(toFloat(), 'f', 3);
+        return QLocale().toString(toFloat(), 'f', 3);
     case PARAM_TYPE_FRACT_10000:
-        return QString::number(toFloat(), 'f', 4);
+        return QLocale().toString(toFloat(), 'f', 4);
     default:
         break;
     }
@@ -123,17 +142,17 @@ QString Parameter::minToString() const
 {
     switch(param_type){
     case PARAM_TYPE_INT:
-        return QString::number(minToInt());
+        return QLocale().toString(minToInt());
     case PARAM_TYPE_UINT:
-        return QString::number(minToUInt());
+        return QLocale().toString(minToUInt());
     case PARAM_TYPE_FRACT_10:
-        return QString::number(minToFloat(), 'f', 1);
+        return QLocale().toString(minToFloat(), 'f', 1);
     case PARAM_TYPE_FRACT_100:
-        return QString::number(minToFloat(), 'f', 2);
+        return QLocale().toString(minToFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
-        return QString::number(minToFloat(), 'f', 3);
+        return QLocale().toString(minToFloat(), 'f', 3);
     case PARAM_TYPE_FRACT_10000:
-        return QString::number(minToFloat(), 'f', 4);
+        return QLocale().toString(minToFloat(), 'f', 4);
     default:
         break;
     }
@@ -144,17 +163,17 @@ QString Parameter::maxToString() const
 {
     switch(param_type){
     case PARAM_TYPE_INT:
-        return QString::number(maxToInt());
+        return QLocale().toString(maxToInt());
     case PARAM_TYPE_UINT:
-        return QString::number(maxToUInt());
+        return QLocale().toString(maxToUInt());
     case PARAM_TYPE_FRACT_10:
-        return QString::number(maxToFloat(), 'f', 1);
+        return QLocale().toString(maxToFloat(), 'f', 1);
     case PARAM_TYPE_FRACT_100:
-        return QString::number(maxToFloat(), 'f', 2);
+        return QLocale().toString(maxToFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
-        return QString::number(maxToFloat(), 'f', 3);
+        return QLocale().toString(maxToFloat(), 'f', 3);
     case PARAM_TYPE_FRACT_10000:
-        return QString::number(maxToFloat(), 'f', 4);
+        return QLocale().toString(maxToFloat(), 'f', 4);
     default:
         break;
     }
@@ -165,17 +184,17 @@ QString Parameter::defToString() const
 {
     switch(param_type){
     case PARAM_TYPE_INT:
-        return QString::number(defToInt());
+        return QLocale().toString(defToInt());
     case PARAM_TYPE_UINT:
-        return QString::number(defToUInt());
+        return QLocale().toString(defToUInt());
     case PARAM_TYPE_FRACT_10:
-        return QString::number(defToFloat(), 'f', 1);
+        return QLocale().toString(defToFloat(), 'f', 1);
     case PARAM_TYPE_FRACT_100:
-        return QString::number(defToFloat(), 'f', 2);
+        return QLocale().toString(defToFloat(), 'f', 2);
     case PARAM_TYPE_FRACT_1000:
-        return QString::number(defToFloat(), 'f', 3);
+        return QLocale().toString(defToFloat(), 'f', 3);
     case PARAM_TYPE_FRACT_10000:
-        return QString::number(defToFloat(), 'f', 4);
+        return QLocale().toString(defToFloat(), 'f', 4);
     default:
         break;
     }
@@ -204,6 +223,26 @@ uint16_t Parameter::toRaw() const
 {
     if(param) return param->toRaw();
     return 0;
+}
+
+void Parameter::setVariant(const QVariant& val)
+{
+    switch(param_type){
+    case PARAM_TYPE_INT:
+        setInt(val.toInt());
+        break;
+    case PARAM_TYPE_UINT:
+        setUInt(val.toUInt());
+        break;
+    case PARAM_TYPE_FRACT_10:
+    case PARAM_TYPE_FRACT_100:
+    case PARAM_TYPE_FRACT_1000:
+    case PARAM_TYPE_FRACT_10000:
+        setFloat(val.toFloat());
+        break;
+    default:
+        break;
+    }
 }
 
 void Parameter::setInt(int val)

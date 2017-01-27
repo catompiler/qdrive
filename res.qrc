@@ -5,5 +5,6 @@
         <file>connect.png</file>
         <file>disconnect.png</file>
         <file>qdrive.png</file>
+        <file>emergency_stop.png</file>
     </qresource>
 </RCC>

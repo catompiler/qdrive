@@ -8,6 +8,7 @@
 
 typedef struct _Menu menu_t;
 typedef struct _MenuItem menu_item_t;
+typedef struct _MenuValue menu_value_t;
 
 
 class ParamsModel
@@ -28,6 +29,12 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+    Parameter* parameter(const QModelIndex& index);
+    const Parameter* parameter(const QModelIndex& index) const;
+
+    menu_value_t* menuValue(const QModelIndex& index);
+    const menu_value_t* menuValue(const QModelIndex& index) const;
 
     QList<Parameter*> getParamsList();
     QHash<param_id_t, Parameter*> getParamsHash();

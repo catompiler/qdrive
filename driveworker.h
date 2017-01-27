@@ -67,6 +67,12 @@ public:
     bool running() const;
 
     /**
+     * @brief Получает состояние.
+     * @return Состояние.
+     */
+    drive_state_t state() const;
+
+    /**
      * @brief Получает ошибки.
      * @return Ошибки.
      */
@@ -222,6 +228,11 @@ public slots:
      * @brief останавливает устройство.
      */
     void stopDrive();
+
+    /**
+     * @brief Экстренно останавливает устройство.
+     */
+    void emergencyStopDrive();
 
     /**
      * @brief Устанавливает задание.
@@ -426,6 +437,10 @@ private:
      * @brief Работа.
      */
     bool dev_running;
+    /**
+     * @brief Состояние.
+     */
+    drive_state_t dev_state;
     /**
      * @brief Ошибки.
      */

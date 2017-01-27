@@ -2,6 +2,7 @@
 #define PARAMETER_H
 
 #include <QString>
+#include <QVariant>
 #include <stdint.h>
 #include <math.h>
 #include "drive_types.h"
@@ -114,6 +115,12 @@ public:
     void setFlags(param_flags_t parameter_flags);
 
     /**
+     * @brief Получает значение параметра.
+     * @return Знчение параметра.
+     */
+    QVariant toVariant() const;
+
+    /**
      * @brief Получает строковое представление значения параметра.
      * @return Строковое представление значения параметра.
      */
@@ -161,6 +168,12 @@ public:
      * @return Сырое(упакованное) значение.
      */
     uint16_t toRaw() const;
+
+    /**
+     * @brief Получает значение параметра.
+     * @return Знчение параметра.
+     */
+    void setVariant(const QVariant& val);
 
     /**
      * @brief Устанавливает целочисленное знаковое значение.

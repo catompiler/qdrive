@@ -7,6 +7,7 @@
 #include "parameter.h"
 #include "paramview.h"
 #include "paramsmodel.h"
+#include "paramsdelegate.h"
 #include "eventsmodel.h"
 #include "eventmodel.h"
 #include "future.h"
@@ -75,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tvParams->expandAll();
 #endif
 
+    paramsDelegate = new ParamsDelegate();
+    ui->tvParams->setItemDelegate(paramsDelegate);
+
     eventsModel = new EventsModel();
     ui->lvEvents->setModel(eventsModel);
     connect(ui->lvEvents->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -110,6 +114,7 @@ MainWindow::~MainWindow()
     delete drive;
     delete eventModel;
     delete eventsModel;
+    delete paramsDelegate;
     delete paramsModel;
     delete selectOscsDlg;
     delete settingsDlg;
@@ -129,6 +134,7 @@ void MainWindow::refreshUi()
     ui->actDisconnect->setEnabled(connected);
     ui->pbStart->setEnabled(connected && !running);
     ui->pbStop->setEnabled(connected && running);
+    ui->tbEmStop->setEnabled(connected);
     ui->hsReference->setEnabled(connected);
     ui->sbReference->setEnabled(connected);
     ui->pbClearErrs->setEnabled(connected);
@@ -239,6 +245,11 @@ void MainWindow::on_pbStop_clicked()
 {
     ui->pbStop->setEnabled(false);
     drive->stop();
+}
+
+void MainWindow::on_tbEmStop_clicked()
+{
+    drive->emergencyStop();
 }
 
 void MainWindow::on_sbReference_valueChanged(int value)

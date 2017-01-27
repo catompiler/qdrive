@@ -43,21 +43,23 @@ typedef struct _DriveModbusId {
 
 // Константы адресов.
 // Регистры ввода.
+//! Полуслова состояния.
+#define DRIVE_MODBUS_INPUT_REG_STATE (DRIVE_MODBUS_INPUT_REGS_START + 0)
 //! Полуслова ошибок.
-#define DRIVE_MODBUS_INPUT_REG_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 0)
-#define DRIVE_MODBUS_INPUT_REG_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 1)
+#define DRIVE_MODBUS_INPUT_REG_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 10)
+#define DRIVE_MODBUS_INPUT_REG_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 11)
 //! Полуслова предупреждений
-#define DRIVE_MODBUS_INPUT_REG_WARNINGS0 (DRIVE_MODBUS_INPUT_REGS_START + 2)
-#define DRIVE_MODBUS_INPUT_REG_WARNINGS1 (DRIVE_MODBUS_INPUT_REGS_START + 3)
+#define DRIVE_MODBUS_INPUT_REG_WARNINGS0 (DRIVE_MODBUS_INPUT_REGS_START + 12)
+#define DRIVE_MODBUS_INPUT_REG_WARNINGS1 (DRIVE_MODBUS_INPUT_REGS_START + 13)
 //! Полуслова ошибок питания.
-#define DRIVE_MODBUS_INPUT_REG_PWR_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 4)
-#define DRIVE_MODBUS_INPUT_REG_PWR_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 5)
+#define DRIVE_MODBUS_INPUT_REG_PWR_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 14)
+#define DRIVE_MODBUS_INPUT_REG_PWR_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 15)
 //! Полуслова предупреждений питания.
-#define DRIVE_MODBUS_INPUT_REG_PWR_WARNINGS0 (DRIVE_MODBUS_INPUT_REGS_START + 6)
-#define DRIVE_MODBUS_INPUT_REG_PWR_WARNINGS1 (DRIVE_MODBUS_INPUT_REGS_START + 7)
+#define DRIVE_MODBUS_INPUT_REG_PWR_WARNINGS0 (DRIVE_MODBUS_INPUT_REGS_START + 16)
+#define DRIVE_MODBUS_INPUT_REG_PWR_WARNINGS1 (DRIVE_MODBUS_INPUT_REGS_START + 17)
 //! Полуслова ошибок фаз.
-#define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 8)
-#define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 9)
+#define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 18)
+#define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 19)
 // Регистры хранения.
 //! Задание.
 #define DRIVE_MODBUS_HOLD_REG_REFERENCE (DRIVE_MODBUS_HOLD_REGS_START + 0)
@@ -94,6 +96,8 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_DOUT_USER_SET_VALUE (DRIVE_MODBUS_COILS_START + 7)
 //! Переключает пользовательские цифровые выхода.
 #define DRIVE_MODBUS_COIL_DOUT_USER_TOGGLE (DRIVE_MODBUS_COILS_START + 8)
+//! Экстренный останов.
+#define DRIVE_MODBUS_COIL_EMERGENCY_STOP (DRIVE_MODBUS_COILS_START + 9)
 
 
 // Пользовательские функции и коды.
@@ -236,6 +240,7 @@ DriveWorker::DriveWorker() : QThread()
 
     dev_reference = 0;
     dev_running = false;
+    dev_state = DRIVE_STATE_IDLE;
     dev_errors = 0;
     dev_warnings = 0;
     dev_power_errors = 0;
@@ -352,6 +357,11 @@ unsigned int DriveWorker::reference() const
 bool DriveWorker::running() const
 {
     return dev_running;
+}
+
+drive_state_t DriveWorker::state() const
+{
+    return dev_state;
 }
 
 drive_errors_t DriveWorker::errors() const
@@ -544,6 +554,19 @@ void DriveWorker::stopDrive()
 
     setRunning(false);
     if(!dev_running) emit information(tr("Останов привода."));
+}
+
+void DriveWorker::emergencyStopDrive()
+{
+    if(!connected_to_device) return;
+
+    int res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_EMERGENCY_STOP, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно экстренно остановить привод.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Экстренный останов привода."));
 }
 
 void DriveWorker::setReference(unsigned int reference)
@@ -1278,11 +1301,19 @@ void DriveWorker::update()
     }
     dev_running = bits_data;
 
+    res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_STATE, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать состояние привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_state = static_cast<drive_state_t>(udata);
+
     #define DRIVE_FLAGS_DATA_LEN 10
     uint16_t drive_flags_data[DRIVE_FLAGS_DATA_LEN];
     res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_ERRORS0, DRIVE_FLAGS_DATA_LEN, drive_flags_data);
     if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать состояния привода.(%1)").arg(modbus_strerror(errno)));
+        emit errorOccured(tr("Невозможно прочитать ошибки и предупреждения привода.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
         return;
     }

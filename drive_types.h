@@ -73,17 +73,11 @@ typedef enum _Drive_Triacs_Exc_Mode {
 } drive_triacs_exc_mode_t;
 
 
-//! Тип времени разгона.
-typedef int32_t ramp_time_t;
-
-//! Максимальное время разгона.
-#define RAMP_TIME_MIN 1
-
-//! Максимальное время разгона.
-#define RAMP_TIME_MAX 300
-
-//! Время разгона по-умолчанию.
-#define RAMP_TIME_DEFAULT 30
+//! Режим останова.
+typedef enum _Ramp_Stop_Mode {
+    RAMP_STOP_MODE_NORMAL = 0, //!< Нормальный останов.
+    RAMP_STOP_MODE_FAST   = 1  //!< Быстрый останов.
+} ramp_stop_mode_t;
 
 //! Тип задания разгона.
 typedef uint32_t ramp_reference_t;
@@ -93,14 +87,44 @@ typedef uint32_t ramp_reference_t;
 //! Максимальное задание.
 #define RAMP_REFERENCE_MAX 100
 
+//! Тип времени разгона.
+typedef int32_t ramp_time_t;
+
+//! Максимальное время разгона.
+#define RAMP_TIME_MIN 1
+
+//! Максимальное время разгона.
+#define RAMP_TIME_MAX 300
+
+//! Время изменения задания по-умолчанию.
+#define RAMP_REFERENCE_TIME_DEFAULT 10
+
+//! Время разгона по-умолчанию.
+#define RAMP_START_TIME_DEFAULT 30
+
+//! Время разгона по-умолчанию.
+#define RAMP_STOP_TIME_DEFAULT 20
+
+//! Время разгона по-умолчанию.
+#define RAMP_FAST_STOP_TIME_DEFAULT 2
+
+
+//! Тип состояния регулятора привода.
+typedef enum _Drive_Regulator_State {
+    DRIVE_REGULATOR_STATE_IDLE = 0,
+    DRIVE_REGULATOR_STATE_START,
+    DRIVE_REGULATOR_STATE_RUN,
+    DRIVE_REGULATOR_STATE_STOP
+} drive_regulator_state_t;
 
 //! Тип задания.
 typedef ramp_reference_t reference_t;
 //! Минимальное задание.
 #define REFERENCE_MIN 0
+#define REFERENCE_MIN_F 0
 //! Максимальное задание.
 #define REFERENCE_MAX 100
-
+#define REFERENCE_MAX_F 0x640000
 
 
 //! Флаги привода - тип флага.
@@ -132,51 +156,6 @@ typedef enum _Drive_State {
     DRIVE_STATE_STOP_ERROR  = 6, //!< Останов при ошибке.
     DRIVE_STATE_ERROR       = 7  //!< Ошибка.
 } drive_state_t;
-
-//! Перечисление состояний инициализации привода.
-typedef enum _Drive_Init_State {
-    DRIVE_INIT_NONE = 0,
-    DRIVE_INIT_RESET = 1,
-    DRIVE_INIT_WAIT_PHASES = 2,
-    DRIVE_INIT_WAIT_POWER = 3,
-    DRIVE_INIT_DONE = 4
-} drive_init_state_t;
-
-//! Перечисление состояний калибровки питания.
-typedef enum _Drive_Power_Calibration {
-    DRIVE_PWR_CALIBRATION_NONE    = 0, //!< Нет калибровки.
-    DRIVE_PWR_CALIBRATION_START   = 1, //!< Нужно выполнить калибровку.
-    DRIVE_PWR_CALIBRATION_RUNNING = 2, //!< Калибровка выполняется.
-    DRIVE_PWR_CALIBRATION_DONE    = 3  //!< Калибровка выполнена.
-} drive_power_calibration_t;
-
-//! Перечисление состояний запуска привода.
-typedef enum _Drive_Starting {
-    DRIVE_STARTING_NONE     = 0, //!< Не запускается.
-    DRIVE_STARTING_START    = 1, //!< Нужно запустить.
-    DRIVE_STARTING_WAIT_EXC = 2, //!< Ожидание возбуждения.
-    DRIVE_STARTING_RAMP     = 3, //!< Разгон.
-    DRIVE_STARTING_DONE     = 4  //!< Запущен.
-} drive_starting_t;
-
-//! Перечисление состояний останова привода.
-typedef enum _Drive_Stopping {
-    DRIVE_STOPPING_NONE     = 0, //!< Не останавливается.
-    DRIVE_STOPPING_STOP     = 1, //!< Нужно остановить.
-    DRIVE_STOPPING_RAMP     = 2, //!< Торможение.
-    DRIVE_STOPPING_WAIT_ROT = 3, //!< Ожидане остановки якоря.
-    DRIVE_STOPPING_WAIT_EXC = 4, //!< Ожидане возвращения к нулю возбуждения.
-    DRIVE_STOPPING_DONE     = 5  //!< Остановлен.
-} drive_stopping_t;
-
-//! Перечисление состояний останова привода при ошибке.
-typedef enum _Drive_Err_Stopping {
-    DRIVE_ERR_STOPPING_NONE = 0, //!< Не останавливается.
-    DRIVE_ERR_STOPPING_STOP, //!< Нужно остановить.
-    DRIVE_ERR_STOPPING_WAIT_ROT, //!< Ожидане остановки якоря.
-    DRIVE_ERR_STOPPING_WAIT_EXC, //!< Ожидане возвращения к нулю возбуждения.
-    DRIVE_ERR_STOPPING_DONE //!< Остановлен.
-} drive_err_stopping_t;
 
 //! Тип ошибки привода.
 typedef enum _Drive_Error {
@@ -274,12 +253,144 @@ typedef enum _Drive_Power_Warning {
 //! Тип предупреждений питания привода.
 typedef uint32_t drive_power_warnings_t;
 
+//! Перечисление состояний инициализации привода.
+typedef enum _Drive_Init_State {
+    DRIVE_INIT_NONE        = 0,
+    DRIVE_INIT_BEGIN       = 1,
+    DRIVE_INIT_WAIT_PHASES = 2,
+    DRIVE_INIT_WAIT_POWER  = 3,
+    DRIVE_INIT_DONE        = 4
+} drive_init_state_t;
+
+//! Перечисление состояний калибровки питания.
+typedef enum _Drive_Power_Calibration {
+    DRIVE_PWR_CALIBRATION_NONE    = 0, //!< Нет калибровки.
+    DRIVE_PWR_CALIBRATION_BEGIN   = 1, //!< Нужно выполнить калибровку.
+    DRIVE_PWR_CALIBRATION_RUNNING = 2, //!< Калибровка выполняется.
+    DRIVE_PWR_CALIBRATION_DONE    = 3  //!< Калибровка выполнена.
+} drive_power_calibration_t;
+
+//! Перечисление состояний запуска привода.
+typedef enum _Drive_Starting {
+    DRIVE_STARTING_NONE     = 0, //!< Не запускается.
+    DRIVE_STARTING_BEGIN    = 1, //!< Нужно запустить.
+    DRIVE_STARTING_WAIT_EXC = 2, //!< Ожидание возбуждения.
+    DRIVE_STARTING_RAMP     = 3, //!< Разгон.
+    DRIVE_STARTING_DONE     = 4  //!< Запущен.
+} drive_starting_t;
+
+//! Перечисление состояний останова привода.
+typedef enum _Drive_Stopping {
+    DRIVE_STOPPING_NONE     = 0, //!< Не останавливается.
+    DRIVE_STOPPING_BEGIN    = 1, //!< Нужно остановить.
+    DRIVE_STOPPING_RAMP     = 2, //!< Торможение.
+    DRIVE_STOPPING_WAIT_ROT = 3, //!< Ожидане остановки якоря.
+    DRIVE_STOPPING_WAIT_EXC = 4, //!< Ожидане возвращения к нулю возбуждения.
+    DRIVE_STOPPING_DONE     = 5  //!< Остановлен.
+} drive_stopping_t;
+
+//! Перечисление состояний останова привода при ошибке.
+typedef enum _Drive_Err_Stopping {
+    DRIVE_ERR_STOPPING_NONE     = 0, //!< Не останавливается.
+    DRIVE_ERR_STOPPING_BEGIN    = 1, //!< Нужно остановить.
+    DRIVE_ERR_STOPPING_WAIT_ROT = 2, //!< Ожидане остановки якоря.
+    DRIVE_ERR_STOPPING_WAIT_EXC = 3, //!< Ожидане возвращения к нулю возбуждения.
+    DRIVE_ERR_STOPPING_DONE     = 4//!< Остановлен.
+} drive_err_stopping_t;
+
+//! Перечисление типа останова привода.
+typedef enum _Drive_Stop_Mode {
+    DRIVE_STOP_MODE_NORMAL = 0, //!< Нормальный останов.
+    DRIVE_STOP_MODE_FAST   = 1, //!< Быстрый останов.
+    DRIVE_STOP_MODE_COAST  = 2, //!< Останов выбегом.
+} drive_stop_mode_t;
+
 //! Тип направления.
 typedef enum _DriveDir {
     DRIVE_DIR_UNK = 0,
     DRIVE_DIR_FORW = 1,
     DRIVE_DIR_BACKW = 2
 } drive_dir_t;
+
+
+//! Тип результата проверки питания.
+typedef enum _Drive_Pwr_Check_Res {
+    DRIVE_PWR_CHECK_NORMAL = 0,
+    DRIVE_PWR_CHECK_WARN_UNDERFLOW,
+    DRIVE_PWR_CHECK_WARN_OVERFLOW,
+    DRIVE_PWR_CHECK_FAULT_UNDERFLOW,
+    DRIVE_PWR_CHECK_FAULT_OVERFLOW,
+} drive_pwr_check_res_t;
+
+//! Тип результата проверки тепловой защиты.
+typedef enum _Drive_Top_Check_Res {
+    DRIVE_TOP_CHECK_NORMAL = 0,
+    DRIVE_TOP_CHECK_HEATING,
+    DRIVE_TOP_CHECK_COOLING,
+    DRIVE_TOP_CHECK_OVERHEAT
+} drive_top_check_res_t;
+
+//! Тип результата проверки обрыва якоря.
+typedef enum _Drive_Break_Check_Res {
+    DRIVE_BREAK_CHECK_NORMAL = 0,
+    DRIVE_BREAK_CHECK_FAIL
+} drive_break_check_res_t;
+
+//! Тип действия при активации элемента защиты.
+typedef enum _Drive_Prot_Action {
+    DRIVE_PROT_ACTION_IGNORE         = 0,
+    DRIVE_PROT_ACTION_WARNING        = 1,
+    DRIVE_PROT_ACTION_FAST_STOP      = 2,
+    DRIVE_PROT_ACTION_COAST_STOP     = 3,
+    DRIVE_PROT_ACTION_EMERGENCY_STOP = 4
+} drive_prot_action_t;
+
+
+//! Перечисление инвертированности логического уровня сигнала.
+typedef enum _Drive_Dio_Inversion {
+    DRIVE_DIO_INVERSION_NONE     = 0,
+    DRIVE_DIO_INVERSION_INVERTED = 1,
+} drive_dio_inversion_t;
+
+//! Перечисление типов цифровых входов.
+typedef enum _Drive_Dio_Input_Type {
+    DRIVE_DIO_IN_NONE           = 0,
+    DRIVE_DIO_IN_START_STOP     = 1,
+    DRIVE_DIO_IN_EMERGENCY_STOP = 2,
+    DRIVE_DIO_IN_REFERENCE_INC  = 3,
+    DRIVE_DIO_IN_REFERENCE_DEC  = 4,
+    DRIVE_DIO_IN_CLEAR_ERRORS   = 5,
+    DRIVE_DIO_IN_USER           = 6,
+} drive_dio_input_type_t;
+
+//! Перечисление типов цифровых выходов.
+typedef enum _Drive_Dio_Output_Type {
+    DRIVE_DIO_OUT_NONE    = 0,
+    DRIVE_DIO_OUT_OK      = 1,
+    DRIVE_DIO_OUT_READY   = 2,
+    DRIVE_DIO_OUT_RUNNING = 3,
+    DRIVE_DIO_OUT_ERROR   = 4,
+    DRIVE_DIO_OUT_WARNING = 5,
+    DRIVE_DIO_OUT_USER    = 6,
+} drive_dio_output_type_t;
+
+//! Перечисление номеров цифровых входов.
+typedef enum _Drive_Dio_Input {
+    DRIVE_DIO_INPUT_1 = 0,
+    DRIVE_DIO_INPUT_2 = 1,
+    DRIVE_DIO_INPUT_3 = 2,
+    DRIVE_DIO_INPUT_4 = 3,
+    DRIVE_DIO_INPUT_5 = 4,
+} drive_dio_input_t;
+
+//! Перечисление номеров цифровых выходов.
+typedef enum _Drive_Dio_Output {
+    DRIVE_DIO_OUTPUT_1 = 0,
+    DRIVE_DIO_OUTPUT_2 = 1,
+    DRIVE_DIO_OUTPUT_3 = 2,
+    DRIVE_DIO_OUTPUT_4 = 3,
+} drive_dio_output_t;
+
 
 //! Тип ошибки.
 typedef enum _DrivePhaseErr {
