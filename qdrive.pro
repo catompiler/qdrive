@@ -57,7 +57,8 @@ HEADERS  += mainwindow.h \
     oscview.h \
     utils.h \
     selectoscsdlg.h \
-    paramsdelegate.h
+    paramsdelegate.h \
+    parameters_menu.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui \

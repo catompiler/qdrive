@@ -57,6 +57,16 @@ typedef struct _Param_Descr {
         { arg_id, arg_type, arg_min, arg_max, arg_def, arg_flags }
 
 
+//! Флаги элементов меню.
+typedef enum _Menu_Flag {
+    MENU_FLAG_NONE  = 0,
+    MENU_FLAG_DATA  = 1,
+    MENU_FLAG_CMD   = 2,
+    MENU_FLAG_ADMIN = 4,
+    MENU_FLAG_ROOT  = 8
+} menu_flag_t;
+
+
 //! Тип фазы.
 typedef enum _Phase {
     PHASE_UNK = 0,

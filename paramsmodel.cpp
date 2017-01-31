@@ -5,7 +5,7 @@
 #include "parameter.h"
 #include <QDebug>
 
-#define MENU_MACRO
+
 #define MENU_DESCR_MACRO
 #define MENU_DESCRS_ATTRIBS static const
 #define MENU_ITEMS_ATTRIBS static
@@ -17,361 +17,99 @@ class MenuValue
         :public menu_value_t
 {
 public:
-    MenuValue(){
-        type = MENU_VALUE_TYPE_NONE;
-    }
-
-    MenuValue(const char* val){
-        type = MENU_VALUE_TYPE_STRING;
-        value_string = val;
-    }
-
-    MenuValue(int val){
-        type = MENU_VALUE_TYPE_INT;
-        value_int = val;
-    }
-
-    MenuValue(bool val){
-        type = MENU_VALUE_TYPE_BOOL;
-        value_bool = val;
-    }
-
-    MenuValue(float val){
-        type = MENU_VALUE_TYPE_FIXED;
-        value_fixed = val * 0x10000;
-    }
-
-    MenuValue(size_t count, MenuValue* val){
-        type = MENU_VALUE_TYPE_ENUM;
-        value_enum.values = val;
-        value_enum.count = count;
-        value_enum.current = 0;
-    }
-
-    MenuValue(void* val){
-        type = MENU_VALUE_TYPE_CUSTOM;
-        value_custom = val;
+    MenuValue(menu_value_type_t t){
+        type = t;
     }
 };
 
-//! Перечисление фаз.
-static MenuValue menu_enum_phases[] = {
-    MenuValue("Не задано"), MenuValue("Фаза A"), MenuValue("Фаза B"), MenuValue("Фаза C")
-};
-//! Перечисление Да/Нет.
-static MenuValue menu_enum_bool[] = {
-    MenuValue("Нет"), MenuValue("Да")
-};
-//! Перечисление Разрешено/Запрещено.
-//static MenuValue menu_enum_en_dis[] = {
-//    MenuValue("Запрещено"), MenuValue("Разрешено")
-//};
-//! Перечисление режима возбуждения.
-static MenuValue menu_enum_exc_mode[] = {
-    MenuValue("Фиксированное"), MenuValue("Регулируемое")
-};
-//! Перечисление типа останова.
-static MenuValue menu_enum_stop_mode[] = {
-    MenuValue("Нормальный"), MenuValue("Быстрый"), MenuValue("Выбег")
-};
-//! Перечисление действия защиты.
-static MenuValue menu_enum_prot_action[] = {
-    MenuValue("Игнорировать"), MenuValue("Предупреждение"), MenuValue("Быстрый останов"),
-    MenuValue("Останов выбегом"), MenuValue("Экстренный останов")
-};
-//! Перечисление типа цифровых входов.
-static MenuValue menu_enum_dio_in_type[] = {
-    MenuValue("Не подключен"), MenuValue("Запуск/Останов"), MenuValue("Экстренный останов"),
-    MenuValue("Инкремент задания"), MenuValue("Декремент задания"),
-    MenuValue("Сброс ошибок"), MenuValue("Пользовательский")
-};
-//! Перечисление типа цифровых выходов.
-static MenuValue menu_enum_dio_out_type[] = {
-    MenuValue("Не подключен"), MenuValue("Привод в порядке"), MenuValue("Готовность"),
-    MenuValue("Работа"), MenuValue("Ошибка"),
-    MenuValue("Предупреждение"), MenuValue("Пользовательский")
+class MenuValueString :public MenuValue {
+public:
+    MenuValueString(const char* val = NULL) :MenuValue(MENU_VALUE_TYPE_STRING)
+        { value_string = val; }
 };
 
-//! Перечисление .
-//static MenuValue menu_enum_[] = {
-//    MenuValue(""), MenuValue("")
-//};
-
-#define MENU_ENUM_LEN(MEARR) (sizeof(MEARR)/sizeof(MenuValue))
-
-static MenuValue menu_val_phase(MENU_ENUM_LEN(menu_enum_phases), menu_enum_phases);
-static MenuValue menu_val_bool(MENU_ENUM_LEN(menu_enum_bool), menu_enum_bool);
-static MenuValue menu_val_exc_mode(MENU_ENUM_LEN(menu_enum_exc_mode), menu_enum_exc_mode);
-//static MenuValue menu_val_en_dis(MENU_ENUM_LEN(menu_enum_en_dis), menu_enum_en_dis);
-static MenuValue menu_val_stop_mode(MENU_ENUM_LEN(menu_enum_stop_mode), menu_enum_stop_mode);
-static MenuValue menu_val_prot_action(MENU_ENUM_LEN(menu_enum_prot_action), menu_enum_prot_action);
-static MenuValue menu_val_dio_in_type(MENU_ENUM_LEN(menu_enum_dio_in_type), menu_enum_dio_in_type);
-static MenuValue menu_val_dio_out_type(MENU_ENUM_LEN(menu_enum_dio_out_type), menu_enum_dio_out_type);
-
-//static MenuValue menu_val_(MENU_ENUM_LEN(menu_enum_), menu_enum_);
-
-
-MENU_DESCRS(menu_descrs) {
-    MENU_DESCR(0, 0, "Питание", 0, 0, 0),
-        MENU_DESCR(1, 0, "Сеть", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_U_NOM, "Ном. U сети, В", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_I_NOM, "Ном. I сети, А", 0, 0, 0),
-        MENU_DESCR(1, 0, "Якорь", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_U_ROT_NOM, "Ном. U якоря, В", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_I_ROT_NOM, "Ном. I якоря, А", 0, 0, 0),
-        MENU_DESCR(1, 0, "Возбуждение", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_I_EXC, "I возбужд., А", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_EXC_PHASE, "Фаза возбужд.", 0, 0, &menu_val_phase),
-            MENU_DESCR(2, PARAM_ID_EXC_MODE, "Режим возбужд.", 0, 0, &menu_val_exc_mode),
-    MENU_DESCR(0, 0, "Разгон и торможение", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_RAMP_START_TIME, "Время разгона 0-100%, с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_RAMP_STOP_TIME, "Время торможения 100-0%, с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_RAMP_FAST_STOP_TIME, "Время быстрого торможения 100-0%, с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_RAMP_REFERENCE_TIME, "Время изменения задания 0-100%, с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_RAMP_STOP_MODE, "Режим останова", 0, 0, &menu_val_stop_mode),
-    MENU_DESCR(0, 0, "ПИД регулятор", 0, 0, 0),
-        MENU_DESCR(1, 0, "ПИД якоря", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_ROT_PID_K_P, "Kp", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_ROT_PID_K_I, "Ki", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_ROT_PID_K_D, "Kd", 0, 0, 0),
-        MENU_DESCR(1, 0, "ПИД возбужд.", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_EXC_PID_K_P, "Kp", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_EXC_PID_K_I, "Ki", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_EXC_PID_K_D, "Kd", 0, 0, 0),
-    MENU_DESCR(0, 0, "Запуск и останов", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_ROT_STOP_TIME, "Время останова якоря, с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_EXC_STOP_TIME, "Время останова возбужд., с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_EXC_START_TIME, "Время запуска возбужд., с", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_PHASES_CHECK_TIME, "Время ожидания фаз, мс", 0, 0, 0),
-    MENU_DESCR(0, 0, "Тиристоры", 0, 0, 0),
-        MENU_DESCR(1, 0, "Время открытия, мкс", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_TIME, "Силовые", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_TIME, "Возбужд.", 0, 0, 0),
-    MENU_DESCR(0, 0, "Защита", 0, 0, 0),
-        MENU_DESCR(1, 0, "Тепловая защита", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ENABLE, "Разрешение", 0, 0, &menu_val_bool),
-            MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_6I, "Время работы при перегрузе 6x, с", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Экстренный останов", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_EMERGENCY_STOP_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Напряжение сети", 0, 0, 0),
-            MENU_DESCR(2, 0, "Отсечка", 0, 0, 0),
-                MENU_DESCR(3, PARAM_ID_PROT_U_IN_CUTOFF_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-            MENU_DESCR(2, 0, "Повышение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_OVF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-            MENU_DESCR(2, 0, "Понижение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_IN_UDF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Ток сети", 0, 0, 0),
-            MENU_DESCR(2, 0, "Отсечка", 0, 0, 0),
-                MENU_DESCR(3, PARAM_ID_PROT_I_IN_CUTOFF_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-            MENU_DESCR(2, 0, "Повышение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_OVF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Напряжение якоря", 0, 0, 0),
-            MENU_DESCR(2, 0, "Отсечка", 0, 0, 0),
-                MENU_DESCR(3, PARAM_ID_PROT_U_ROT_CUTOFF_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-            MENU_DESCR(2, 0, "Повышение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_OVF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Ток якоря", 0, 0, 0),
-            MENU_DESCR(2, 0, "Отсечка", 0, 0, 0),
-                MENU_DESCR(3, PARAM_ID_PROT_I_ROT_CUTOFF_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-            MENU_DESCR(2, 0, "Повышение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_OVF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Ток возбуждения", 0, 0, 0),
-            MENU_DESCR(2, 0, "Отсечка", 0, 0, 0),
-                MENU_DESCR(3, PARAM_ID_PROT_I_EXC_CUTOFF_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-            MENU_DESCR(2, 0, "Повышение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_OVF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-            MENU_DESCR(2, 0, "Понижение", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_FAULT_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_WARN_LEVEL_VALUE, "Отклонение, %", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_UDF_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-        MENU_DESCR(1, 0, "Отклонения нулей", 0, 0, 0),
-            MENU_DESCR(2, 0, "Ток сети", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_FAULT_LEVEL_VALUE, "Отклонение, А", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_WARN_LEVEL_VALUE, "Отклонение, А", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_IN_IDLE_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-            MENU_DESCR(2, 0, "Напряжение якоря", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_FAULT_LEVEL_VALUE, "Отклонение, В", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_WARN_LEVEL_VALUE, "Отклонение, В", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_U_ROT_IDLE_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-            MENU_DESCR(2, 0, "Ток якоря", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_FAULT_LEVEL_VALUE, "Отклонение, А", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_WARN_LEVEL_VALUE, "Отклонение, А", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_ROT_IDLE_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-            MENU_DESCR(2, 0, "Ток возбуждения", 0, 0, 0),
-                MENU_DESCR(3, 0, "Уровень ошибки", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_FAULT_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_FAULT_LEVEL_VALUE, "Отклонение, А", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_FAULT_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_FAULT_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_FAULT_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-                MENU_DESCR(3, 0, "Уровень предупреждения", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_WARN_ENABLE, "Включено", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_WARN_LEVEL_VALUE, "Отклонение, А", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_WARN_LEVEL_TIME_MS, "Время отклонения, мс", 0, 0, 0),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_WARN_LATCH_ENABLE, "Защёлка", 0, 0, &menu_val_bool),
-                    MENU_DESCR(4, PARAM_ID_PROT_I_EXC_IDLE_WARN_ACTION, "Действие", 0, 0, &menu_val_prot_action),
-    MENU_DESCR(0, 0, "Вычисления", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALC_PHASE_CURRENT, "Вычислять ток для фазы", 0, 0, &menu_val_phase),
-    MENU_DESCR(0, 0, "Коммуникация", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_MODBUS_BAUD, "Скорость Modbus RTU", 0, 0, 0),
-    MENU_DESCR(0, 0, "Цифровые входа", 0, 0, 0),
-        MENU_DESCR(1, 0, "Вход 1", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_1_TYPE, "Тип", 0, 0, &menu_val_dio_in_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_1_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Вход 2", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_2_TYPE, "Тип", 0, 0, &menu_val_dio_in_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_2_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Вход 3", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_3_TYPE, "Тип", 0, 0, &menu_val_dio_in_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_3_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Вход 4", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_4_TYPE, "Тип", 0, 0, &menu_val_dio_in_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_4_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Вход 5", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_5_TYPE, "Тип", 0, 0, &menu_val_dio_in_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_IN_5_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-    MENU_DESCR(0, 0, "Цифровые выхода", 0, 0, 0),
-        MENU_DESCR(1, 0, "Выход 1", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_1_TYPE, "Тип", 0, 0, &menu_val_dio_out_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_1_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Выход 2", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_2_TYPE, "Тип", 0, 0, &menu_val_dio_out_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_2_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Выход 3", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_3_TYPE, "Тип", 0, 0, &menu_val_dio_out_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_3_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-        MENU_DESCR(1, 0, "Выход 4", 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_4_TYPE, "Тип", 0, 0, &menu_val_dio_out_type),
-            MENU_DESCR(2, PARAM_ID_DIGITAL_OUT_4_INVERSION, "Инверсия", 0, 0, &menu_val_bool),
-    MENU_DESCR(0, 0, "Коэффициенты АЦП", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ua, "Коэффициент Ua", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ub, "Коэффициент Ub", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Uc, "Коэффициент Uc", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Urot, "Коэффициент Urot", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ia, "Коэффициент Ia", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ib, "Коэффициент Ib", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ic, "Коэффициент Ic", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Irot, "Коэффициент Irot", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iexc, "Коэффициент Iexc", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iref, "Коэффициент Iref", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ifan, "Коэффициент Ifan", 0, 0, 0),
-    MENU_DESCR(0, 0, "Калибровочные данные", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ua, "Значение калибровки Ua", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ub, "Значение калибровки Ub", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Uc, "Значение калибровки Uc", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Urot, "Значение калибровки Urot", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ia, "Значение калибровки Ia", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ib, "Значение калибровки Ib", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ic, "Значение калибровки Ic", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Irot, "Значение калибровки Irot", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Iexc, "Значение калибровки Iexc", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Iref, "Значение калибровки Iref", 0, 0, 0),
-        MENU_DESCR(1, PARAM_ID_CALIBRATION_DATA_Ifan, "Значение калибровки Ifan", 0, 0, 0),
-    //MENU_DESCR(0, 0, "Menu1_1", 0, 0, 0)
+class MenuValueInt :public MenuValue {
+public:
+    MenuValueInt(int val = 0) :MenuValue(MENU_VALUE_TYPE_INT)
+    { value_int = val; }
 };
+
+class MenuValueBool :public MenuValue {
+public:
+    MenuValueBool(bool val = false) :MenuValue(MENU_VALUE_TYPE_BOOL)
+    { value_bool = val; }
+};
+
+class MenuValueFixed :public MenuValue {
+public:
+    MenuValueFixed(fixed32_t val = 0) :MenuValue(MENU_VALUE_TYPE_FIXED)
+    { value_fixed = val; }
+};
+
+class MenuValueEnum :public MenuValue {
+public:
+    MenuValueEnum(size_t current, size_t count, MenuValue* val) :MenuValue(MENU_VALUE_TYPE_ENUM)
+    { value_enum.current = current; value_enum.count = count; value_enum.values = val; }
+};
+
+class MenuValueCustom :public MenuValue {
+public:
+    MenuValueCustom(void* val) :MenuValue(MENU_VALUE_TYPE_CUSTOM)
+    { value_custom = val; }
+};
+
+
+//! Объявляет переменную и инициалищирует массив значений элемента меню.
+#define MENU_VALUES(name, ...) static MenuValue name[] = {__VA_ARGS__}
+
+
+//! Инициализирует пустое значение элемента меню.
+#define MAKE_MENU_VALUE_NONE()\
+            MenuValue(MENU_VALUE_TYPE_NONE)
+//! Инициализирует строковое значение элемента меню.
+#define MAKE_MENU_VALUE_STRING(arg_value_string)\
+            MenuValueString(arg_value_string)
+//! Инициализирует целочисленное значение элемента меню.
+#define MAKE_MENU_VALUE_INT(arg_value_int)\
+            MenuValueInt(arg_value_int)
+//! Инициализирует логическое значение элемента меню.
+#define MAKE_MENU_VALUE_BOOL(arg_value_bool)\
+            MenuValueBool(arg_value_bool)
+//! Инициализирует значение числа с фиксированной запятой элемента меню.
+#define MAKE_MENU_VALUE_FIXED(arg_value_fixed)\
+            MenuValueFixed(arg_value_fixed)
+//! Инициализирует перечислимое значение элемента меню.
+#define MAKE_MENU_VALUE_ENUM(arg_current, arg_count, arg_values)\
+            MenuValueEnum(arg_current, arg_count, arg_values)
+//! Инициализирует пользовательское значение элемента меню.
+#define MAKE_MENU_VALUE_CUSTOM(arg_value_custom)\
+            MenuValueCustom(arg_value_custom)
+
+
+//! Обявляет переменную пустого значения элемента меню.
+#define MENU_VALUE_NONE(name)\
+        static MenuValue name(MENU_VALUE_TYPE_NONE)
+//! Обявляет переменную строкового значения элемента меню.
+#define MENU_VALUE_STRING(name, arg_value_string)\
+        static MenuValueString name(arg_value_string)
+//! Обявляет переменную целочисленного значения элемента меню.
+#define MENU_VALUE_INT(name, arg_value_int)\
+        static MenuValueInt name(arg_value_int)
+//! Обявляет переменную логического значения элемента меню.
+#define MENU_VALUE_BOOL(name, arg_value_bool)\
+        static MenuValueBool name(arg_value_bool)
+//! Обявляет переменную значения числа с фиксированной запятой элемента меню.
+#define MENU_VALUE_FIXED(name, arg_value_fixed)\
+        static MenuValueFixed name(arg_value_fixed)
+//! Обявляет переменную перичислимого значения элемента меню.
+#define MENU_VALUE_ENUM(name, arg_current, arg_count, arg_values)\
+        static MenuValueEnum name(arg_current, arg_count, arg_values)
+//! Обявляет переменную пользовательского значения элемента меню.
+#define MENU_VALUE_CUSTOM(name, arg_value_custom)\
+        static MenuValueCustom name(arg_value_custom)
+
+
+#include "parameters_menu.h"
 
 
 #define PARAMS_COLUMNS_COUNT 5
@@ -396,7 +134,10 @@ ParamsModel::ParamsModel(QObject *parent)
     params_menu = new menu_t();
     params_items = new menu_item_t[MENU_DESCRS_COUNT(menu_descrs)];
     menu_make_from_descrs(params_menu, params_items, MENU_DESCRS_COUNT(menu_descrs),
-                                       menu_descrs, MENU_DESCRS_COUNT(menu_descrs));
+                                       menu_descrs, MENU_DESCRS_COUNT(menu_descrs),
+                                       [](const menu_descr_t* descr) -> bool {
+                                            return ((descr->flags & MENU_FLAG_DATA) != 0) || (descr->id == 0);
+                                       });
     setupParams();
 }
 
