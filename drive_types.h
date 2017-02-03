@@ -30,6 +30,9 @@ typedef enum _Param_Flag {
 //! Тип флагов параметров.
 typedef uint32_t param_flags_t;
 
+//! Тип единиц измерения параметров.
+typedef const char* param_units_t;
+
 
 //! Тип значения параметра.
 typedef union _Param_Value {
@@ -46,6 +49,7 @@ typedef struct _Param_Descr {
     param_value_t max;
     param_value_t def;
     param_flags_t flags;
+    param_units_t units;
 } param_descr_t;
 
 //! Начинает список дескрипторов параметров.
@@ -53,8 +57,8 @@ typedef struct _Param_Descr {
         static const param_descr_t arg_name[arg_count] =
 
 //! Описывает дескриптор параметра.
-#define PARAM_DESCR(arg_id, arg_type, arg_min, arg_max, arg_def, arg_flags)\
-        { arg_id, arg_type, arg_min, arg_max, arg_def, arg_flags }
+#define PARAM_DESCR(arg_id, arg_type, arg_min, arg_max, arg_def, arg_flags, arg_units)\
+        { arg_id, arg_type, arg_min, arg_max, arg_def, arg_flags, arg_units }
 
 
 //! Флаги элементов меню.

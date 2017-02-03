@@ -115,6 +115,18 @@ public:
     void setFlags(param_flags_t parameter_flags);
 
     /**
+     * @brief Получает единицу измерения параметра.
+     * @return Единица измерения параметра.
+     */
+    param_units_t units() const;
+
+    /**
+     * @brief Получает единицу измерения параметра.
+     * @param parameter_units Единица измерения параметра.
+     */
+    void setUnits(param_units_t parameter_units);
+
+    /**
      * @brief Получает значение параметра.
      * @return Знчение параметра.
      */
@@ -367,6 +379,7 @@ protected:
     param_type_t param_type;
     param_id_t param_id;
     param_flags_t param_flags;
+    param_units_t param_units;
 
     static float fixed32_to_float(fixed32_t f);
 };

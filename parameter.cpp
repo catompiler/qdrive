@@ -12,6 +12,8 @@ Parameter::Parameter(param_type_t parameter_type)
 
     param_flags = PARAM_FLAG_NONE;
 
+    param_units = nullptr;
+
     switch(parameter_type){
     case PARAM_TYPE_INT:
         param = new ParameterInt();
@@ -46,6 +48,7 @@ Parameter::Parameter(const param_descr_t *parameter_descr)
     :Parameter(parameter_descr->type, parameter_descr->id)
 {
     setFlags(parameter_descr->flags);
+    setUnits(parameter_descr->units);
 
     switch(parameter_descr->type){
     case PARAM_TYPE_INT:
@@ -97,6 +100,16 @@ param_flags_t Parameter::flags() const
 void Parameter::setFlags(param_flags_t parameter_flags)
 {
     param_flags = parameter_flags;
+}
+
+param_units_t Parameter::units() const
+{
+    return param_units;
+}
+
+void Parameter::setUnits(param_units_t parameter_units)
+{
+    param_units = parameter_units;
 }
 
 QVariant Parameter::toVariant() const
