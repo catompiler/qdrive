@@ -27,6 +27,7 @@ SOURCES += main.cpp\
     paramview.cpp \
     future.cpp \
     ../lib/menu/menu.c \
+    ../lib/localization/localization.c \
     paramsmodel.cpp \
     eventsmodel.cpp \
     eventmodel.cpp \
@@ -49,6 +50,7 @@ HEADERS  += mainwindow.h \
     parameters_list.h \
     future.h \
     ../lib/menu/menu.h \
+    ../lib/localization/localization.h \
     paramsmodel.h \
     eventsmodel.h \
     eventmodel.h \
@@ -58,7 +60,11 @@ HEADERS  += mainwindow.h \
     utils.h \
     selectoscsdlg.h \
     paramsdelegate.h \
-    parameters_menu.h
+    parameters_menu.h \
+    translation_en.h \
+    translation_ru.h \
+    translations.h \
+    translations_ids.h
 
 FORMS    += mainwindow.ui \
     settingsdlg.ui \

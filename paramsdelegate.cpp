@@ -11,6 +11,7 @@
 #include <QFont>
 #include <QStyle>
 #include <QSize>
+#include "localization/localization.h"
 
 
 ParamsDelegate::ParamsDelegate(QObject* parent)
@@ -200,7 +201,12 @@ QStringList ParamsDelegate::getMenuValueStringList(menu_value_t* menu_value, siz
 
     for(size_t i = min_index; i < menu_value_enum_count(menu_value); i ++){
         if(menu_value_type(&enum_values[i]) == MENU_VALUE_TYPE_STRING){
-            res_list << tr(menu_value_string(&enum_values[i]));
+            trid_t text_trid = TRID(menu_value_string(&enum_values[i]));
+            if(text_trid){
+                const char* text = localization_translate(text_trid);
+                if(text) res_list << tr(text);
+            }
+            //res_list << tr(menu_value_string(&enum_values[i]));
         }
     }
 

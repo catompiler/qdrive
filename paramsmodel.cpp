@@ -110,6 +110,20 @@ public:
 
 
 #include "parameters_menu.h"
+#include "translations.h"
+
+//! Класс для однократной инициализации локализации для модели параметров.
+class LocInit{
+public:
+    LocInit(){
+        localization_init(trs_main, TRANSLATIONS_COUNT(trs_main));
+        localization_set_default_lang(TR_LANG_ID_RU);
+        localization_set_lang(TR_LANG_ID_RU);
+        localization_set_default_text("НЕТ ПЕРЕВОДА");
+    }
+    ~LocInit(){}
+};
+static LocInit _loc_init;
 
 
 #define PARAMS_COLUMNS_COUNT 5
@@ -175,7 +189,7 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
 
         switch(index.column()){
         case PARAMS_COL_NAME:
-            return QVariant(tr(menu_item_text(item)));
+            return getItemName(item, param);
         case PARAMS_COL_VALUE:
             if(role == Qt::DisplayRole)
                 val_index = param->toUInt();
@@ -198,11 +212,17 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
         menu_value_t* cur_menu_val = &menu_values[val_index];
         if(!cur_menu_val || menu_value_type(cur_menu_val) != MENU_VALUE_TYPE_STRING) return QVariant();
 
-        return  QVariant(tr(menu_value_string(cur_menu_val)));
+        trid_t text_trid = TRID(menu_value_string(cur_menu_val));
+        const char* text = localization_translate(text_trid);
+
+        if(text) return tr(text);
+
+        return QVariant();
+        //return  QVariant(tr(menu_value_string(cur_menu_val)));
     }else{
         switch(index.column()){
         case PARAMS_COL_NAME:
-            return QVariant(tr(menu_item_text(item)));
+            return getItemName(item, param);
         case PARAMS_COL_VALUE:
             if(role == Qt::DisplayRole)
                 res = QVariant(param->toString());
@@ -428,6 +448,26 @@ void ParamsModel::paramsUpdated()
             emit dataChanged(index, index);
         }
     }
+}
+
+QString ParamsModel::getItemName(menu_item_t* item, Parameter* param) const
+{
+    trid_t text_trid = TRID(menu_item_text(item));
+    if(!text_trid) return QString();
+
+    const char* text = localization_translate(text_trid);
+    if(!text) return QString();
+
+    if(param){
+        trid_t units_trid = TRID(param->units());
+        if(units_trid){
+            const char* units = localization_translate(units_trid);
+            if(units){
+                return tr("%1, %2").arg(tr(text)).arg(tr(units));
+            }
+        }
+    }
+    return tr(text);
 }
 
 void ParamsModel::setupParams()

@@ -50,6 +50,7 @@ private:
     menu_t* params_menu;
     menu_item_t* params_items;
 
+    QString getItemName(menu_item_t* item, Parameter* param) const;
     void setupParams();
     void cleanUpParams();
 };
