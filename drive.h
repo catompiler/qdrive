@@ -275,6 +275,11 @@ signals:
     void emergencyStop();
 
     /**
+     * @brief Перезагружает привод.
+     */
+    void reboot();
+
+    /**
      * @brief Устанавливает задание.
      * @param reference Задание.
      */

@@ -135,6 +135,7 @@ void MainWindow::refreshUi()
     ui->pbStart->setEnabled(connected && !running);
     ui->pbStop->setEnabled(connected && running);
     ui->tbEmStop->setEnabled(connected);
+    ui->pbReboot->setEnabled(connected);
     ui->hsReference->setEnabled(connected);
     ui->sbReference->setEnabled(connected);
     ui->pbClearErrs->setEnabled(connected);
@@ -250,6 +251,11 @@ void MainWindow::on_pbStop_clicked()
 void MainWindow::on_tbEmStop_clicked()
 {
     drive->emergencyStop();
+}
+
+void MainWindow::on_pbReboot_clicked()
+{
+    drive->reboot();
 }
 
 void MainWindow::on_sbReference_valueChanged(int value)

@@ -107,9 +107,14 @@ private slots:
     void on_pbStop_clicked();
 
     /**
-     * @brief Обработчик кнопки останова экстренного останова.
+     * @brief Обработчик кнопки экстренного останова.
      */
     void on_tbEmStop_clicked();
+
+    /**
+     * @brief Обработчик кнопки перезагрузки.
+     */
+    void on_pbReboot_clicked();
 
     /**
      * @brief Обработчик изменения значения задания.

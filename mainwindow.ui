@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>656</width>
+    <width>679</width>
     <height>506</height>
    </rect>
   </property>
@@ -46,7 +46,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabSensors">
        <attribute name="title">
@@ -483,100 +483,145 @@
        <attribute name="title">
         <string>Утилиты</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0" rowspan="2">
-         <widget class="QGroupBox" name="gbUserIo">
-          <property name="title">
-           <string>Пользовательское IO</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_13">
-           <item>
-            <widget class="QGroupBox" name="gbDout">
-             <property name="title">
-              <string>Цифровые выхода</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_12">
-              <item>
-               <widget class="QPushButton" name="pbDoutUserOn">
-                <property name="text">
-                 <string>Включить</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pbDoutUserOff">
-                <property name="text">
-                 <string>Выключить</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pbDoutUserToggle">
-                <property name="text">
-                 <string>Переключить</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_10">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <widget class="QGroupBox" name="gbUserIo">
+            <property name="title">
+             <string>Пользовательское IO</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_13">
+             <item>
+              <widget class="QGroupBox" name="gbDout">
+               <property name="title">
+                <string>Цифровые выхода</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <item>
+                 <widget class="QPushButton" name="pbDoutUserOn">
+                  <property name="text">
+                   <string>Включить</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pbDoutUserOff">
+                  <property name="text">
+                   <string>Выключить</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pbDoutUserToggle">
+                  <property name="text">
+                   <string>Переключить</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
-        <item row="0" column="1">
-         <widget class="QGroupBox" name="gbPower">
-          <property name="title">
-           <string>Питание</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_10">
-           <item>
-            <widget class="QPushButton" name="pbCalibrate">
-             <property name="text">
-              <string>Калибровка</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <item>
+           <widget class="QGroupBox" name="gbOther">
+            <property name="title">
+             <string>Прочее</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QPushButton" name="pbSetTime">
+               <property name="text">
+                <string>Уст. время</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pbReboot">
+               <property name="text">
+                <string>Перезагрузка</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>231</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
-        <item row="1" column="1">
-         <widget class="QGroupBox" name="gbOther">
-          <property name="title">
-           <string>Прочее</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <item>
-            <widget class="QPushButton" name="pbSetTime">
-             <property name="text">
-              <string>Уст. время</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QGroupBox" name="gbPower">
+            <property name="title">
+             <string>Питание</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="QPushButton" name="pbCalibrate">
+               <property name="text">
+                <string>Калибровка</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
-        <item row="1" column="2">
+        <item>
          <spacer name="horizontalSpacer_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>260</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="1">
-         <spacer name="verticalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>231</height>
+            <width>136</width>
+            <height>72</height>
            </size>
           </property>
          </spacer>
@@ -592,8 +637,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>656</width>
-     <height>21</height>
+     <width>679</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="mnuFile">

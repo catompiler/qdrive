@@ -55,6 +55,22 @@ QWidget* ParamsDelegate::createEditor(QWidget* parent, const QStyleOptionViewIte
             QDoubleSpinBox* dsb = new QDoubleSpinBox(parent);
             dsb->setSingleStep(0.1);
             dsb->setRange(p->minToFloat(), p->maxToFloat());
+            switch(p->type()){
+            default:
+                break;
+            case PARAM_TYPE_FRACT_10:
+                dsb->setDecimals(1);
+                break;
+            case PARAM_TYPE_FRACT_100:
+                dsb->setDecimals(2);
+                break;
+            case PARAM_TYPE_FRACT_1000:
+                dsb->setDecimals(3);
+                break;
+            case PARAM_TYPE_FRACT_10000:
+                dsb->setDecimals(4);
+                break;
+            }
             return dsb;
             }
             break;

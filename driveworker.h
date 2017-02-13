@@ -235,6 +235,11 @@ public slots:
     void emergencyStopDrive();
 
     /**
+     * @brief Перезагружает привод.
+     */
+    void rebootDrive();
+
+    /**
      * @brief Устанавливает задание.
      * @param reference Задание.
      */

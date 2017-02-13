@@ -98,6 +98,8 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_DOUT_USER_TOGGLE (DRIVE_MODBUS_COILS_START + 8)
 //! Экстренный останов.
 #define DRIVE_MODBUS_COIL_EMERGENCY_STOP (DRIVE_MODBUS_COILS_START + 9)
+//! Перезагрузка.
+#define DRIVE_MODBUS_COIL_REBOOT (DRIVE_MODBUS_COILS_START + 10)
 
 
 // Пользовательские функции и коды.
@@ -567,6 +569,19 @@ void DriveWorker::emergencyStopDrive()
         return;
     }
     emit information(tr("Экстренный останов привода."));
+}
+
+void DriveWorker::rebootDrive()
+{
+    if(!connected_to_device) return;
+
+    int res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_REBOOT, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно перезагрузить привод.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Перезагрузка привода."));
 }
 
 void DriveWorker::setReference(unsigned int reference)
