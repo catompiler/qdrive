@@ -165,7 +165,7 @@ ParamsModel::~ParamsModel()
 QVariant ParamsModel::data(const QModelIndex &index, int role) const
 {
     if(!index.isValid()) return QVariant();
-    if(role != Qt::DisplayRole){
+    if(role != Qt::DisplayRole && role != Qt::ToolTipRole){
         if(role != Qt::EditRole || index.column()!= PARAMS_COL_VALUE){
             return QVariant();
         }
@@ -189,6 +189,8 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
 
         switch(index.column()){
         case PARAMS_COL_NAME:
+            if(role == Qt::ToolTipRole && menu_item_help(item))
+                { return tr(menu_item_help(item)); }
             return getItemName(item, param);
         case PARAMS_COL_VALUE:
             if(role == Qt::DisplayRole)
@@ -222,6 +224,8 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
     }else{
         switch(index.column()){
         case PARAMS_COL_NAME:
+            if(role == Qt::ToolTipRole && menu_item_help(item))
+                { return tr(menu_item_help(item)); }
             return getItemName(item, param);
         case PARAMS_COL_VALUE:
             if(role == Qt::DisplayRole)
