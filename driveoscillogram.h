@@ -159,6 +159,13 @@ public:
      */
     bool load(const QString& filename);
 
+    /**
+     * @brief Сохраняет осциллограмму в файл CSV.
+     * @param filename Имя файла.
+     * @return Флаг успеха.
+     */
+    bool saveCsv(const QString& filename) const;
+
 private:
     //! Идентификатор события осциллограммы.
     drive_event_id_t event_id;
@@ -169,6 +176,11 @@ private:
     static const uint32_t data_file_magic = 0x43534f2e;
     //! Версия файла осциллограмм.
     static const uint32_t data_file_version = 0x100;
+
+    //! Текстовый magic файла осциллограмм.
+    static const char* data_file_magic_csv;
+    //! Текстовая версия файла осциллограмм.
+    static const char* data_file_version_csv;
 };
 
 #endif // DRIVEOSCILLOGRAM_H

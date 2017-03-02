@@ -2,9 +2,18 @@
 #include <QString>
 #include <QFile>
 #include <QDataStream>
+#include <QTextStream>
+#include <QLocale>
+#include <algorithm>
 #include <string.h>
 #include <new>
 
+
+//#define DRIVE_OSC_CSV_EXPORT_SIZE
+
+
+const char* DriveOscillogram::data_file_magic_csv = "OSC";
+const char* DriveOscillogram::data_file_version_csv = "100";
 
 
 DriveOscillogram::DriveOscillogram()
@@ -153,6 +162,74 @@ bool DriveOscillogram::load(const QString& filename)
     file.close();
 
     return ds.status() == QDataStream::Ok;
+}
+
+bool DriveOscillogram::saveCsv(const QString& filename) const
+{
+    static const char* channels_names[DRIVE_POWER_OSC_CHANNELS_COUNT] = {
+        "Ua", "Ub", "Uc", "Ia", "Ib", "Ic", "Urot", "Irot", "Iexc"
+    };
+
+    QFile file(filename);
+
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
+
+    QTextStream ts(&file);
+
+    ts.setLocale(QLocale());
+
+    ts << data_file_magic_csv << ";" << data_file_version_csv << ";"
+       << (uint8_t)event_id << ";" << (uint8_t)channelsCount();
+    ts << "\n";
+
+    if(ts.status() != QTextStream::Ok){
+        file.close();
+        return false;
+    }
+
+    size_t max_size = 0;
+    const Channel* ch = nullptr;
+
+    for(size_t i = 0; i < channelsCount(); i ++){
+
+        if(i != 0) ts << ";";
+
+        if(i < DRIVE_POWER_OSC_CHANNELS_COUNT) ts << channels_names[i];
+    }
+    ts << "\n";
+
+    for(size_t i = 0; i < channelsCount(); i ++){
+#ifdef DRIVE_OSC_CSV_EXPORT_SIZE
+        if(i != 0) ts << ";";
+
+        ch = channel(i);
+
+        ts << (uint32_t)ch->size();
+#endif
+        max_size = std::max(max_size, ch->size());
+    }
+#ifdef DRIVE_OSC_CSV_EXPORT_SIZE
+    ts << "\n";
+#endif
+
+    for(size_t n = 0; n < max_size; n ++){
+
+        if(n != 0) ts << "\n";
+
+        for(size_t i = 0; i < channelsCount(); i ++){
+
+            if(i != 0) ts << ";";
+
+            ch = channel(i);
+
+            if(n < ch->size()) ts << ch->value(n);
+        }
+    }
+    ts << "\n";
+
+    file.close();
+
+    return ts.status() == QTextStream::Ok;
 }
 
 DriveOscillogram::Channel::Channel()

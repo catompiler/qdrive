@@ -20,6 +20,7 @@
 #include <QGridLayout>
 #include <QLayoutItem>
 #include <QString>
+#include <QStringList>
 #include <QItemSelectionModel>
 #include <QFileInfo>
 #include <QSettings>
@@ -462,7 +463,8 @@ void MainWindow::on_pbSaveOsc_clicked()
         return;
     }
 
-    QString filename = QFileDialog::getSaveFileName(this, tr("Сохранение осциллограммы"), Settings::get().lastPath(), tr("Осциллограммы (*.osc)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Сохранение осциллограммы"), Settings::get().lastPath(),
+                                                    tr("Осциллограммы (*.osc);;CSV (*.csv)"));
 
     if(filename.isEmpty()) return;
 
@@ -470,27 +472,57 @@ void MainWindow::on_pbSaveOsc_clicked()
 
     DriveOscillogram osc = drive->oscillogram(static_cast<size_t>(ui->cbOscs->currentIndex()));
 
-    if(!osc.save(filename)){
-        QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка сохранения файла!"));
+    QString ext = filename.right(4).toLower();
+
+    if(ext == ".osc"){
+        if(!osc.save(filename)){
+            QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка сохранения файла осциллограммы!"));
+        }
+    }else if(ext == ".csv"){
+        if(!osc.saveCsv(filename)){
+            QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка сохранения файла csv!"));
+        }
+    }else{
+        QMessageBox::critical(this, tr("Ошибка"), tr("Неизвестный формат осциллограммы!"));
     }
 }
 
 void MainWindow::on_pbReadOsc_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Загрузка осциллограммы"), Settings::get().lastPath(), tr("Осциллограммы (*.osc)"));
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Загрузка осциллограмм"), Settings::get().lastPath(), tr("Осциллограммы (*.osc)"));
 
-    if(filename.isEmpty()) return;
+    if(filenames.isEmpty()) return;
 
-    Settings::get().setLastPath(QFileInfo(filename).path());
+    Settings::get().setLastPath(QFileInfo(filenames.first()).path());
 
-    DriveOscillogram osc;
+    QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                    0, 0, this);
+    progress->setWindowTitle(tr("Чтение файлов осциллограмм"));
+    progress->setModal(true);
+    progress->setRange(0, filenames.size());
+    progress->show();
 
-    if(!osc.load(filename)){
-        QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка загрузки файла!"));
-    }else{
-        drive->addOscillogram(osc);
-        refreshOscsList(static_cast<int>(drive->oscillogramsCount()) - 1);
+    for(int i = 0; i < filenames.size(); i ++){
+
+        progress->setValue(i);
+
+        QApplication::processEvents();
+
+        if(progress->wasCanceled()) break;
+
+        const QString& filename = filenames.at(i);
+
+        DriveOscillogram osc;
+
+        if(!osc.load(filename)){
+            QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка загрузки файла %1!").arg(filename));
+        }else{
+            drive->addOscillogram(osc);
+            refreshOscsList(static_cast<int>(drive->oscillogramsCount()) - 1);
+        }
     }
+
+    progress->close();
 }
 
 void MainWindow::on_pbDoutUserOn_clicked()
