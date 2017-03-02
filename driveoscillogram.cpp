@@ -147,11 +147,11 @@ bool DriveOscillogram::load(const QString& filename)
         ch = channel(i);
 
         ds >> ch_size;
-        if(ch_size != ch->size()){
+        if(ch_size > ch->size()){
             file.close();
             return false;
         }
-        size_to_read = ch->size() * sizeof(float);
+        size_to_read = ch_size * sizeof(float);
         if(ds.readRawData(reinterpret_cast<char*>(ch->data()), size_to_read)
                 != static_cast<int>(size_to_read)){
             file.close();
