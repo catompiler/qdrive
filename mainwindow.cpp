@@ -44,7 +44,8 @@ static ParamItem default_params[] = {
     {"Urot", PARAM_ID_POWER_U_ROT, Qt::blue},
     {"Irot", PARAM_ID_POWER_I_ROT, Qt::blue},
     {"Iexc", PARAM_ID_POWER_I_EXC, Qt::darkMagenta},
-    {"PIDexc", PARAM_ID_DEBUG_6, Qt::black},
+    //{"PIDexc", PARAM_ID_DEBUG_6, Qt::black},
+    //{"PIDrot", PARAM_ID_DEBUG_6, Qt::black},
     //{"Exc Angle", PARAM_ID_DEBUG_2, Qt::magenta}
 };
 
