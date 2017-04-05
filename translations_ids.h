@@ -21,7 +21,9 @@
 //! Проценты.
 #define TR_ID_UNITS_PERCENT 120
 //! Градусы.
-#define TR_ID_UNITS_GRAD 125
+#define TR_ID_UNITS_DEGREE 125
+//! Градусы цельсия.
+#define TR_ID_UNITS_DEGREE_CELSIUS 130
 
 /**
  * Перечисления меню.
@@ -288,29 +290,53 @@
 //! Коэффициент Ifan.
 #define TR_ID_MENU_ADC_VALUE_MULT_Ifan  411
 //! Калибровочные данные.
-#define TR_ID_MENU_CALIBRATION_DATA     420
+#define TR_ID_MENU_ADC_CALIBRATION_DATA     420
 //! Коэффициент Ua.
-#define TR_ID_MENU_CALIBRATION_DATA_Ua    421
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Ua    421
 //! Коэффициент Ub.
-#define TR_ID_MENU_CALIBRATION_DATA_Ub    422
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Ub    422
 //! Коэффициент Uc.
-#define TR_ID_MENU_CALIBRATION_DATA_Uc    423
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Uc    423
 //! Коэффициент Urot.
-#define TR_ID_MENU_CALIBRATION_DATA_Urot  424
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Urot  424
 //! Коэффициент Ia.
-#define TR_ID_MENU_CALIBRATION_DATA_Ia    425
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Ia    425
 //! Коэффициент Ib.
-#define TR_ID_MENU_CALIBRATION_DATA_Ib    426
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Ib    426
 //! Коэффициент Ic.
-#define TR_ID_MENU_CALIBRATION_DATA_Ic    427
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Ic    427
 //! Коэффициент Irot.
-#define TR_ID_MENU_CALIBRATION_DATA_Irot  428
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Irot  428
 //! Коэффициент Iexc.
-#define TR_ID_MENU_CALIBRATION_DATA_Iexc  429
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Iexc  429
 //! Коэффициент Iref.
-#define TR_ID_MENU_CALIBRATION_DATA_Iref  430
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Iref  430
 //! Коэффициент Ifan.
-#define TR_ID_MENU_CALIBRATION_DATA_Ifan  431
+#define TR_ID_MENU_ADC_CALIBRATION_DATA_Ifan  431
+//! Коэффициенты значений.
+#define TR_ID_MENU_VALUE_MULTS  432
+//! Коэффициент Ua.
+#define TR_ID_MENU_VALUE_MULT_Ua    433
+//! Коэффициент Ub.
+#define TR_ID_MENU_VALUE_MULT_Ub    434
+//! Коэффициент Uc.
+#define TR_ID_MENU_VALUE_MULT_Uc    435
+//! Коэффициент Urot.
+#define TR_ID_MENU_VALUE_MULT_Urot  436
+//! Коэффициент Ia.
+#define TR_ID_MENU_VALUE_MULT_Ia    437
+//! Коэффициент Ib.
+#define TR_ID_MENU_VALUE_MULT_Ib    438
+//! Коэффициент Ic.
+#define TR_ID_MENU_VALUE_MULT_Ic    439
+//! Коэффициент Irot.
+#define TR_ID_MENU_VALUE_MULT_Irot  440
+//! Коэффициент Iexc.
+#define TR_ID_MENU_VALUE_MULT_Iexc  441
+//! Коэффициент Iref.
+#define TR_ID_MENU_VALUE_MULT_Iref  442
+//! Коэффициент Ifan.
+#define TR_ID_MENU_VALUE_MULT_Ifan  443
 // //! .
 // #define TR_ID_MENU_
 
@@ -320,6 +346,21 @@
 #define TR_ID_MENU_PHASE_SYNC_ACCURACY  451
 //! Меню ПИД синхронизации с фазами.
 #define TR_ID_MENU_PHASE_SYNC_PID       452
+
+//! Питание.
+#define TR_ID_HELP_POWER            550
+//! Сеть.
+#define TR_ID_HELP_POWER_IN         551
+//! Ном. U сети.
+#define TR_ID_HELP_U_NOM            552
+//! Ном. I сети.
+#define TR_ID_HELP_I_NOM            553
+//! Якорь.
+#define TR_ID_HELP_ROTOR            560
+//! Ном. U якоря.
+#define TR_ID_HELP_U_ROT_NOM        561
+//! Ном. I якоря.
+#define TR_ID_HELP_I_ROT_NOM        562
 
 // /**
 //  * .
@@ -332,6 +373,18 @@
 //  */
 // //!
 // #define TR_ID_
+
+//! Напряжение якоря
+#define TR_ID_HOME_ANCHOR_VOLTAGE 910
+//! Ток якоря
+#define TR_ID_HOME_ANCHOR_CURRENT 920
+//! Ток возбуждения
+#define TR_ID_HOME_EXCITATION_CURRENT 930
+//! Температура радиатора
+#define TR_ID_HOME_RADIATOR_TEMPERATURE 940
+
+//! Заголовок меню
+#define TR_ID_MENU_HEADER_TITLE  1010
 
 #endif /* TRANSLATIONS_IDS_H */
 
