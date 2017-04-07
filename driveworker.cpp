@@ -1296,6 +1296,8 @@ void DriveWorker::update()
 {
     if(!connected_to_device) return;
 
+    timer->start();
+
     int res = 0;
     uint16_t udata = 0;
     uint8_t bits_data = 0;
@@ -1360,8 +1362,6 @@ void DriveWorker::update()
     upd_mutex->unlock();
 
     emit updated();
-
-    timer->start();
 }
 
 void DriveWorker::run()
