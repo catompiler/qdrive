@@ -224,11 +224,14 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
     }else{
         switch(index.column()){
         case PARAMS_COL_NAME:
-            if(role == Qt::ToolTipRole && menu_item_help(item))
-                { return tr(menu_item_help(item)); }
+            if(role == Qt::ToolTipRole && menu_item_help(item)){
+                trid_t help_trid = TRID(menu_item_help(item));
+                const char* help_text = localization_translate(help_trid);
+                return tr(help_text);
+            }
             return getItemName(item, param);
         case PARAMS_COL_VALUE:
-            if(role == Qt::DisplayRole)
+            if(role == Qt::DisplayRole || role == Qt::ToolTipRole)
                 res = QVariant(param->toString());
             else
                 res = param->toVariant();
