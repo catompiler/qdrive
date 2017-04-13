@@ -26,6 +26,11 @@ void SelectOscsDlg::setOscillograms(QList<drive_event_id_t> oscs_list)
         item->setCheckState(Qt::Unchecked);
         ui->lwOscs->addItem(item);
     }
+
+    QPushButton* ok_button = ui->buttonBox->button(QDialogButtonBox::Ok);
+    if(ok_button){
+        ok_button->setEnabled(!oscs_list.empty());
+    }
 }
 
 QList<size_t> SelectOscsDlg::selectedOscillograms() const

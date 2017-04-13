@@ -676,21 +676,25 @@ void MainWindow::selectAndReadOscs()
     selectOscsDlg->setOscillograms(drive->oscillogramsList());
 
     if(selectOscsDlg->exec()){
-        QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
-                                                        0, 0, this);
-        progress->setWindowTitle(tr("Чтение выбранных осциллограмм"));
-        progress->setModal(true);
-        Future* future = drive->readSelectedOscillograms(selectOscsDlg->selectedOscillograms());
+        auto read_list = selectOscsDlg->selectedOscillograms();
 
-        connect(future, &Future::finished, future, &Future::deleteLater);
-        connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
-        connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
-        connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
-        connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
-        connect(future, &Future::finished, future, [this](){
-            refreshOscsList(0);
-        });
+        if(!read_list.empty()){
+            QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
+                                                            0, 0, this);
+            progress->setWindowTitle(tr("Чтение выбранных осциллограмм"));
+            progress->setModal(true);
+            Future* future = drive->readSelectedOscillograms(read_list);
 
-        progress->show();
+            connect(future, &Future::finished, future, &Future::deleteLater);
+            connect(future, &Future::finished, progress, &QProgressDialog::deleteLater);
+            connect(future, &Future::progressRangeChanged, progress, &QProgressDialog::setRange);
+            connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
+            connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
+            connect(future, &Future::finished, future, [this](){
+                refreshOscsList(0);
+            });
+
+            progress->show();
+        }
     }
 }
