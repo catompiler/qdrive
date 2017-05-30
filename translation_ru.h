@@ -111,6 +111,7 @@ TEXT_TR(TR_ID_MENU_CALCULATION, "Вычисления")
 TEXT_TR(TR_ID_MENU_CALC_PHASE_CURRENT, "Вычислять ток для фазы")
 TEXT_TR(TR_ID_MENU_COMMUNICATION, "Коммуникация")
 TEXT_TR(TR_ID_MENU_MODBUS_BAUD, "Скорость Modbus RTU")
+TEXT_TR(TR_ID_MENU_MODBUS_ADDRESS, "Адрес Modbus RTU")
 TEXT_TR(TR_ID_MENU_DIGITAL_INPUTS, "Цифровые входа")
 TEXT_TR(TR_ID_MENU_DIGITAL_OUTPUTS, "Цифровые выхода")
 TEXT_TR(TR_ID_MENU_DIO_TYPE, "Тип")
@@ -171,10 +172,30 @@ TEXT_TR(TR_ID_MENU_PHASE_STATE_PROT, "Состояние фаз")
 TEXT_TR(TR_ID_MENU_PHASES_ANGLES_PROT, "Угол между фазами")
 TEXT_TR(TR_ID_MENU_PHASES_SYNC_PROT, "Синхронизация с фазами")
 TEXT_TR(TR_ID_MENU_ROT_BREAK_PROT, "Обрыв якоря")
+TEXT_TR(TR_ID_MENU_GUI, "Настройки панели (GUI)")
+TEXT_TR(TR_ID_MENU_GUI_TILES, "Плитки")
+TEXT_TR(TR_ID_MENU_GUI_TILE_1, "Плитка 1")
+TEXT_TR(TR_ID_MENU_GUI_TILE_2, "Плитка 2")
+TEXT_TR(TR_ID_MENU_GUI_TILE_3, "Плитка 3")
+TEXT_TR(TR_ID_MENU_GUI_TILE_4, "Плитка 4")          
+TEXT_TR(TR_ID_MENU_GUI_BUZZER, "Звуковое оповещение")
+TEXT_TR(TR_ID_MENU_GUI_PASSWORD_ADMIN, "Пароль администратора")
+TEXT_TR(TR_ID_MENU_GUI_PASSWORD_ROOT, "Пароль ROOT")
+TEXT_TR(TR_ID_MENU_COMMANDS, "Команды")
+TEXT_TR(TR_ID_MENU_CMD_START_STOP, "Старт/Стоп")
+TEXT_TR(TR_ID_MENU_CMD_ENABLE_DRIVE, "Enable drive")
+TEXT_TR(TR_ID_MENU_CMD_SETTINGS_SAVE, "Записать параметры в память")
+TEXT_TR(TR_ID_MENU_CMD_STATE_SAVE, "Записать состояние в память")
+TEXT_TR(TR_ID_MENU_CMD_SETTINGS_DEFAULT, "Уст. настр. по умолч.")  
+TEXT_TR(TR_ID_MENU_CMD_TEST_LEDS, "Проверка светодиодов")  
+        
+TEXT_TR(TR_ID_MENU_STATUS, "Статус привода")
+TEXT_TR(TR_ID_MENU_EVENTS, "История событий")
+TEXT_TR(TR_ID_MENU_MEASUREMENTS, "Измерения")         
 //TEXT_TR(TR_ID_MENU_, "")
 //TEXT_TR(TR_ID_ENUM_, "")
 //TEXT_TR(TR_ID_, "")
-
+    
 // справка меню
 TEXT_TR(TR_ID_HELP_POWER, "Питание")
 TEXT_TR(TR_ID_HELP_POWER_IN, "Номинальное напряжение и ток сети Номинальное напряжение и ток сети Номинальное напряжение и ток сети Номинальное напряжение и ток сети Номинальное напряжение и ток сети")
@@ -184,14 +205,43 @@ TEXT_TR(TR_ID_HELP_ROTOR, "Напряжение и ток якоря")
 TEXT_TR(TR_ID_HELP_U_ROT_NOM, "Номинальное напряжение якоря в вольтах")
 TEXT_TR(TR_ID_HELP_I_ROT_NOM, "Номинальный ток якоря в амперах")
 
+TEXT_TR(TR_ID_ENUM_BUZZER_ON, "Включено")
+TEXT_TR(TR_ID_ENUM_BUZZER_OFF, "Без звука")
+  
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Ua, "Напр. фазы A")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Ia, "Ток фазы A")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Ub, "Напр. фазы B")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Ib, "Ток фазы B") 
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Uc, "Напр. фазы C")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Ic, "Ток фазы C")   
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Urot, "Напр. якоря")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Irot, "Ток якоря")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Iexc, "Ток возб.")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Iref, "Ток 4-20 мА")
+TEXT_TR(TR_ID_ENUM_TILES_DRIVE_POWER_Ifan, "Ток вент.")  
+TEXT_TR(TR_ID_ENUM_HEATSINK_TEMP, "Темп. радиат.") 
+
+//! Напряжения фаз
+TEXT_TR(TR_ID_HOME_PHASE_A_VOLTAGE, "Напряжение\nфазы A")
+TEXT_TR(TR_ID_HOME_PHASE_B_VOLTAGE, "Напряжение\nфазы B")
+TEXT_TR(TR_ID_HOME_PHASE_C_VOLTAGE, "Напряжение\nфазы C")
+//! Токи фаз
+TEXT_TR(TR_ID_HOME_PHASE_A_CURRENT, "Ток фазы A")
+TEXT_TR(TR_ID_HOME_PHASE_B_CURRENT, "Ток фазы B")
+TEXT_TR(TR_ID_HOME_PHASE_C_CURRENT, "Ток фазы C")
+        
 // главный экран
 TEXT_TR(TR_ID_HOME_ANCHOR_VOLTAGE, "Напряжение\nякоря")
 TEXT_TR(TR_ID_HOME_ANCHOR_CURRENT, "Ток\nякоря")
 TEXT_TR(TR_ID_HOME_EXCITATION_CURRENT, "Ток\nвозбуждения")
-TEXT_TR(TR_ID_HOME_RADIATOR_TEMPERATURE, "Температура\nрадиатора")
+TEXT_TR(TR_ID_HOME_HEATSINK_TEMP, "Температура\nрадиатора")
 // меню
 TEXT_TR(TR_ID_MENU_HEADER_TITLE, "Меню")
-
+// запрос пароля
+TEXT_TR(TR_ID_MENU_PASSWORD_REQUEST, "Доступ по паролю:")
+// запрос пароля "Нажмите Esc чтобы выйти"
+TEXT_TR(TR_ID_MENU_PASSWORD_REQUEST_ESC, "Нажмите Esc чтобы выйти") 
+        
 TEXT_TRS_END()
 
 #endif /* TRANSLATION_RU_H */

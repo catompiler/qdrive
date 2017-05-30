@@ -922,6 +922,33 @@
  * Скорость соединения Modbus RTU.
  */
 #define PARAM_ID_MODBUS_BAUD 700
+/**
+ * Адрес устройства Modbus RTU.
+ */
+#define PARAM_ID_MODBUS_ADDRESS 701
+
+/*
+ * Настройки интерфейса панели (GUI)
+ */
+/**
+ * Плитки (выбор отображаемых значений)
+ */
+#define PARAM_ID_GUI_TILE_1 801
+#define PARAM_ID_GUI_TILE_2 802
+#define PARAM_ID_GUI_TILE_3 803
+#define PARAM_ID_GUI_TILE_4 804
+/**
+ * Работа зуммера (звукового оповещения)
+ */
+#define PARAM_ID_GUI_BUZZER 811
+/**
+ * Пароль администратора
+ */
+#define PARAM_ID_GUI_PASSWORD_ADMIN 821
+/**
+ * Пароль рута
+ */
+#define PARAM_ID_GUI_PASSWORD_ROOT 822
 
 /*
  * Отладочные параметры.
@@ -1007,6 +1034,10 @@
  */
 #define PARAM_ID_POWER_I_EXC 1028
 
+/**
+ * Температура радиатора.
+ */
+#define PARAM_ID_HEATSINK_TEMP 1050
 
 #endif	/* PARAMETERS_IDS_H */
 

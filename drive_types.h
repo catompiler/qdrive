@@ -63,11 +63,13 @@ typedef struct _Param_Descr {
 
 //! Флаги элементов меню.
 typedef enum _Menu_Flag {
-    MENU_FLAG_NONE  = 0,
-    MENU_FLAG_DATA  = 1,
-    MENU_FLAG_CMD   = 2,
-    MENU_FLAG_ADMIN = 4,
-    MENU_FLAG_ROOT  = 8
+    MENU_FLAG_NONE  = 0x0,
+    MENU_FLAG_DATA  = 0x1,
+    MENU_FLAG_CMD   = 0x2,
+    MENU_FLAG_EVENTS = 0x4,
+    MENU_FLAG_VALUE = 0x8,
+    MENU_FLAG_ADMIN = 0x10,
+    MENU_FLAG_ROOT  = 0x20
 } menu_flag_t;
 
 
@@ -548,6 +550,15 @@ typedef int16_t osc_value_t;
 
 //! Время канала осциллограммы (1.75 * 2 * 20)
 #define DRIVE_POWER_OSC_CHANNEL_TIME_MS (70)
+
+
+
+// GUI.
+
+//! Список типов плитки (отображаемых значений)
+#define GUI_TILE_TYPES_COUNT 10
+#define GUI_TILE_TYPES_MIN 0
+#define GUI_TILE_TYPES_MAX (GUI_TILE_TYPES_COUNT - 1)
 
 
 #endif // DRIVE_TYPES_H

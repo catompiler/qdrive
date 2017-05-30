@@ -241,6 +241,8 @@
 #define TR_ID_MENU_COMMUNICATION    365
 //! Скорость Modbus RTU.
 #define TR_ID_MENU_MODBUS_BAUD      366
+//! Адрес Modbus RTU.
+#define TR_ID_MENU_MODBUS_ADDRESS   367
 //! Цифровые входа.
 #define TR_ID_MENU_DIGITAL_INPUTS   370
 //! Цифровые выхода.
@@ -367,7 +369,43 @@
 //! Меню защиты от обрыва якоря.
 #define TR_ID_MENU_ROT_BREAK_PROT   470
 
-//! Питание.
+//! Меню интерфейса (GUI)
+#define TR_ID_MENU_GUI              471
+//! Плитки (выбор отображаемых измерений)
+#define TR_ID_MENU_GUI_TILES        472
+#define TR_ID_MENU_GUI_TILE_1        473
+#define TR_ID_MENU_GUI_TILE_2        474
+#define TR_ID_MENU_GUI_TILE_3        475
+#define TR_ID_MENU_GUI_TILE_4        476
+//! Работа зуммера (звукового оповещения)
+#define TR_ID_MENU_GUI_BUZZER       477
+//! Работа зуммера (звукового оповещения)
+#define TR_ID_MENU_GUI_PASSWORD_ADMIN       478
+//! Работа зуммера (звукового оповещения)
+#define TR_ID_MENU_GUI_PASSWORD_ROOT       479
+
+//! Меню Команды
+#define TR_ID_MENU_COMMANDS     480
+//! Старт/стоп
+#define TR_ID_MENU_CMD_START_STOP       482
+//! Enable/drive
+#define TR_ID_MENU_CMD_ENABLE_DRIVE     483 
+//! Сохранить настройки
+#define TR_ID_MENU_CMD_SETTINGS_SAVE    484
+//! Сохранить состояние
+#define TR_ID_MENU_CMD_STATE_SAVE       485 
+//! Настройки по умолчанию
+#define TR_ID_MENU_CMD_SETTINGS_DEFAULT 486
+//! Тест светодиодов
+#define TR_ID_MENU_CMD_TEST_LEDS        487
+
+//! Меню Статус привода
+#define TR_ID_MENU_STATUS 490
+//! История событий
+#define TR_ID_MENU_EVENTS 491
+//! Измерения
+#define TR_ID_MENU_MEASUREMENTS 492
+
 #define TR_ID_HELP_POWER            550
 //! Сеть.
 #define TR_ID_HELP_POWER_IN         551
@@ -382,6 +420,27 @@
 //! Ном. I якоря.
 #define TR_ID_HELP_I_ROT_NOM        562
 
+
+//! Настройки интерфейса
+
+//! Перечисление работы зуммера
+//! Зуммер включен
+#define TR_ID_ENUM_BUZZER_ON        710
+//! Зуммер отключен
+#define TR_ID_ENUM_BUZZER_OFF       711
+
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Ua     720
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Ia     721 
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Ub     722 
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Ib     723 
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Uc     724
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Ic     725     
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Urot   726   
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Irot   727 
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Iexc   728
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Iref   729
+#define TR_ID_ENUM_TILES_DRIVE_POWER_Ifan   730 
+#define TR_ID_ENUM_HEATSINK_TEMP            740
 // /**
 //  * .
 //  */
@@ -394,6 +453,14 @@
 // //!
 // #define TR_ID_
 
+//! Напряжения фаз
+#define TR_ID_HOME_PHASE_A_VOLTAGE 901
+#define TR_ID_HOME_PHASE_B_VOLTAGE 902
+#define TR_ID_HOME_PHASE_C_VOLTAGE 903
+//! Токи фаз
+#define TR_ID_HOME_PHASE_A_CURRENT 906
+#define TR_ID_HOME_PHASE_B_CURRENT 907
+#define TR_ID_HOME_PHASE_C_CURRENT 908
 //! Напряжение якоря
 #define TR_ID_HOME_ANCHOR_VOLTAGE 910
 //! Ток якоря
@@ -401,10 +468,15 @@
 //! Ток возбуждения
 #define TR_ID_HOME_EXCITATION_CURRENT 930
 //! Температура радиатора
-#define TR_ID_HOME_RADIATOR_TEMPERATURE 940
+#define TR_ID_HOME_HEATSINK_TEMP 940
 
 //! Заголовок меню
 #define TR_ID_MENU_HEADER_TITLE  1010
+
+//! Запрос доступа к элементам меню 
+#define TR_ID_MENU_PASSWORD_REQUEST 1012
+//! Сообщение: Нажмите Esc для выхода
+#define TR_ID_MENU_PASSWORD_REQUEST_ESC 1013
 
 #endif /* TRANSLATIONS_IDS_H */
 
