@@ -65,6 +65,18 @@ public:
     drive_state_t state() const;
 
     /**
+     * @brief Получает общее время включения, ч.
+     * @return Общее время включения, ч.
+     */
+    unsigned int devLifetime() const;
+
+    /**
+     * @brief Получает общее время работы, ч.
+     * @return Общее время работы, ч.
+     */
+    unsigned int devRuntime() const;
+
+    /**
      * @brief Получает ошибки.
      * @return Ошибки.
      */

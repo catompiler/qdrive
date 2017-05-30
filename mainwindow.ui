@@ -485,7 +485,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_15">
+         <layout class="QVBoxLayout" name="verticalLayout_14">
           <item>
            <widget class="QGroupBox" name="gbUserIo">
             <property name="title">
@@ -532,8 +532,8 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>20</width>
-              <height>40</height>
+              <width>146</width>
+              <height>33</height>
              </size>
             </property>
            </spacer>
@@ -541,7 +541,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_14">
+         <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
            <widget class="QGroupBox" name="gbOther">
             <property name="title">
@@ -566,23 +566,6 @@
            </widget>
           </item>
           <item>
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>231</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_11">
-          <item>
            <widget class="QGroupBox" name="gbPower">
             <property name="title">
              <string>Питание</string>
@@ -592,6 +575,60 @@
               <widget class="QPushButton" name="pbCalibrate">
                <property name="text">
                 <string>Калибровка</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>48</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <widget class="QGroupBox" name="gbLifeTime">
+            <property name="title">
+             <string>Наработка</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="lblLifeTime">
+               <property name="text">
+                <string>Время включения, ч</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="lblLifeTimeVal">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="lblRunTime">
+               <property name="text">
+                <string>Время работы, ч</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLabel" name="lblRunTimeVal">
+               <property name="text">
+                <string>0</string>
                </property>
               </widget>
              </item>

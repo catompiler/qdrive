@@ -84,6 +84,16 @@ drive_state_t Drive::state() const
     return worker->state();
 }
 
+unsigned int Drive::devLifetime() const
+{
+    return worker->devLifetime();
+}
+
+unsigned int Drive::devRuntime() const
+{
+    return worker->devRuntime();
+}
+
 drive_errors_t Drive::errors() const
 {
     return worker->errors();

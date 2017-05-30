@@ -47,6 +47,7 @@ static ParamItem default_params[] = {
     //{"PIDexc", PARAM_ID_DEBUG_6, Qt::black},
     {"PIDspd", PARAM_ID_DEBUG_6, Qt::black},
     {"PIDrot", PARAM_ID_DEBUG_7, Qt::black},
+    {"Temperature", PARAM_ID_HEATSINK_TEMP, Qt::darkGreen},
     //{"Exc Angle", PARAM_ID_DEBUG_2, Qt::magenta}
 };
 
@@ -180,6 +181,9 @@ void MainWindow::updated()
     ui->hsReference->setValue(drive->reference());
 
     ui->sbReference->blockSignals(false);
+
+    ui->lblLifeTimeVal->setText(QString::number(drive->devLifetime()));
+    ui->lblRunTimeVal->setText(QString::number(drive->devRuntime()));
 
     ui->lblErrsVal->setText(QString("0x%1").arg(drive->errors(), 0, 16));
     ui->lblPhErrsVal->setText(QString("0x%1").arg(drive->phaseErrors(), 0, 16));

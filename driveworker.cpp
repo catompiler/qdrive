@@ -60,6 +60,10 @@ typedef struct _DriveModbusId {
 //! Полуслова ошибок фаз.
 #define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS0 (DRIVE_MODBUS_INPUT_REGS_START + 18)
 #define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 19)
+//! Общее время включения.
+#define DRIVE_MODBUS_INPUT_REG_LIFETIME (DRIVE_MODBUS_INPUT_REGS_START + 30)
+//! Общее время включения.
+#define DRIVE_MODBUS_INPUT_REG_RUNTIME (DRIVE_MODBUS_INPUT_REGS_START + 31)
 // Регистры хранения.
 //! Задание.
 #define DRIVE_MODBUS_HOLD_REG_REFERENCE (DRIVE_MODBUS_HOLD_REGS_START + 0)
@@ -243,6 +247,8 @@ DriveWorker::DriveWorker() : QThread()
     dev_reference = 0;
     dev_running = false;
     dev_state = DRIVE_STATE_IDLE;
+    dev_lifetime = 0;
+    dev_runtime = 0;
     dev_errors = 0;
     dev_warnings = 0;
     dev_power_errors = 0;
@@ -364,6 +370,16 @@ bool DriveWorker::running() const
 drive_state_t DriveWorker::state() const
 {
     return dev_state;
+}
+
+unsigned int DriveWorker::devLifetime() const
+{
+    return dev_lifetime;
+}
+
+unsigned int DriveWorker::devRuntime() const
+{
+    return dev_runtime;
 }
 
 drive_errors_t DriveWorker::errors() const
@@ -1325,6 +1341,22 @@ void DriveWorker::update()
         return;
     }
     dev_state = static_cast<drive_state_t>(udata);
+
+    res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_LIFETIME, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать время включения привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_lifetime = static_cast<unsigned int>(udata);
+
+    res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_RUNTIME, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать время работы привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_runtime = static_cast<unsigned int>(udata);
 
     #define DRIVE_FLAGS_DATA_LEN 10
     uint16_t drive_flags_data[DRIVE_FLAGS_DATA_LEN];
