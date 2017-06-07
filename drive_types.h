@@ -85,7 +85,8 @@ typedef enum _Phase {
 //! Режим возбуждения.
 typedef enum _Drive_Triacs_Exc_Mode {
     DRIVE_TRIACS_EXC_FIXED = 0, //!< Фиксированная подача возбуждения.
-    DRIVE_TRIACS_EXC_REGULATED = 1 //!< Регулирование тока возбуждения.
+    DRIVE_TRIACS_EXC_REGULATED = 1, //!< Регулирование тока возбуждения.
+    DRIVE_TRIACS_EXC_EXTERNAL = 2 //!< Внешнее возбуждение.
 } drive_triacs_exc_mode_t;
 
 

@@ -224,6 +224,22 @@
  * Время охлаждения в эко-режиме.
  */
 #define PARAM_ID_FAN_ECO_COOLING_TIME 1505
+/*
+ * Номинальный ток вентилятора, А.
+ */
+#define PARAM_ID_FAN_I_NOM 1510
+/*
+ * Шум нуля тока вентилятора, А.
+ */
+#define PARAM_ID_FAN_I_ZERO_NOISE 1511
+/**
+ * Время срабатывания защиты вентилятора, мс.
+ */
+#define PARAM_ID_FAN_PROT_TIME 1515
+/**
+ * Значение уровеня предупреждения превышения тока вентилятора, %.
+ */
+#define PARAM_ID_FAN_PROT_OVF_LEVEL 1516
 
 
 /////////////
@@ -336,6 +352,29 @@
 #define PARAM_ID_PROT_PHASES_SYNC_WARN_LATCH_ENABLE 2243
 //! Действие.
 #define PARAM_ID_PROT_PHASES_SYNC_WARN_ACTION 2244
+
+/*
+ * Защита от перегрева.
+ */
+/*
+ * Ошибки.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_HEATSINK_TEMP_FAULT_ENABLED 2250
+//! Значение.
+#define PARAM_ID_PROT_HEATSINK_TEMP_FAULT_VALUE 2251
+//! Действие.
+#define PARAM_ID_PROT_HEATSINK_TEMP_FAULT_ACTION 2252
+/*
+ * Предупреждения.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_HEATSINK_TEMP_WARN_ENABLED 2260
+//! Значение.
+#define PARAM_ID_PROT_HEATSINK_TEMP_WARN_VALUE 2261
+//! Действие.
+#define PARAM_ID_PROT_HEATSINK_TEMP_WARN_ACTION 2262
+
 
 
 /////////////////////
@@ -829,6 +868,10 @@
 ////////////////////////////////////////
 
 /**
+ * Язык интерфейса
+ */
+#define PARAM_ID_GUI_LANGUAGE 6050
+/**
  * Плитки (выбор отображаемых значений)
  */
 #define PARAM_ID_GUI_TILE_1 6101
@@ -893,7 +936,41 @@
 #define PARAM_ID_HEATSINK_TEMP_WARN_MIN     6351
 #define PARAM_ID_HEATSINK_TEMP_WARN_MAX     6352
 #define PARAM_ID_HEATSINK_TEMP_ALARM_MAX    6353
-
+/**
+ * Ток вентилятора.
+ */
+#define PARAM_ID_POWER_I_FAN_ALARM_MIN    6360
+#define PARAM_ID_POWER_I_FAN_WARN_MIN    6361
+#define PARAM_ID_POWER_I_FAN_WARN_MAX    6362
+#define PARAM_ID_POWER_I_FAN_ALARM_MAX    6363
+/**
+ * Ток 4-20.
+ */      
+#define PARAM_ID_POWER_I_REF_ALARM_MIN    6370
+#define PARAM_ID_POWER_I_REF_WARN_MIN    6371
+#define PARAM_ID_POWER_I_REF_WARN_MAX    6372
+#define PARAM_ID_POWER_I_REF_ALARM_MAX    6373
+/**
+ * Обороты вентилятора радиатора.
+ */
+#define PARAM_ID_HEATSINK_FAN_RPM_ALARM_MIN    6380
+#define PARAM_ID_HEATSINK_FAN_RPM_WARN_MIN    6381
+#define PARAM_ID_HEATSINK_FAN_RPM_WARN_MAX    6382
+#define PARAM_ID_HEATSINK_FAN_RPM_ALARM_MAX    6383
+/**
+ * Угол открытия тиристоров.
+ */        
+#define PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE_ALARM_MIN    6390
+#define PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE_WARN_MIN    6391
+#define PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE_WARN_MAX    6392
+#define PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE_ALARM_MAX    6393
+/**
+ * Угол открытия возбуждения.
+ */          
+#define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_ALARM_MIN    6400
+#define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_WARN_MIN    6401
+#define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_WARN_MAX    6402
+#define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_ALARM_MAX    6403
 
 //////////
 // АЦП. //
@@ -1085,6 +1162,14 @@
  * Ток возбуждения.
  */
 #define PARAM_ID_POWER_I_EXC 8108
+/**
+ * Ток 4-20 мА.
+ */
+#define PARAM_ID_POWER_I_REF 8109
+/**
+ * Ток вентилятора.
+ */
+#define PARAM_ID_POWER_I_FAN 8110
 
 /**
  * Температура радиатора.
