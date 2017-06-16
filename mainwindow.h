@@ -218,6 +218,11 @@ private slots:
     void on_pbDoutUserToggle_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки сброса времени работы вентилятора.
+     */
+    void on_tbtnResetFanRunTime_clicked();
+
+    /**
      * @brief Обработчик выделения события.
      * @param current Текущий индекс.
      * @param previous Предыдущий индекс.

@@ -134,6 +134,12 @@ typedef enum _Drive_Regulator_State {
     DRIVE_REGULATOR_STATE_STOP
 } drive_regulator_state_t;
 
+//! Режим регулятора.
+typedef enum _Drive_Regulator_Mode {
+    DRIVE_REGULATOR_MODE_SPEED = 0,  //!< Поддержание скорости (напряжения).
+    DRIVE_REGULATOR_MODE_TORQUE = 1 //!< Поддержание момента (тока).
+} drive_regulator_mode_t;
+
 //! Тип задания.
 typedef ramp_reference_t reference_t;
 //! Минимальное задание.
@@ -557,9 +563,13 @@ typedef int16_t osc_value_t;
 // GUI.
 
 //! Список типов плитки (отображаемых значений)
-#define GUI_TILE_TYPES_COUNT 10
+#define GUI_TILE_TYPES_COUNT 19
 #define GUI_TILE_TYPES_MIN 0
 #define GUI_TILE_TYPES_MAX (GUI_TILE_TYPES_COUNT - 1)
+
+#define GUI_HOME_TILES_WIDTH 2
+#define GUI_HOME_TILES_HEIGHT 2
+#define GUI_HOME_TILES_COUNT (GUI_HOME_TILES_WIDTH * GUI_HOME_TILES_HEIGHT)
 
 
 #endif // DRIVE_TYPES_H

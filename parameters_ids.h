@@ -22,18 +22,46 @@
  * Номинальный фазный ток, А.
  */
 #define PARAM_ID_I_NOM 101
+
+/*
+ * Двигатель.
+ */
+/**
+ * Номинальная мощность двигателя.
+ */
+#define PARAM_ID_MOTOR_P_NOM    200
+/**
+ * Номинальные обороты.
+ */
+#define PARAM_ID_MOTOR_RPM_NOM  201
+/**
+ * Максимальные обороты.
+ */
+#define PARAM_ID_MOTOR_RPM_MAX  202
 /**
  * Номинальное напряжение якоря двигателя, В.
  */
-#define PARAM_ID_U_ROT_NOM 110
+#define PARAM_ID_MOTOR_U_ROT_NOM      210
 /**
  * Номинальный ток якоря двигателя, А.
  */
-#define PARAM_ID_I_ROT_NOM 111
+#define PARAM_ID_MOTOR_I_ROT_NOM      211
 /**
- * Ток возбуждения двигателя, А.
+ * Номинальное напряжение возбуждения двигателя, В.
  */
-#define PARAM_ID_I_EXC 120
+#define PARAM_ID_MOTOR_U_EXC_NOM      212
+/**
+ * Номинальный ток возбуждения двигателя, А.
+ */
+#define PARAM_ID_MOTOR_I_EXC_NOM      213
+/**
+ * Номинальный коэффициент полезного действия.
+ */
+#define PARAM_ID_MOTOR_EFF_NOM        214
+/**
+ * Номинальное сопротивление якоря.
+ */
+#define PARAM_ID_MOTOR_R_ROT_NOM      215
 
 
 ///////////////////////
@@ -45,17 +73,29 @@
  */
 #define PARAM_ID_CALC_PHASE_CURRENT 1100
 
+/**
+ * Регулятор.
+ */
+/**
+ * Режим регулятора.
+ */
+#define PARAM_ID_REGULATOR_MODE 1125
+
 /*
  * Возбуждение.
  */
 /**
- * Фаза возбуждения.
- */
-#define PARAM_ID_EXC_PHASE 1150
-/**
  * Режим возбуждения.
  */
-#define PARAM_ID_EXC_MODE 1151
+#define PARAM_ID_EXC_MODE  1150
+/**
+ * Фаза возбуждения.
+ */
+#define PARAM_ID_EXC_PHASE 1151
+/**
+ * Поддерживаемый ток возбуждения двигателя, А.
+ */
+#define PARAM_ID_I_EXC     1152
 
 /*
  * Рампа.
@@ -872,6 +912,10 @@
  */
 #define PARAM_ID_GUI_LANGUAGE 6050
 /**
+ * Вывод предупреждений на плитке
+ */
+#define PARAM_ID_MENU_GUI_TILE_WARNINGS 6070
+/**
  * Плитки (выбор отображаемых значений)
  */
 #define PARAM_ID_GUI_TILE_1 6101
@@ -971,6 +1015,28 @@
 #define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_WARN_MIN    6401
 #define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_WARN_MAX    6402
 #define PARAM_ID_TRIAC_EXC_OPEN_ANGLE_ALARM_MAX    6403
+
+/////////// Мотор ////////////
+// Вычисленный коэффициент полезного действия.
+#define PARAM_ID_MOTOR_EFF_ALARM_MIN            6410
+#define PARAM_ID_MOTOR_EFF_WARN_MIN             6411
+#define PARAM_ID_MOTOR_EFF_WARN_MAX             6412
+#define PARAM_ID_MOTOR_EFF_ALARM_MAX            6413
+// Вычисленное сопротивление якоря.
+#define PARAM_ID_MOTOR_R_ROT_ALARM_MIN          6420
+#define PARAM_ID_MOTOR_R_ROT_WARN_MIN           6421
+#define PARAM_ID_MOTOR_R_ROT_WARN_MAX           6422
+#define PARAM_ID_MOTOR_R_ROT_ALARM_MAX          6423
+// Вычисленные обороты.
+#define PARAM_ID_MOTOR_RPM_ALARM_MIN            6430
+#define PARAM_ID_MOTOR_RPM_WARN_MIN             6431
+#define PARAM_ID_MOTOR_RPM_WARN_MAX             6432
+#define PARAM_ID_MOTOR_RPM_ALARM_MAX            6433
+// Вычисленный момент.
+#define PARAM_ID_MOTOR_TORQUE_ALARM_MIN         6440
+#define PARAM_ID_MOTOR_TORQUE_WARN_MIN          6441
+#define PARAM_ID_MOTOR_TORQUE_WARN_MAX          6442
+#define PARAM_ID_MOTOR_TORQUE_ALARM_MAX         6443
 
 //////////
 // АЦП. //
@@ -1172,6 +1238,11 @@
 #define PARAM_ID_POWER_I_FAN 8110
 
 /**
+ * Вычисленное напряжение якоря.
+ */
+#define PARAM_ID_POWER_CALC_U_ROT 8150
+
+/**
  * Температура радиатора.
  */
 #define PARAM_ID_HEATSINK_TEMP 8200
@@ -1190,6 +1261,90 @@
  * Угол открытия основных симистора возбуждения.
  */
 #define PARAM_ID_TRIAC_EXC_OPEN_ANGLE 8301
+
+/*
+ * Данные состояния цифровых входов.
+ */
+/**
+ * Состояние цифрового входа 1.
+ */
+#define PARAM_ID_DIGITAL_IN_1_STATE     8351
+/**
+ * Состояние цифрового входа 2.
+ */
+#define PARAM_ID_DIGITAL_IN_2_STATE     8352
+/**
+ * Состояние цифрового входа 3.
+ */
+#define PARAM_ID_DIGITAL_IN_3_STATE     8353
+/**
+ * Состояние цифрового входа 4.
+ */
+#define PARAM_ID_DIGITAL_IN_4_STATE     8354
+/**
+ * Состояние цифрового входа 5.
+ */
+#define PARAM_ID_DIGITAL_IN_5_STATE     8355
+
+/*
+ * Данные состояния цифровых выходов.
+ */
+/**
+ * Состояние цифрового выхода 1.
+ */
+#define PARAM_ID_DIGITAL_OUT_1_STATE     8361
+/**
+ * Состояние цифрового выхода 2.
+ */
+#define PARAM_ID_DIGITAL_OUT_2_STATE     8362
+/**
+ * Состояние цифрового выхода 3.
+ */
+#define PARAM_ID_DIGITAL_OUT_3_STATE     8363
+/**
+ * Состояние цифрового выхода 4.
+ */
+#define PARAM_ID_DIGITAL_OUT_4_STATE     8364
+
+/*
+ * Наработка.
+ */
+/**
+ * Общее время включения.
+ */
+#define PARAM_ID_LIFETIME        8400
+/**
+ * Общее время работы.
+ */
+#define PARAM_ID_RUNTIME         8401
+/**
+ * Общее время работы вентилятора.
+ */
+#define PARAM_ID_FAN_RUNTIME     8402
+/**
+ * Время работы после включения.
+ */
+#define PARAM_ID_LAST_RUNTIME    8403
+
+/*
+ * Мотор.
+ */
+/**
+ * Вычисленный коэффициент полезного действия.
+ */
+#define PARAM_ID_MOTOR_EFF        8450
+/**
+ * Вычисленное сопротивление якоря.
+ */
+#define PARAM_ID_MOTOR_R_ROT      8451
+/**
+ * Вычисленные обороты.
+ */
+#define PARAM_ID_MOTOR_RPM        8452
+/**
+ * Вычисленный момент.
+ */
+#define PARAM_ID_MOTOR_TORQUE     8453
 
 
 ///////////////////////////

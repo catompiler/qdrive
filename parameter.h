@@ -469,9 +469,18 @@ protected:
 };
 
 /**
- * @brief Тип параметра с целочисленным знаковым значением.
+ * @brief Класс параметра с целочисленным знаковым значением.
  */
-typedef ParameterImpl<int> ParameterInt;
+class ParameterInt
+        :public ParameterImpl<int>
+{
+public:
+    ParameterInt() :ParameterImpl<int>() {}
+    ~ParameterInt() {}
+
+    void setRaw(uint16_t val)
+        { value = static_cast<int>(static_cast<int16_t>(val)); }
+};
 
 /**
  * @brief Тип параметра с целочисленным беззнаковым значением.

@@ -33,6 +33,7 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::doutUserOn, worker, &DriveWorker::doutUserOn);
     connect(this, &Drive::doutUserOff, worker, &DriveWorker::doutUserOff);
     connect(this, &Drive::doutUserToggle, worker, &DriveWorker::doutUserToggle);
+    connect(this, &Drive::resetFanRuntime, worker, &DriveWorker::resetFanRuntime);
     connect(this, &Drive::readNextParams, worker, &DriveWorker::readNextParams);
     connect(this, &Drive::writeNextParams, worker, &DriveWorker::writeNextParams);
     connect(this, &Drive::doReadEvents, worker, &DriveWorker::readEvents);
@@ -92,6 +93,16 @@ unsigned int Drive::devLifetime() const
 unsigned int Drive::devRuntime() const
 {
     return worker->devRuntime();
+}
+
+unsigned int Drive::devFanRuntime() const
+{
+    return worker->devFanRuntime();
+}
+
+unsigned int Drive::devLastRuntime() const
+{
+    return worker->devLastRuntime();
 }
 
 drive_errors_t Drive::errors() const

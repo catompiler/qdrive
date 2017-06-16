@@ -12,12 +12,24 @@
 #define TR_ID_UNITS_V 100
 //! Амперы.
 #define TR_ID_UNITS_A 101
+//! Ом.
+#define TR_ID_UNITS_OHM 102
+//! Ом Ω.
+#define TR_ID_UNITS_OHM_SHORT 103
+//! кВт.
+#define TR_ID_UNITS_KW 105
+//! Н•м.
+#define TR_ID_UNITS_TORQUE 106
+//! Н•м (сокр.).
+#define TR_ID_UNITS_TORQUE_SHORT 107
 //! Секунды.
 #define TR_ID_UNITS_S 110
 //! Миллисекунды.
 #define TR_ID_UNITS_MS 111
 //! Микросекунды.
 #define TR_ID_UNITS_US 112
+//! Часы.
+#define TR_ID_UNITS_HOUR 113
 //! Проценты.
 #define TR_ID_UNITS_PERCENT 120
 //! Градусы.
@@ -26,6 +38,8 @@
 #define TR_ID_UNITS_DEGREE_CELSIUS 130
 //! Обороты.
 #define TR_ID_UNITS_RPM 135
+//! Обороты (сокр.).
+#define TR_ID_UNITS_RPM_SHORT 136
 
 /**
  * Перечисления меню.
@@ -124,27 +138,44 @@
  * Меню.
  */
 //! Питание.
-#define TR_ID_MENU_POWER            250
+#define TR_ID_MENU_SUPPLY           250
 //! Сеть.
-#define TR_ID_MENU_POWER_IN         251
+#define TR_ID_MENU_SUPPLY_IN        251
 //! Ном. U сети.
 #define TR_ID_MENU_U_NOM            252
 //! Ном. I сети.
 #define TR_ID_MENU_I_NOM            253
-//! Якорь.
-#define TR_ID_MENU_ROTOR            260
+//! Двигатель.
+#define TR_ID_MENU_MOTOR            260
+//! Ном. мощность.
+#define TR_ID_MENU_MOTOR_P_NOM           261
+//! Ном. обороты.
+#define TR_ID_MENU_MOTOR_RPM_NOM         262
+//! Макс. обороты.
+#define TR_ID_MENU_MOTOR_RPM_MAX         263
 //! Ном. U якоря.
-#define TR_ID_MENU_U_ROT_NOM        261
+#define TR_ID_MENU_MOTOR_U_ROT_NOM  265
 //! Ном. I якоря.
-#define TR_ID_MENU_I_ROT_NOM        262
+#define TR_ID_MENU_MOTOR_I_ROT_NOM  266
+//! Ном. U возбуждения.
+#define TR_ID_MENU_MOTOR_U_EXC_NOM  267
+//! Ном. I возбуждения.
+#define TR_ID_MENU_MOTOR_I_EXC_NOM  268
+//! Ном. КПД.
+#define TR_ID_MENU_MOTOR_EFF_NOM         269
+//! Ном. сопротивление якоря.
+#define TR_ID_MENU_MOTOR_R_ROT_NOM       270
+
+//! Якорь.
+#define TR_ID_MENU_ROTOR            274
 //! Возбуждение.
-#define TR_ID_MENU_EXCITATION       270
+#define TR_ID_MENU_EXCITATION       275
 //! I возбуждения.
-#define TR_ID_MENU_I_EXC            271
+#define TR_ID_MENU_I_EXC            276
 //! Фаза возбуждения.
-#define TR_ID_MENU_EXC_PHASE        272
+#define TR_ID_MENU_EXC_PHASE        277
 //! Режим возбуждения.
-#define TR_ID_MENU_EXC_MODE         273
+#define TR_ID_MENU_EXC_MODE         278
 //! Разгон и торможение.
 #define TR_ID_MENU_RAMP             280
 //! Время разгона 0-100%.
@@ -375,7 +406,9 @@
 #define TR_ID_MENU_HEATSINK_TEMP_PROT 465
 
 //! Меню интерфейса (GUI)
-#define TR_ID_MENU_GUI              471
+#define TR_ID_MENU_GUI              470
+//! Отображение текста ошибок и предупреждений на плитке
+#define TR_ID_MENU_GUI_TILE_WARNINGS    471
 //! Плитки (выбор отображаемых измерений)
 #define TR_ID_MENU_GUI_TILES        472
 #define TR_ID_MENU_GUI_TILE_1        473
@@ -412,6 +445,7 @@
 #define TR_ID_MENU_STATUS 490
 //! История событий
 #define TR_ID_MENU_EVENTS 491
+
 //! Измерения
 #define TR_ID_MENU_MEASUREMENTS 492
 
@@ -430,6 +464,39 @@
 #define TR_ID_MENU_MESS_PARAM_ID_HEATSINK_FAN_RPM               523
 #define TR_ID_MENU_MESS_PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE        524
 #define TR_ID_MENU_MESS_PARAM_ID_TRIAC_EXC_OPEN_ANGLE           525
+/////////// Мотор ////////////
+// Вычисленный коэффициент полезного действия.
+#define TR_ID_MENU_MESS_PARAM_ID_MOTOR_EFF        526
+// Вычисленное сопротивление якоря.
+#define TR_ID_MENU_MESS_PARAM_ID_MOTOR_R_ROT      527
+// Вычисленные обороты.
+#define TR_ID_MENU_MESS_PARAM_ID_MOTOR_RPM        528
+// Вычисленный момент.
+#define TR_ID_MENU_MESS_PARAM_ID_MOTOR_TORQUE     529
+
+// Цифровые входа
+#define TR_ID_MENU_DIGITAL_INPUTS_STATE                 530
+#define TR_ID_MENU_DIGITAL_IN_1_STATE                   531
+#define TR_ID_MENU_DIGITAL_IN_2_STATE                   532
+#define TR_ID_MENU_DIGITAL_IN_3_STATE                   533
+#define TR_ID_MENU_DIGITAL_IN_4_STATE                   534
+#define TR_ID_MENU_DIGITAL_IN_5_STATE                   535
+// Цифровые выхода
+#define TR_ID_MENU_DIGITAL_OUTPUTS_STATE               540
+#define TR_ID_MENU_DIGITAL_OUT_1_STATE                 541
+#define TR_ID_MENU_DIGITAL_OUT_2_STATE                 542
+#define TR_ID_MENU_DIGITAL_OUT_3_STATE                 543
+#define TR_ID_MENU_DIGITAL_OUT_4_STATE                 544
+// Наработка привода
+#define TR_ID_MENU_RUNTIMES                             545
+// Время работы после последнего включения
+#define TR_ID_MENU_LAST_RUNTIME                         546
+// Время работы
+#define TR_ID_MENU_RUNTIME                              547
+// Время работы вентиляторов
+#define TR_ID_MENU_FAN_RUNTIME                          548
+// Время во вкл.состоянии (включая готовность)
+#define TR_ID_MENU_LIFETIME                             549
 
 #define TR_ID_HELP_POWER            550
 //! Сеть.
@@ -470,6 +537,14 @@
 //! Значение уровеня предупреждения превышения тока вентилятора, %.
 #define TR_ID_FAN_PROT_OVF_LEVEL     610
 
+//! Регулятор.
+#define TR_ID_MENU_REGULATOR              650
+//! Режим регулятора.
+#define TR_ID_MENU_REGULATOR_MODE         651
+//! Регулятор скорости.
+#define TR_ID_ENUM_REGULATOR_MODE_SPEED   652
+//! Регулятор момента.
+#define TR_ID_ENUM_REGULATOR_MODE_TORQUE  653
 
 //! Настройки интерфейса
 
@@ -490,13 +565,27 @@
 #define TR_ID_ENUM_TILES_DRIVE_POWER_Iexc   728
 #define TR_ID_ENUM_TILES_DRIVE_POWER_Iref   729
 #define TR_ID_ENUM_TILES_DRIVE_POWER_Ifan   730 
-#define TR_ID_ENUM_HEATSINK_TEMP            740
-#define TR_ID_ENUM_HEATSINK_FAN_RPM         742
-#define TR_ID_ENUM_TRIACS_PAIRS_OPEN_ANGLE  744
-#define TR_ID_ENUM_TRIAC_EXC_OPEN_ANGLE     746
+#define TR_ID_ENUM_TILES_HEATSINK_TEMP            740
+#define TR_ID_ENUM_TILES_HEATSINK_FAN_RPM         741
+#define TR_ID_ENUM_TILES_TRIACS_PAIRS_OPEN_ANGLE  742
+#define TR_ID_ENUM_TILES_TRIAC_EXC_OPEN_ANGLE     743
+#define TR_ID_ENUM_TILES_MOTOR_EFF                744
+#define TR_ID_ENUM_TILES_MOTOR_R_ROT              745
+#define TR_ID_ENUM_TILES_MOTOR_RPM                746
+#define TR_ID_ENUM_TILES_MOTOR_TORQUE             747
+
 //! Языки интерфейса
 #define TR_ID_ENUM_LANGUAGES_RU             750
 #define TR_ID_ENUM_LANGUAGES_EN             751
+//! Состояния цифровых входов/выходов
+#define TR_ID_ENUM_DIGITAL_STATES_ON         760
+#define TR_ID_ENUM_DIGITAL_STATES_OFF        761
+//! Перечисления плиток для выбора отображения текста ошибок и предупреждений
+#define TR_ID_ENUM_GUI_TILE_1               770
+#define TR_ID_ENUM_GUI_TILE_2               771
+#define TR_ID_ENUM_GUI_TILE_3               772
+#define TR_ID_ENUM_GUI_TILE_4               773
+#define TR_ID_ENUM_GUI_TILE_NONE            774
 // /**
 //  * .
 //  */
@@ -535,7 +624,15 @@
 #define TR_ID_HOME_TRIACS_PAIRS_OPEN_ANGLE 944
 //! Угол открытия основных симистора возбуждения.
 #define TR_ID_HOME_TRIAC_EXC_OPEN_ANGLE 946
-        
+/////////// Мотор ////////////
+// Вычисленный коэффициент полезного действия.
+#define TR_ID_HOME_MOTOR_EFF        950
+// Вычисленное сопротивление якоря.
+#define TR_ID_HOME_MOTOR_R_ROT      952
+// Вычисленные обороты.
+#define TR_ID_HOME_MOTOR_RPM        954
+// Вычисленный момент.
+#define TR_ID_HOME_MOTOR_TORQUE     956        
 
 //! Заголовок меню
 #define TR_ID_MENU_HEADER_TITLE  1010
@@ -613,6 +710,58 @@
 #define TR_ID_MENU_GUI_TILE_VALUE_TRIAC_EXC_OPEN_ANGLE_WARN_MIN            1322
 #define TR_ID_MENU_GUI_TILE_VALUE_TRIAC_EXC_OPEN_ANGLE_WARN_MAX            1323
 #define TR_ID_MENU_GUI_TILE_VALUE_TRIAC_EXC_OPEN_ANGLE_ALARM_MAX           1324
+/////////// Мотор //////////// 
+// Вычисленный коэффициент полезного действия.
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_EFF                 1330
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_EFF_ALARM_MIN       1331
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_EFF_WARN_MIN        1332
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_EFF_WARN_MAX        1333
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_EFF_ALARM_MAX       1334
+// Вычисленное сопротивление якоря.
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_R_ROT                   1340
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_R_ROT_ALARM_MIN         1341
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_R_ROT_WARN_MIN          1342
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_R_ROT_WARN_MAX          1343
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_R_ROT_ALARM_MAX         1344
+// Вычисленные обороты. 
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_RPM                     1350
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_RPM_ALARM_MIN           1351
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_RPM_WARN_MIN            1352
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_RPM_WARN_MAX            1353
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_RPM_ALARM_MAX           1354
+// Вычисленный момент.
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_TORQUE                      1360
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_TORQUE_ALARM_MIN            1361
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_TORQUE_WARN_MIN             1362
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_TORQUE_WARN_MAX             1363
+#define TR_ID_MENU_GUI_TILE_VALUE_MOTOR_TORQUE_ALARM_MAX            1364
+
+// Список состояний пуст
+#define TR_ID_MENU_EVENTS_NONE 2001
+// Тип события - Состояние
+#define TR_ID_MENU_EVENT_STATUS 2002
+// Тип события - Предупреждение
+#define TR_ID_MENU_EVENT_WARNING 2003
+// Тип события - Ошибка
+#define TR_ID_MENU_EVENT_ERROR 2004
+// Инициализация
+#define TR_ID_MENU_EVENT_DRIVE_STATE_INIT 2005
+// Калибровка питания.
+#define TR_ID_MENU_EVENT_DRIVE_STATE_CALIBRATION 2006
+// Простой (готовность).
+#define TR_ID_MENU_EVENT_DRIVE_STATE_IDLE 2007
+// Останов.
+#define TR_ID_MENU_EVENT_DRIVE_STATE_STOP 2008
+// Запуск.
+#define TR_ID_MENU_EVENT_DRIVE_STATE_START 2009
+// Работа.
+#define TR_ID_MENU_EVENT_DRIVE_STATE_RUN 2010
+// Останов при ошибке.
+#define TR_ID_MENU_EVENT_DRIVE_STATE_STOP_ERROR 2011
+// Ошибка.
+#define TR_ID_MENU_EVENT_DRIVE_STATE_ERROR 2012
+
+#define TR_ID_MENU_EVENT_DRIVE_REFERENCE_FORMAT 2015
 
 //! Описание ошибок привода
 #define TR_ID_DRIVE_ERROR_POWER_DATA_NOT_AVAIL  2101 //!< Данные питания не поступают с АЦП.
@@ -623,11 +772,15 @@
 #define TR_ID_DRIVE_ERROR_PHASE_SYNC            2106 //!< Ошибка синхронизации фаз.
 #define TR_ID_DRIVE_ERROR_THERMAL_OVERLOAD      2107 //!< Тепловая защита.
 #define TR_ID_DRIVE_ERROR_ROT_BREAK             2108 //!< Обрыв якоря.
+#define TR_ID_DRIVE_ERROR_HEATSINK_TEMP         2109 //!< Перегрев радиатора.
 //! Описание предупреждений привода
 #define TR_ID_DRIVE_WARNING_POWER                     2202 //!< Предупреждение по питанию.
 #define TR_ID_DRIVE_WARNING_PHASE_ANGLE               2203 //!< Ошибка угла между фазами.
 #define TR_ID_DRIVE_WARNING_PHASE_SYNC                2204 //!< Ошибка синхронизации фаз.
 #define TR_ID_DRIVE_WARNING_THERMAL_OVERLOAD          2205 //!< Перегрев.
+#define TR_ID_DRIVE_WARNING_FAN_FAIL                  2206 //!< Ошибка вентилятора
+#define TR_ID_DRIVE_WARNING_HEATSINK_TEMP             2207 //!< Перегрев радиатора
+
 
 #endif /* TRANSLATIONS_IDS_H */
 

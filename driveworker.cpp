@@ -62,8 +62,12 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_INPUT_REG_PHASE_ERRORS1 (DRIVE_MODBUS_INPUT_REGS_START + 19)
 //! Общее время включения.
 #define DRIVE_MODBUS_INPUT_REG_LIFETIME (DRIVE_MODBUS_INPUT_REGS_START + 30)
-//! Общее время включения.
+//! Общее время работы.
 #define DRIVE_MODBUS_INPUT_REG_RUNTIME (DRIVE_MODBUS_INPUT_REGS_START + 31)
+//! Общее время работы вентилятора.
+#define DRIVE_MODBUS_INPUT_REG_FAN_RUNTIME (DRIVE_MODBUS_INPUT_REGS_START + 32)
+//! Время работы после включения.
+#define DRIVE_MODBUS_INPUT_REG_LAST_RUNTIME (DRIVE_MODBUS_INPUT_REGS_START + 33)
 // Регистры хранения.
 //! Задание.
 #define DRIVE_MODBUS_HOLD_REG_REFERENCE (DRIVE_MODBUS_HOLD_REGS_START + 0)
@@ -104,6 +108,8 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_EMERGENCY_STOP (DRIVE_MODBUS_COILS_START + 9)
 //! Перезагрузка.
 #define DRIVE_MODBUS_COIL_REBOOT (DRIVE_MODBUS_COILS_START + 10)
+//! Сброс времени работы вентилятора.
+#define DRIVE_MODBUS_COIL_RESET_FAN_RUNTIME (DRIVE_MODBUS_COILS_START + 11)
 
 
 // Пользовательские функции и коды.
@@ -249,6 +255,8 @@ DriveWorker::DriveWorker() : QThread()
     dev_state = DRIVE_STATE_IDLE;
     dev_lifetime = 0;
     dev_runtime = 0;
+    dev_fan_runtime = 0;
+    dev_last_runtime = 0;
     dev_errors = 0;
     dev_warnings = 0;
     dev_power_errors = 0;
@@ -380,6 +388,16 @@ unsigned int DriveWorker::devLifetime() const
 unsigned int DriveWorker::devRuntime() const
 {
     return dev_runtime;
+}
+
+unsigned int DriveWorker::devFanRuntime() const
+{
+    return dev_fan_runtime;
+}
+
+unsigned int DriveWorker::devLastRuntime() const
+{
+    return dev_last_runtime;
 }
 
 drive_errors_t DriveWorker::errors() const
@@ -1213,6 +1231,21 @@ void DriveWorker::doutUserToggle()
     emit information(tr("Пользовательские выхода переключены."));
 }
 
+void DriveWorker::resetFanRuntime()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_RESET_FAN_RUNTIME, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно сбросить время работы вентилятора привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Время работы вентилятора сброшено."));
+}
+
 void DriveWorker::readNextParams()
 {
     if(!connected_to_device) return;
@@ -1245,11 +1278,13 @@ void DriveWorker::readNextParams()
             if(res == -1){
                 emit errorOccured(tr("Невозможно прочитать параметр с id %1.(%2)")
                                   .arg((*it)->id()).arg(modbus_strerror(errno)));
-                curParams.second->finish();
-                disconnectFromDevice();
-                return;
+                //curParams.second->finish();
+                //disconnectFromDevice();
+                //return;
+                (*it)->applyDefault();
+            }else{
+                (*it)->setRaw(udata);
             }
-            (*it)->setRaw(udata);
             curParams.second->setProgress(++ cur_progress);
         }
         curParams.second->finish();
@@ -1344,7 +1379,7 @@ void DriveWorker::update()
 
     res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_LIFETIME, 1, &udata);
     if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать время включения привода.(%1)").arg(modbus_strerror(errno)));
+        emit errorOccured(tr("Невозможно прочитать общее время включения привода.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
         return;
     }
@@ -1352,11 +1387,27 @@ void DriveWorker::update()
 
     res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_RUNTIME, 1, &udata);
     if(res == -1){
-        emit errorOccured(tr("Невозможно прочитать время работы привода.(%1)").arg(modbus_strerror(errno)));
+        emit errorOccured(tr("Невозможно прочитать общее время работы привода.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
         return;
     }
     dev_runtime = static_cast<unsigned int>(udata);
+
+    res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_FAN_RUNTIME, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать время работы вентилятора привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_fan_runtime = static_cast<unsigned int>(udata);
+
+    res = modbusTry(modbus_read_input_registers, DRIVE_MODBUS_INPUT_REG_LAST_RUNTIME, 1, &udata);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно прочитать время работы привода после включения.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    dev_last_runtime = static_cast<unsigned int>(udata);
 
     #define DRIVE_FLAGS_DATA_LEN 10
     uint16_t drive_flags_data[DRIVE_FLAGS_DATA_LEN];

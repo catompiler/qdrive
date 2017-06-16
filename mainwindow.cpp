@@ -48,8 +48,12 @@ static ParamItem default_params[] = {
     //{"PIDexc", PARAM_ID_DEBUG_6, Qt::black},
     {"PIDspd", PARAM_ID_DEBUG_6, Qt::black},
     {"PIDrot", PARAM_ID_DEBUG_7, Qt::black},
+    {"RPM", PARAM_ID_MOTOR_RPM, Qt::darkBlue},
+    {"Torque", PARAM_ID_MOTOR_TORQUE, Qt::darkBlue},
     {"Temperature", PARAM_ID_HEATSINK_TEMP, Qt::darkGreen},
-    //{"Exc Angle", PARAM_ID_DEBUG_2, Qt::magenta}
+    {"Calc Urot", PARAM_ID_POWER_CALC_U_ROT, Qt::blue},
+    //{"Rrot", PARAM_ID_MOTOR_R_ROT, Qt::darkYellow},
+    //{"Eff", PARAM_ID_MOTOR_EFF, Qt::darkYellow},
 };
 
 #define PARAM_ITEMS_COLS 2
@@ -156,6 +160,7 @@ void MainWindow::refreshUi()
     ui->pbDoutUserOn->setEnabled(connected);
     ui->pbDoutUserOff->setEnabled(connected);
     ui->pbDoutUserToggle->setEnabled(connected);
+    ui->tbtnResetFanRunTime->setEnabled(connected);
 }
 
 void MainWindow::connected()
@@ -185,6 +190,8 @@ void MainWindow::updated()
 
     ui->lblLifeTimeVal->setText(QString::number(drive->devLifetime()));
     ui->lblRunTimeVal->setText(QString::number(drive->devRuntime()));
+    ui->lblFanRunTimeVal->setText(QString::number(drive->devFanRuntime()));
+    ui->lblLastRunTimeVal->setText(QString::number(drive->devLastRuntime()));
 
     ui->lblErrsVal->setText(QString("0x%1").arg(drive->errors(), 0, 16));
     ui->lblPhErrsVal->setText(QString("0x%1").arg(drive->phaseErrors(), 0, 16));
@@ -289,7 +296,7 @@ void MainWindow::on_pbImportParams_clicked()
 
     Settings::get().setLastPath(QFileInfo(filename).path());
 
-    auto params = paramsModel->getParamsHash();
+    auto params = paramsModel->getRealParamsHash();
 
     QSettings settings(filename, QSettings::IniFormat);
 
@@ -324,7 +331,7 @@ void MainWindow::on_pbExportParams_clicked()
 
     Settings::get().setLastPath(QFileInfo(filename).path());
 
-    auto params = paramsModel->getParamsHash();
+    auto params = paramsModel->getRealParamsHash();
 
     QSettings settings(filename, QSettings::IniFormat);
 
@@ -367,7 +374,7 @@ void MainWindow::on_pbReadParams_clicked()
 
 void MainWindow::on_pbWriteParams_clicked()
 {
-    QList<Parameter*> params = paramsModel->getParamsList();
+    QList<Parameter*> params = paramsModel->getRealParamsList();
 
     QProgressDialog* progress = new QProgressDialog(tr("Подождите..."), tr("Прервать"),
                                                     0, params.size(), this);
@@ -545,6 +552,11 @@ void MainWindow::on_pbDoutUserOff_clicked()
 void MainWindow::on_pbDoutUserToggle_clicked()
 {
     drive->doutUserToggle();
+}
+
+void MainWindow::on_tbtnResetFanRunTime_clicked()
+{
+    drive->resetFanRuntime();
 }
 
 void MainWindow::lvEvents_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)

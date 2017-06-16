@@ -150,7 +150,7 @@ ParamsModel::ParamsModel(QObject *parent)
     menu_make_from_descrs(params_menu, params_items, MENU_DESCRS_COUNT(menu_descrs),
                                        menu_descrs, MENU_DESCRS_COUNT(menu_descrs),
                                        [](const menu_descr_t* descr) -> bool {
-                                            return ((descr->flags & MENU_FLAG_DATA) != 0) || (descr->id == 0);
+                                            return ((descr->flags & MENU_FLAG_CMD) == 0) || (descr->id == 0);
                                        });
     setupParams();
 }
@@ -297,8 +297,11 @@ Qt::ItemFlags ParamsModel::flags(const QModelIndex &index) const
 
     if(index.column() == PARAMS_COL_VALUE){
         menu_item_t* item = static_cast<menu_item_t*>(index.internalPointer());
-        if(item && menu_item_user_data(item) != nullptr){
-            return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+        if(item){
+            Parameter* param = static_cast<Parameter*>(menu_item_user_data(item));
+            if(param && !(param->flags() & PARAM_FLAG_VIRTUAL)){
+                return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+            }
         }
     }
     return QAbstractItemModel::flags(index);
@@ -412,6 +415,22 @@ QList<Parameter *> ParamsModel::getParamsList()
     return res_list;
 }
 
+QList<Parameter *> ParamsModel::getRealParamsList()
+{
+    QList<Parameter*> res_list;
+
+    menu_item_t* item = nullptr;
+    Parameter* param = nullptr;
+
+    for(size_t i = 0; i < MENU_DESCRS_COUNT(menu_descrs); i ++){
+        item = &params_items[i];
+        param = static_cast<Parameter*>(menu_item_user_data(item));
+        if(param && !(param->flags() & PARAM_FLAG_VIRTUAL)) res_list.append(param);
+    }
+
+    return res_list;
+}
+
 QHash<param_id_t, Parameter*> ParamsModel::getParamsHash()
 {
     QHash<param_id_t, Parameter*> res_hash;
@@ -423,6 +442,22 @@ QHash<param_id_t, Parameter*> ParamsModel::getParamsHash()
         item = &params_items[i];
         param = static_cast<Parameter*>(menu_item_user_data(item));
         if(param) res_hash.insert(param->id(), param);
+    }
+
+    return res_hash;
+}
+
+QHash<param_id_t, Parameter*> ParamsModel::getRealParamsHash()
+{
+    QHash<param_id_t, Parameter*> res_hash;
+
+    menu_item_t* item = nullptr;
+    Parameter* param = nullptr;
+
+    for(size_t i = 0; i < MENU_DESCRS_COUNT(menu_descrs); i ++){
+        item = &params_items[i];
+        param = static_cast<Parameter*>(menu_item_user_data(item));
+        if(param && !(param->flags() & PARAM_FLAG_VIRTUAL)) res_hash.insert(param->id(), param);
     }
 
     return res_hash;

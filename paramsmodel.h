@@ -37,7 +37,9 @@ public:
     const menu_value_t* menuValue(const QModelIndex& index) const;
 
     QList<Parameter*> getParamsList();
+    QList<Parameter*> getRealParamsList();
     QHash<param_id_t, Parameter*> getParamsHash();
+    QHash<param_id_t, Parameter*> getRealParamsHash();
 
 
 signals:

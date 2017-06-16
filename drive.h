@@ -77,6 +77,18 @@ public:
     unsigned int devRuntime() const;
 
     /**
+     * @brief Получает общее время работы вентилятора, ч.
+     * @return Общее время работы, ч.
+     */
+    unsigned int devFanRuntime() const;
+
+    /**
+     * @brief Получает время работы после включения, ч.
+     * @return Время работы после включения, ч.
+     */
+    unsigned int devLastRuntime() const;
+
+    /**
      * @brief Получает ошибки.
      * @return Ошибки.
      */
@@ -342,6 +354,11 @@ signals:
      * @brief Переключает пользовательские цифровые выхода.
      */
     void doutUserToggle();
+
+    /**
+     * @brief Сбрасывает время работы вентилятора.
+     */
+    void resetFanRuntime();
 
 //private signals:
     /**
