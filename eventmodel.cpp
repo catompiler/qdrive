@@ -29,9 +29,15 @@ static const QString header_names[EVENT_COLUMNS_COUNT] = {
 #define EVENT_ROW_POWER_WARNINGS 13
 #define EVENT_ROW_POWER_ERRORS 14
 #define EVENT_ROW_PHASE_ERRORS 15
+#ifdef USE_ZERO_SENSORS
 #define EVENT_ROW_PHASE_A_TIME 16
 #define EVENT_ROW_PHASE_B_TIME 17
 #define EVENT_ROW_PHASE_C_TIME 18
+#else
+#define EVENT_ROW_PHASE_A_ANGLE 16
+#define EVENT_ROW_PHASE_B_ANGLE 17
+#define EVENT_ROW_PHASE_C_ANGLE 18
+#endif //USE_ZERO_SENSORS
 #define EVENT_ROW_TIME 19
 
 #define EVENT_ROWS_COUNT 20
@@ -52,9 +58,15 @@ static const QString rows_names[EVENT_ROWS_COUNT] = {
     QObject::tr("Предупреждения пит."),
     QObject::tr("Ошибки пит."),
     QObject::tr("Ошибки фаз"),
+#ifdef USE_ZERO_SENSORS
     QObject::tr("Время фазы A"),
     QObject::tr("Время фазы B"),
     QObject::tr("Время фазы C"),
+#else
+    QObject::tr("Угол фазы A"),
+    QObject::tr("Угол фазы B"),
+    QObject::tr("Угол фазы C"),
+#endif //USE_ZERO_SENSORS
     QObject::tr("Время"),
 };
 
@@ -114,12 +126,21 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
         return QString("0x%1").arg(cur_event->powerErrors(), 0, 16);
     case EVENT_ROW_PHASE_ERRORS:
         return QString("0x%1").arg(cur_event->phaseErrors(), 0, 16);
+#ifdef USE_ZERO_SENSORS
     case EVENT_ROW_PHASE_A_TIME:
         return QString("%1").arg(cur_event->phaseTimeA(), 0, 10);
     case EVENT_ROW_PHASE_B_TIME:
         return QString("%1").arg(cur_event->phaseTimeB(), 0, 10);
     case EVENT_ROW_PHASE_C_TIME:
         return QString("%1").arg(cur_event->phaseTimeC(), 0, 10);
+#else
+    case EVENT_ROW_PHASE_A_ANGLE:
+        return QString("%1").arg(cur_event->phaseAngleA(), 0, 10);
+    case EVENT_ROW_PHASE_B_ANGLE:
+        return QString("%1").arg(cur_event->phaseAngleB(), 0, 10);
+    case EVENT_ROW_PHASE_C_ANGLE:
+        return QString("%1").arg(cur_event->phaseAngleC(), 0, 10);
+#endif //USE_ZERO_SENSORS
     case EVENT_ROW_TIME:
         return QDateTime::fromTime_t(cur_event->time(), Qt::UTC, 0).toString("hh:mm:ss dd.MM.yyyy");
     }

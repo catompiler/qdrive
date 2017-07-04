@@ -132,6 +132,8 @@ drive_phase_errors_t DriveEvent::phaseErrors() const
     return event_impl->phase_errors;
 }
 
+#ifdef USE_ZERO_SENSORS
+
 phase_time_t DriveEvent::phaseTimeA() const
 {
     if(!isValid()) return static_cast<phase_time_t>(0);
@@ -152,6 +154,31 @@ phase_time_t DriveEvent::phaseTimeC() const
 
     return event_impl->phase_c_time;
 }
+
+#else
+
+int16_t DriveEvent::phaseAngleA() const
+{
+    if(!isValid()) return static_cast<int16_t>(0);
+
+    return event_impl->phase_a_angle;
+}
+
+int16_t DriveEvent::phaseAngleB() const
+{
+    if(!isValid()) return static_cast<int16_t>(0);
+
+    return event_impl->phase_b_angle;
+}
+
+int16_t DriveEvent::phaseAngleC() const
+{
+    if(!isValid()) return static_cast<int16_t>(0);
+
+    return event_impl->phase_c_angle;
+}
+
+#endif //USE_ZERO_SENSORS
 
 uint32_t DriveEvent::time() const
 {

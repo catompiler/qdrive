@@ -117,6 +117,7 @@ public:
      */
     drive_phase_errors_t phaseErrors() const;
 
+#ifdef USE_ZERO_SENSORS
     /**
      * @brief Получает время фазы A.
      * @return Время фазы A.
@@ -124,16 +125,35 @@ public:
     phase_time_t phaseTimeA() const;
 
     /**
+     * @brief Получает время фазы B.
+     * @return Время фазы B.
+     */
+    phase_time_t phaseTimeB() const;
+
+    /**
      * @brief Получает время фазы C.
      * @return Время фазы C.
      */
     phase_time_t phaseTimeC() const;
+#else
+    /**
+     * @brief Получает время фазы A.
+     * @return Время фазы A.
+     */
+    int16_t phaseAngleA() const;
 
     /**
      * @brief Получает время фазы B.
      * @return Время фазы B.
      */
-    phase_time_t phaseTimeB() const;
+    int16_t phaseAngleB() const;
+
+    /**
+     * @brief Получает время фазы C.
+     * @return Время фазы C.
+     */
+    int16_t phaseAngleC() const;
+#endif
 
     /**
      * @brief Получает время события.
