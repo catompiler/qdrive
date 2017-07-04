@@ -31,7 +31,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabSensors">
        <attribute name="title">
@@ -231,6 +231,17 @@
               <width>100</width>
               <height>0</height>
              </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="tbClearOscs">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="res.qrc">
+              <normaloff>:/images/trash.png</normaloff>:/images/trash.png</iconset>
             </property>
            </widget>
           </item>

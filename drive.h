@@ -218,6 +218,14 @@ public:
     Future* readOscillogramsList();
 
     /**
+     * @brief Очищает считанные осциллограммы.
+     * Возвращаемое будущее должно быть удалено
+     * посредством deleteLater.
+     * @return Будущее.
+     */
+    Future*  clearReadedOscillograms();
+
+    /**
      * @brief Получает строковое представление ошибки привода.
      * @param err Ошибка привода.
      * @return Строковое представление ошибки привода.
@@ -390,6 +398,11 @@ signals:
      * @brief Читает осциллограммы.
      */
     void doReadOscillogramsList(Future* future);
+
+    /**
+     * @brief Очищает прочитанные осциллограммы.
+     */
+    void doClearReadedOscillograms(Future* future);
 
 private:
     /**

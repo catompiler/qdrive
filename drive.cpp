@@ -40,6 +40,7 @@ Drive::Drive(QObject *parent) : QObject(parent)
     connect(this, &Drive::doReadOscillograms, worker, &DriveWorker::readOscillograms);
     connect(this, &Drive::doReadSelectedOscillograms, worker, &DriveWorker::readSelectedOscillograms);
     connect(this, &Drive::doReadOscillogramsList, worker, &DriveWorker::readOscillogramsList);
+    connect(this, &Drive::doClearReadedOscillograms, worker, &DriveWorker::clearReadedOscillograms);
 }
 
 Drive::~Drive()
@@ -240,6 +241,18 @@ Future *Drive::readOscillogramsList()
     connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
 
     emit doReadOscillogramsList(future);
+
+    return future;
+}
+
+Future *Drive::clearReadedOscillograms()
+{
+    Future* future = new Future();
+    future->moveToThread(worker);
+
+    connect(worker, &DriveWorker::finished, future, &Future::deleteLater);
+
+    emit doClearReadedOscillograms(future);
 
     return future;
 }

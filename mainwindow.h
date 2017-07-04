@@ -203,6 +203,11 @@ private slots:
     void on_pbReadOsc_clicked();
 
     /**
+     * @brief Обработчик нажатия кнопки очистки считанных осциллограмм.
+     */
+    void on_tbClearOscs_clicked();
+
+    /**
      * @brief Обработчик нажатия кнопки включения пользовательских цифровых выходов.
      */
     void on_pbDoutUserOn_clicked();

@@ -7,5 +7,6 @@
         <file>qdrive.png</file>
         <file>emergency_stop.png</file>
         <file>reset_value.png</file>
+        <file>trash.png</file>
     </qresource>
 </RCC>

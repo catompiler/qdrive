@@ -52,6 +52,8 @@ static ParamItem default_params[] = {
     {"Torque", PARAM_ID_MOTOR_TORQUE, Qt::darkBlue},
     {"Temperature", PARAM_ID_HEATSINK_TEMP, Qt::darkGreen},
     {"Calc Urot", PARAM_ID_POWER_CALC_U_ROT, Qt::blue},
+    //{"I_c_zero", PARAM_ID_DEBUG_8, Qt::black},
+    {"Triacs opens", PARAM_ID_DEBUG_2, Qt::black},
     //{"Rrot", PARAM_ID_MOTOR_R_ROT, Qt::darkYellow},
     //{"Eff", PARAM_ID_MOTOR_EFF, Qt::darkYellow},
 };
@@ -445,7 +447,7 @@ void MainWindow::on_pbReadAllOscs_clicked()
     connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
     connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
     connect(future, &Future::finished, future, [this](){
-        refreshOscsList(0);
+        refreshOscsList(ui->cbOscs->count());
     });
 
     progress->show();
@@ -537,6 +539,16 @@ void MainWindow::on_pbReadOsc_clicked()
     }
 
     progress->close();
+}
+
+void MainWindow::on_tbClearOscs_clicked()
+{
+    Future* future = drive->clearReadedOscillograms();
+
+    connect(future, &Future::finished, future, &Future::deleteLater);
+    connect(future, &Future::finished, this, [this](){
+        refreshOscsList();
+    });
 }
 
 void MainWindow::on_pbDoutUserOn_clicked()
@@ -708,7 +720,7 @@ void MainWindow::selectAndReadOscs()
             connect(future, &Future::progressChanged, progress, &QProgressDialog::setValue);
             connect(progress, &QProgressDialog::canceled, future, &Future::cancel, Qt::DirectConnection);
             connect(future, &Future::finished, future, [this](){
-                refreshOscsList(0);
+                refreshOscsList(ui->cbOscs->count());
             });
 
             progress->show();

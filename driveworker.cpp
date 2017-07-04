@@ -1111,7 +1111,7 @@ void DriveWorker::readOscillograms(Future *future)
 
     //qDebug() << osc_count;
 
-    readed_osc_list->clear();
+    //readed_osc_list->clear();
 
     DriveOscillogram osc;
 
@@ -1138,7 +1138,7 @@ void DriveWorker::readSelectedOscillograms(Future* future, QList<size_t> osc_lis
 
     //qDebug() << osc_count;
 
-    readed_osc_list->clear();
+    //readed_osc_list->clear();
 
     DriveOscillogram osc;
 
@@ -1182,6 +1182,15 @@ void DriveWorker::readOscillogramsList(Future* future)
         if(future->needCancel()) break;
         future->setProgress(static_cast<int>(index + 1));
     }
+
+    future->finish();
+}
+
+void DriveWorker::clearReadedOscillograms(Future* future)
+{
+    future->start();
+
+    readed_osc_list->clear();
 
     future->finish();
 }

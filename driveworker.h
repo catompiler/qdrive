@@ -321,6 +321,11 @@ public slots:
     void readOscillogramsList(Future* future);
 
     /**
+     * @brief Очищает считанные осциллограммы.
+     */
+    void clearReadedOscillograms(Future* future);
+
+    /**
      * @brief Включает пользовательские цифровые выхода.
      */
     void doutUserOn();
