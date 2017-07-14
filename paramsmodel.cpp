@@ -214,8 +214,7 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
         menu_value_t* cur_menu_val = &menu_values[val_index];
         if(!cur_menu_val || menu_value_type(cur_menu_val) != MENU_VALUE_TYPE_STRING) return QVariant();
 
-        trid_t text_trid = TRID(menu_value_string(cur_menu_val));
-        const char* text = localization_translate(text_trid);
+        const char* text = menu_value_string(cur_menu_val);
 
         if(text) return tr(text);
 
@@ -225,8 +224,8 @@ QVariant ParamsModel::data(const QModelIndex &index, int role) const
         switch(index.column()){
         case PARAMS_COL_NAME:
             if(role == Qt::ToolTipRole && menu_item_help(item)){
-                trid_t help_trid = TRID(menu_item_help(item));
-                const char* help_text = localization_translate(help_trid);
+                const char* help_text = menu_item_help(item);
+                if(!help_text) return QVariant();
                 return tr(help_text);
             }
             return getItemName(item, param);
@@ -494,10 +493,7 @@ void ParamsModel::paramsUpdated()
 
 QString ParamsModel::getItemName(menu_item_t* item, Parameter* param) const
 {
-    trid_t text_trid = TRID(menu_item_text(item));
-    if(!text_trid) return QString();
-
-    const char* text = localization_translate(text_trid);
+    const char* text = menu_item_text(item);
     if(!text) return QString();
 
     if(param){
