@@ -322,6 +322,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_MOTOR_RPM_MAX, "Максимальные обороты", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_U_ROT_NOM, "Номинальное напряжения якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_I_ROT_NOM, "Номинальный ток якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_MOTOR_I_ROT_MAX, "Максимальный ток якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_U_EXC_NOM, "Номинальное напряжение возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_I_EXC_NOM, "Номинальный ток возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_EFF_NOM, "КПД двигателя", NULL, 0, MENU_FLAG_DATA, 0, 0),
