@@ -400,6 +400,13 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_PROT_ROT_BREAK_TIME_MS, "Время отклонения", NULL, 0, MENU_FLAG_DATA, 0, 0),
             MENU_DESCR(2, PARAM_ID_PROT_ROT_BREAK_LATCH_ENABLE, "Защёлка", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
             MENU_DESCR(2, PARAM_ID_PROT_ROT_BREAK_ACTION, "Действие", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_prot_action),
+        // Обрыв измерения напряжения якоря.
+        MENU_DESCR(1, 0, "Обрыв измерения якоря", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_PROT_ROT_MEASURE_BREAK_ENABLED, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+            MENU_DESCR(2, PARAM_ID_PROT_ROT_MEASURE_BREAK_VALUE, "Отклонение", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_PROT_ROT_MEASURE_BREAK_TIME_MS, "Время отклонения", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_PROT_ROT_MEASURE_BREAK_LATCH_ENABLE, "Защёлка", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+            MENU_DESCR(2, PARAM_ID_PROT_ROT_MEASURE_BREAK_ACTION, "Действие", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_prot_action),
         // Защита фаз.
         MENU_DESCR(1, 0, "Защита фаз", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, 0, "Состояние фаз", NULL, 0, 0, 0, 0),
