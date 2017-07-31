@@ -62,6 +62,10 @@
  * Номинальное сопротивление якоря.
  */
 #define PARAM_ID_MOTOR_R_ROT_NOM      215
+/**
+ * Номинальное сопротивление возбуждения.
+ */
+#define PARAM_ID_MOTOR_R_EXC_NOM      216
 
 
 ///////////////////////
@@ -72,6 +76,26 @@
  * Фаза для которой необходимо вычислять ток.
  */
 #define PARAM_ID_CALC_PHASE_CURRENT 1100
+
+/**
+ * Фаза для которой необходимо вычислять напряжение.
+ */
+#define PARAM_ID_CALC_PHASE_VOLTAGE 1101
+
+/**
+ * Необходимость вычисления тока якоря.
+ */
+#define PARAM_ID_CALC_ROT_CURRENT 1105
+
+/**
+ * Необходимость вычисления напряжения якоря.
+ */
+#define PARAM_ID_CALC_ROT_VOLTAGE 1106
+
+/**
+ * Необходимость вычисления тока возбуждения.
+ */
+#define PARAM_ID_CALC_EXC_CURRENT 1107
 
 /**
  * Регулятор.
@@ -415,6 +439,103 @@
 //! Действие.
 #define PARAM_ID_PROT_HEATSINK_TEMP_WARN_ACTION 2262
 
+/*
+ * Защита тиристоров.
+ */
+/*
+ * Уровень предупреждения.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_TRIACS_WARN_ENABLED 2300
+//! Значение минимального угла.
+#define PARAM_ID_PROT_TRIACS_WARN_MIN_ANGLE 2301
+//! Значение минимального тока.
+#define PARAM_ID_PROT_TRIACS_WARN_MIN_CURRENT 2302
+//! Время отклонения, мс.
+#define PARAM_ID_PROT_TRIACS_WARN_TIME_MS 2303
+//! Разрешение защёлки.
+#define PARAM_ID_PROT_TRIACS_WARN_LATCH_ENABLE 2304
+//! Действие.
+#define PARAM_ID_PROT_TRIACS_WARN_ACTION 2305
+
+/*
+ * Защита датчиков.
+ */
+/*
+ * Защита датчиков напряжения сети.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_SENSORS_U_IN_ENABLED 2500
+//! Нижняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_U_IN_ADC_RANGE_MIN 2501
+//! Верхняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_U_IN_ADC_RANGE_MAX 2502
+//! Программное вычисление.
+#define PARAM_ID_PROT_SENSORS_U_IN_EMULATION_ENABLED 2503
+//! Разрешение защёлки.
+#define PARAM_ID_PROT_SENSORS_U_IN_LATCH_ENABLE 2504
+//! Действие.
+#define PARAM_ID_PROT_SENSORS_U_IN_ACTION 2505
+/*
+ * Защита датчиков тока сети.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_SENSORS_I_IN_ENABLED 2510
+//! Нижняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_I_IN_ADC_RANGE_MIN 2511
+//! Верхняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_I_IN_ADC_RANGE_MAX 2512
+//! Программное вычисление.
+#define PARAM_ID_PROT_SENSORS_I_IN_EMULATION_ENABLED 2513
+//! Разрешение защёлки.
+#define PARAM_ID_PROT_SENSORS_I_IN_LATCH_ENABLE 2514
+//! Действие.
+#define PARAM_ID_PROT_SENSORS_I_IN_ACTION 2515
+/*
+ * Защита датчика напряжения якоря.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_SENSORS_U_ROT_ENABLED 2520
+//! Нижняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_U_ROT_ADC_RANGE_MIN 2521
+//! Верхняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_U_ROT_ADC_RANGE_MAX 2522
+//! Программное вычисление.
+#define PARAM_ID_PROT_SENSORS_U_ROT_EMULATION_ENABLED 2523
+//! Разрешение защёлки.
+#define PARAM_ID_PROT_SENSORS_U_ROT_LATCH_ENABLE 2524
+//! Действие.
+#define PARAM_ID_PROT_SENSORS_U_ROT_ACTION 2525
+/*
+ * Защита датчика тока якоря.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_SENSORS_I_ROT_ENABLED 2530
+//! Нижняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_I_ROT_ADC_RANGE_MIN 2531
+//! Верхняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_I_ROT_ADC_RANGE_MAX 2532
+//! Программное вычисление.
+#define PARAM_ID_PROT_SENSORS_I_ROT_EMULATION_ENABLED 2533
+//! Разрешение защёлки.
+#define PARAM_ID_PROT_SENSORS_I_ROT_LATCH_ENABLE 2534
+//! Действие.
+#define PARAM_ID_PROT_SENSORS_I_ROT_ACTION 2535
+/*
+ * Защита датчика тока возбуждения.
+ */
+//! Разрешение.
+#define PARAM_ID_PROT_SENSORS_I_EXC_ENABLED 2540
+//! Нижняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_I_EXC_ADC_RANGE_MIN 2541
+//! Верхняя граница значений АЦП.
+#define PARAM_ID_PROT_SENSORS_I_EXC_ADC_RANGE_MAX 2542
+//! Программное вычисление.
+#define PARAM_ID_PROT_SENSORS_I_EXC_EMULATION_ENABLED 2543
+//! Разрешение защёлки.
+#define PARAM_ID_PROT_SENSORS_I_EXC_LATCH_ENABLE 2544
+//! Действие.
+#define PARAM_ID_PROT_SENSORS_I_EXC_ACTION 2545
 
 
 /////////////////////
@@ -1338,18 +1459,42 @@
  */
 #define PARAM_ID_MOTOR_R_ROT      8451
 /**
+ * Вычисленное сопротивление возбуждения.
+ */
+#define PARAM_ID_MOTOR_R_EXC      8452
+/**
  * Вычисленные обороты.
  */
-#define PARAM_ID_MOTOR_RPM        8452
+#define PARAM_ID_MOTOR_RPM        8455
 /**
  * Вычисленный момент.
  */
-#define PARAM_ID_MOTOR_TORQUE     8453
+#define PARAM_ID_MOTOR_TORQUE     8456
 
 
 ///////////////////////////
 // Отладочные параметры. //
 ///////////////////////////
+
+/*
+ * ПИД
+ */
+/**
+ * ПИД синхронизации с фазами.
+ */
+#define PARAM_ID_PID_PHASE_SYNC 9050
+/**
+ * ПИД регулятора тока возбуждения.
+ */
+#define PARAM_ID_PID_EXC_CURRENT 9051
+/**
+ * ПИД регулятора скорости.
+ */
+#define PARAM_ID_PID_ROT_SPEED 9052
+/**
+ * ПИД регулятора тока якоря.
+ */
+#define PARAM_ID_PID_ROT_CURRENT 9053
 
 /**
  * Отладочный параметр 0
