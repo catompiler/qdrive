@@ -289,7 +289,7 @@ MENU_DESCRS(menu_descrs) {
         // Тепловая защита.
         MENU_DESCR(1, 0, "Тепловая защита", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ENABLE, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
-            MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_6I, "Время срабатывания при перегрузе 6х", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_2I, "Время срабатывания при перегрузе 2х", NULL, 0, MENU_FLAG_DATA, 0, 0),
             MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ACTION, "Действие", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_prot_action),
         // Грибок.
         MENU_DESCR(1, 0, "Экстренный останов", NULL, 0, 0, 0, 0),
