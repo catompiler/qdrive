@@ -219,6 +219,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_MOTOR_EFF_NOM, "КПД двигателя", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_ROT_NOM, "Сопротивление якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_EXC_NOM, "Сопротивление возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_MOTOR_R_WIRES, "Сопротивление проводов", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
     // Возбуждение.
     MENU_DESCR(0, 0, "Возбуждение", NULL, 0, 0, 0, 0),
