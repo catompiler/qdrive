@@ -167,6 +167,8 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_POWER_I_EXC, "Ток возбуждения", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_POWER_I_FAN, "Ток вентилятора", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_POWER_I_REF, "Ток 4-20 мА", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_POWER_U_WIRES, "Напряжение на проводах", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_POWER_U_ROT_WIRES, "Напряжение якоря с учётом проводов", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_HEATSINK_TEMP, "Температура радиатора", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_HEATSINK_FAN_RPM, "Обороты вентилятора", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE, "Угол открытия тиристоров", NULL, 0, MENU_FLAG_VALUE, 0, 0),
