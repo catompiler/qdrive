@@ -251,6 +251,7 @@ MENU_DESCRS(menu_descrs) {
     // Регулятор.
     MENU_DESCR(0, 0, "Регулятор", NULL, 0, 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_REGULATOR_MODE, "Режим", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_regulator_mode),
+        MENU_DESCR(1, PARAM_ID_REGULATOR_IR_COMPENSATION, "IR-компенсация", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
         // ПИД.
         MENU_DESCR(1, 0, "ПИД", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, 0, "Регулятор скорости", NULL, 0, 0, 0, 0),

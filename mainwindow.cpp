@@ -53,6 +53,8 @@ static ParamItem default_params[] = {
     {"Torque", PARAM_ID_MOTOR_TORQUE, Qt::darkBlue},
     {"Temperature", PARAM_ID_HEATSINK_TEMP, Qt::darkGreen},
     {"Urot_wires", PARAM_ID_POWER_U_ROT_WIRES, Qt::blue},
+    {"PCA resets", PARAM_ID_DEBUG_2, Qt::black},
+    {"LM75 resets", PARAM_ID_DEBUG_3, Qt::black},
     //{"I_c_zero", PARAM_ID_DEBUG_8, Qt::black},
     //{"Rrot", PARAM_ID_MOTOR_R_ROT, Qt::darkYellow},
     //{"Eff", PARAM_ID_MOTOR_EFF, Qt::darkYellow},
