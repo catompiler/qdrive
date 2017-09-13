@@ -785,6 +785,19 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iexc, "Множитель Iexc", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iref, "Множитель Iref", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ifan, "Множитель Ifan", NULL, 0, MENU_FLAG_DATA, 0, 0),
+    // Усреднение значений.
+    MENU_DESCR(0, 0, "Время усреднения значений", NULL, 0, 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ua, "Время усреднения Ua", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ub, "Время усреднения Ub", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Uc, "Время усреднения Uc", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Urot, "Время усреднения Urot", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ia, "Время усреднения Ia", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ib, "Время усреднения Ib", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ic, "Время усреднения Ic", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Irot, "Время усреднения Irot", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Iexc, "Время усреднения Iexc", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Iref, "Время усреднения Iref", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ifan, "Время усреднения Ifan", NULL, 0, MENU_FLAG_DATA, 0, 0),
     //MENU_DESCR(0, 0, "", NULL, 0, 0, 0, 0)
 };
 
