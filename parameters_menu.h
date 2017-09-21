@@ -168,14 +168,17 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_POWER_I_FAN, "Ток вентилятора", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_POWER_I_REF, "Ток 4-20 мА", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_POWER_U_WIRES, "Напряжение на проводах", NULL, 0, MENU_FLAG_VALUE, 0, 0),
-            MENU_DESCR(2, PARAM_ID_POWER_U_ROT_WIRES, "Напряжение якоря с учётом проводов", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_MOTOR_E, "ЭДС двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_HEATSINK_TEMP, "Температура радиатора", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_HEATSINK_FAN_RPM, "Обороты вентилятора", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_ANGLE, "Угол открытия тиристоров", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_ANGLE, "Угол открытия симистора возбуждения", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             // Мотор
             MENU_DESCR(2, PARAM_ID_MOTOR_EFF, "КПД двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_MOTOR_E_NOM, "Номинальная ЭДС", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_MOTOR_M_NOM, "Номинальный момент", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_MOTOR_R_ROT, "Сопротивление якоря", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_MOTOR_L_ROT, "Индуктивность якоря", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_MOTOR_R_EXC, "Сопротивление возбуждения", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_MOTOR_RPM, "Обороты двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_MOTOR_TORQUE, "Момент двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
@@ -213,6 +216,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_MOTOR_P_NOM, "Номинальная мощность", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_RPM_NOM, "Номинальные обороты", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_RPM_MAX, "Максимальные обороты", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_MOTOR_POLES, "Число полюсов", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_U_ROT_NOM, "Номинальное напряжения якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_I_ROT_NOM, "Номинальный ток якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_I_ROT_MAX, "Максимальный ток якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
@@ -220,6 +224,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_MOTOR_I_EXC_NOM, "Номинальный ток возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_EFF_NOM, "КПД двигателя", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_ROT_NOM, "Сопротивление якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_MOTOR_L_ROT_NOM, "Индуктивность якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_EXC_NOM, "Сопротивление возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_WIRES, "Сопротивление проводов", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
@@ -785,6 +790,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iexc, "Множитель Iexc", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Iref, "Множитель Iref", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Ifan, "Множитель Ifan", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_VALUE_MULTIPLIER_Erot, "Множитель Erot", NULL, 0, MENU_FLAG_DATA, 0, 0),
     // Усреднение значений.
     MENU_DESCR(0, 0, "Время усреднения значений", NULL, 0, 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ua, "Время усреднения Ua", NULL, 0, MENU_FLAG_DATA, 0, 0),
@@ -798,6 +804,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Iexc, "Время усреднения Iexc", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Iref, "Время усреднения Iref", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ifan, "Время усреднения Ifan", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Erot, "Время усреднения Erot", NULL, 0, MENU_FLAG_DATA, 0, 0),
     //MENU_DESCR(0, 0, "", NULL, 0, 0, 0, 0)
 };
 
