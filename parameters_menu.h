@@ -805,6 +805,8 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Iref, "Время усреднения Iref", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Ifan, "Время усреднения Ifan", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_Erot, "Время усреднения Erot", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_RPM, "Время усреднения оборотов", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_AVERAGING_TIME_TORQUE, "Время усреднения момента", NULL, 0, MENU_FLAG_DATA, 0, 0),
     //MENU_DESCR(0, 0, "", NULL, 0, 0, 0, 0)
 };
 
