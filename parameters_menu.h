@@ -32,6 +32,11 @@ MENU_VALUES(menu_enum_regulator_mode,
     MAKE_MENU_VALUE_STRING("Поддержание скорости"),
     MAKE_MENU_VALUE_STRING("Поддержание момента")
 );
+//! Перечисление режима перегруза.
+MENU_VALUES(menu_enum_overload_mode,
+    MAKE_MENU_VALUE_STRING("Нормальный"),
+    MAKE_MENU_VALUE_STRING("Тепловой")
+);
 //! Перечисление режима возбуждения.
 MENU_VALUES(menu_enum_exc_mode,
     MAKE_MENU_VALUE_STRING("Фиксированное"),
@@ -133,6 +138,7 @@ MENU_VALUE_ENUM(menu_val_phase, 0, MENU_ENUM_LEN(menu_enum_phases), menu_enum_ph
 MENU_VALUE_ENUM(menu_val_bool, 0, MENU_ENUM_LEN(menu_enum_bool), menu_enum_bool);
 MENU_VALUE_ENUM(menu_val_exc_mode, 0, MENU_ENUM_LEN(menu_enum_exc_mode), menu_enum_exc_mode);
 MENU_VALUE_ENUM(menu_val_regulator_mode, 0, MENU_ENUM_LEN(menu_enum_regulator_mode), menu_enum_regulator_mode);
+MENU_VALUE_ENUM(menu_val_overload_mode, 0, MENU_ENUM_LEN(menu_enum_overload_mode), menu_enum_overload_mode);
 MENU_VALUE_ENUM(menu_val_stop_mode, 0, MENU_ENUM_LEN(menu_enum_stop_mode), menu_enum_stop_mode);
 MENU_VALUE_ENUM(menu_val_prot_action, 0, MENU_ENUM_LEN(menu_enum_prot_action), menu_enum_prot_action);
 MENU_VALUE_ENUM(menu_val_dio_in_type, 0, MENU_ENUM_LEN(menu_enum_dio_in_type), menu_enum_dio_in_type);
@@ -257,6 +263,14 @@ MENU_DESCRS(menu_descrs) {
     MENU_DESCR(0, 0, "Регулятор", NULL, 0, 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_REGULATOR_MODE, "Режим", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_regulator_mode),
         MENU_DESCR(1, PARAM_ID_REGULATOR_IR_COMPENSATION, "IR-компенсация", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+        MENU_DESCR(1, 0, "Перегруз", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_ENABLED, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_MODE, "Режим", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_overload_mode),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_BASE_CURRENT, "Продолжительный ток", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_MAX_CURRENT, "Ток перегрузки", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_TIME, "Время перегруза", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_PERIOD, "Период перегруза", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_REGULATOR_OVERLOAD_DEAD_ZONE, "Зона нечувствительности", NULL, 0, MENU_FLAG_DATA, 0, 0),
         // ПИД.
         MENU_DESCR(1, 0, "ПИД", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, 0, "Регулятор скорости", NULL, 0, 0, 0, 0),
@@ -300,6 +314,7 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ENABLE, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
             MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_TIME_2I, "Время срабатывания при перегрузе 2х", NULL, 0, MENU_FLAG_DATA, 0, 0),
             MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ACTION, "Действие", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_prot_action),
+            MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_DEAD_ZONE, "Зона нечувствительности", NULL, 0, MENU_FLAG_DATA, 0, 0),
         // Грибок.
         MENU_DESCR(1, 0, "Экстренный останов", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_EMERGENCY_STOP_ACTION, "Действие", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_prot_action),
