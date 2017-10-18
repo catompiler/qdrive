@@ -294,6 +294,15 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_PHASES_CHECK_TIME, "Время ожидания сети", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_ZERO_SENSOR_TIME, "Время срабатывания датчиков нуля", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
+        MENU_DESCR(1, 0, "Самозапуск", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_SELFSTART_ENABLED, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+            MENU_DESCR(2, PARAM_ID_SELFSTART_PERIOD, "Период", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_SELFSTART_DELAY, "Задержка", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_SELFSTART_CLEAR_ERRORS_ENABLED, "Очищать ошибки", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+            MENU_DESCR(2, PARAM_ID_SELFSTART_CLEAR_ERRORS_ATTEMPTS, "Попытки очистки", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_SELFSTART_CLEAR_ERRORS_PERIOD, "Период очистки", NULL, 0, MENU_FLAG_DATA, 0, 0),
+
+
     // Тиристоры.
     MENU_DESCR(0, 0, "Тиристоры", NULL, 0, 0, 0, 0),
         MENU_DESCR(1, 0, "Время открытия", NULL, 0, 0, 0, 0),
