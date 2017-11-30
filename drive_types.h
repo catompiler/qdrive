@@ -562,7 +562,7 @@ typedef int16_t osc_value_t;
 #define DRIVE_POWER_OSC_CHANNEL_SIZE (DRIVE_POWER_OSC_CHANNEL_LEN * sizeof(osc_value_t))
 
 //! Время канала осциллограммы (3.5 * 2 * 20)
-#define DRIVE_POWER_OSC_CHANNEL_TIME_MS (140)
+#define DRIVE_POWER_OSC_CHANNEL_TIME_MS (70)
 
 
 

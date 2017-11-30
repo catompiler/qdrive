@@ -345,6 +345,11 @@ public slots:
      */
     void resetFanRuntime();
 
+    /**
+     * @brief Запускает самонастройку.
+     */
+    void selftune();
+
 private slots:
 
     /**

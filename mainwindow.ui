@@ -522,6 +522,22 @@
            </widget>
           </item>
           <item>
+           <widget class="QGroupBox" name="gbTune">
+            <property name="title">
+             <string>Тюнинг</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_17">
+             <item>
+              <widget class="QPushButton" name="pbSelftune">
+               <property name="text">
+                <string>Самонастройка</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_6">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -716,7 +732,7 @@
      <x>0</x>
      <y>0</y>
      <width>697</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="mnuFile">
@@ -738,9 +754,16 @@
     <addaction name="actConnect"/>
     <addaction name="actDisconnect"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>&amp;Утилиты</string>
+    </property>
+    <addaction name="actMakeStatusEvent"/>
+   </widget>
    <addaction name="mnuFile"/>
    <addaction name="mnuPref"/>
    <addaction name="mnuConnect"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QToolBar" name="fileToolBar">
    <property name="enabled">
@@ -1082,6 +1105,18 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actMakeStatusEvent">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/images/oscillogram_make.png</normaloff>:/images/oscillogram_make.png</iconset>
+   </property>
+   <property name="text">
+    <string>За&amp;фиксировать состояние</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>

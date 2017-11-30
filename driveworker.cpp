@@ -110,6 +110,8 @@ typedef struct _DriveModbusId {
 #define DRIVE_MODBUS_COIL_REBOOT (DRIVE_MODBUS_COILS_START + 10)
 //! Сброс времени работы вентилятора.
 #define DRIVE_MODBUS_COIL_RESET_FAN_RUNTIME (DRIVE_MODBUS_COILS_START + 11)
+//! Самонастройка.
+#define DRIVE_MODBUS_COIL_SELFTUNE (DRIVE_MODBUS_COILS_START + 12)
 
 
 // Пользовательские функции и коды.
@@ -1253,6 +1255,21 @@ void DriveWorker::resetFanRuntime()
         return;
     }
     emit information(tr("Время работы вентилятора сброшено."));
+}
+
+void DriveWorker::selftune()
+{
+    if(!connected_to_device) return;
+
+    int res = 0;
+
+    res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_SELFTUNE, 1);
+    if(res == -1){
+        emit errorOccured(tr("Невозможно запустить самонастройку привода.(%1)").arg(modbus_strerror(errno)));
+        disconnectFromDevice();
+        return;
+    }
+    emit information(tr("Самонастройка привода запущена."));
 }
 
 void DriveWorker::readNextParams()

@@ -178,6 +178,11 @@ private slots:
     void on_pbMakeStatusEvent_clicked();
 
     /**
+     * @brief Обработчик действия создания события состояния.
+     */
+    void on_actMakeStatusEvent_triggered();
+
+    /**
      * @brief Обработчик нажатия кнопки установки времени.
      */
     void on_pbSetTime_clicked();
@@ -226,6 +231,11 @@ private slots:
      * @brief Обработчик нажатия кнопки сброса времени работы вентилятора.
      */
     void on_tbtnResetFanRunTime_clicked();
+
+    /**
+     * @brief Обработчик нажатия кнопки запуска самонастройки.
+     */
+    void on_pbSelftune_clicked();
 
     /**
      * @brief Обработчик выделения события.

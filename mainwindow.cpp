@@ -53,11 +53,13 @@ static ParamItem default_params[] = {
     {"Temperature", PARAM_ID_HEATSINK_TEMP, Qt::darkGreen},
     //{"Calc Urot", PARAM_ID_POWER_CALC_U_ROT, Qt::blue},
     //{"Erot", PARAM_ID_MOTOR_E, Qt::blue},
-    //{"PCA resets", PARAM_ID_DEBUG_2, Qt::black},
-    //{"LM75 resets", PARAM_ID_DEBUG_3, Qt::black},
+    {"PCA resets", PARAM_ID_DEBUG_2, Qt::black},
+    {"LM75 resets", PARAM_ID_DEBUG_3, Qt::black},
     //{"I_c_zero", PARAM_ID_DEBUG_8, Qt::black},
     //{"Rrot", PARAM_ID_MOTOR_R_ROT, Qt::darkYellow},
     //{"Eff", PARAM_ID_MOTOR_EFF, Qt::darkYellow},
+    {"Iter time", PARAM_ID_DEBUG_0, Qt::black},
+    {"Adc time", PARAM_ID_DEBUG_1, Qt::black},
 };
 
 #define PARAM_ITEMS_COLS 2
@@ -153,6 +155,8 @@ void MainWindow::refreshUi()
     ui->sbReference->setEnabled(connected);
     ui->pbClearErrs->setEnabled(connected);
     ui->pbClearEvents->setEnabled(connected);
+    ui->pbMakeStatusEvent->setEnabled(connected);
+    ui->actMakeStatusEvent->setEnabled(connected);
     ui->pbCalibrate->setEnabled(connected && !running);
     ui->pbReadParams->setEnabled(connected);
     ui->pbWriteParams->setEnabled(connected);
@@ -165,6 +169,7 @@ void MainWindow::refreshUi()
     ui->pbDoutUserOff->setEnabled(connected);
     ui->pbDoutUserToggle->setEnabled(connected);
     ui->tbtnResetFanRunTime->setEnabled(connected);
+    ui->pbSelftune->setEnabled(connected && !running);
 }
 
 void MainWindow::connected()
@@ -179,17 +184,8 @@ void MainWindow::disconnected()
 
 void MainWindow::updated()
 {
-    bool connected = drive->connectedToDevice();
-    bool running = drive->running();
-
-    ui->pbCalibrate->setEnabled(connected && !running);
-
     ui->sbReference->blockSignals(true);
-
-    ui->pbStart->setEnabled(!running);
-    ui->pbStop->setEnabled(running);
     ui->hsReference->setValue(drive->reference());
-
     ui->sbReference->blockSignals(false);
 
     ui->lblLifeTimeVal->setText(QString::number(drive->devLifetime()));
@@ -203,6 +199,8 @@ void MainWindow::updated()
 
     ui->lblWarnsVal->setText(QString("0x%1").arg(drive->warnings(), 0, 16));
     ui->lblPwrWarnsVal->setText(QString("0x%1").arg(drive->powerWarnings(), 0, 16));
+
+    refreshUi();
 }
 
 void MainWindow::errorOccured(const QString &error_text)
@@ -430,6 +428,11 @@ void MainWindow::on_pbMakeStatusEvent_clicked()
     drive->makeStatusEvent();
 }
 
+void MainWindow::on_actMakeStatusEvent_triggered()
+{
+    drive->makeStatusEvent();
+}
+
 void MainWindow::on_pbSetTime_clicked()
 {
     drive->setDateTime(QDateTime::currentDateTime());
@@ -571,6 +574,11 @@ void MainWindow::on_pbDoutUserToggle_clicked()
 void MainWindow::on_tbtnResetFanRunTime_clicked()
 {
     drive->resetFanRuntime();
+}
+
+void MainWindow::on_pbSelftune_clicked()
+{
+    drive->selftune();
 }
 
 void MainWindow::lvEvents_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)

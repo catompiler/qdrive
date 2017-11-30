@@ -8,5 +8,6 @@
         <file>emergency_stop.png</file>
         <file>reset_value.png</file>
         <file>trash.png</file>
+        <file>oscillogram_make.png</file>
     </qresource>
 </RCC>

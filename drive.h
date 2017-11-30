@@ -368,6 +368,11 @@ signals:
      */
     void resetFanRuntime();
 
+    /**
+     * @brief Запускает самонастройку.
+     */
+    void selftune();
+
 //private signals:
     /**
      * @brief Читает следующий список параметров.
