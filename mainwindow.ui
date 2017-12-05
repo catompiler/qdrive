@@ -754,16 +754,25 @@
     <addaction name="actConnect"/>
     <addaction name="actDisconnect"/>
    </widget>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="mnuUtils">
     <property name="title">
      <string>&amp;Утилиты</string>
     </property>
+    <widget class="QMenu" name="mnuPid">
+     <property name="title">
+      <string>Пересчитать &amp;ПИД</string>
+     </property>
+     <addaction name="actCalcPidSpeed"/>
+     <addaction name="actCalcPidRot"/>
+     <addaction name="actCalcPidField"/>
+    </widget>
     <addaction name="actMakeStatusEvent"/>
+    <addaction name="mnuPid"/>
    </widget>
    <addaction name="mnuFile"/>
    <addaction name="mnuPref"/>
    <addaction name="mnuConnect"/>
-   <addaction name="menu"/>
+   <addaction name="mnuUtils"/>
   </widget>
   <widget class="QToolBar" name="fileToolBar">
    <property name="enabled">
@@ -1117,6 +1126,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actCalcPidSpeed">
+   <property name="text">
+    <string>Пересчитать ПИД с&amp;корости</string>
+   </property>
+  </action>
+  <action name="actCalcPidRot">
+   <property name="text">
+    <string>Пересчитать ПИД &amp;якоря</string>
+   </property>
+  </action>
+  <action name="actCalcPidField">
+   <property name="text">
+    <string>Пересчитать ПИД &amp;возб.</string>
    </property>
   </action>
  </widget>

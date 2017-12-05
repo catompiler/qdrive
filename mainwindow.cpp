@@ -14,6 +14,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <QSystemTrayIcon>
 #include <QProgressDialog>
 #include <QFileDialog>
@@ -581,6 +582,163 @@ void MainWindow::on_pbSelftune_clicked()
     drive->selftune();
 }
 
+void MainWindow::on_actCalcPidSpeed_triggered()
+{
+    QHash<param_id_t, Parameter*> params = paramsModel->getRealParamsHash();
+
+    Parameter* param_Irot = params.value(PARAM_ID_MOTOR_I_ROT_NOM);
+    Parameter* param_Rpm = params.value(PARAM_ID_MOTOR_RPM_NOM);
+
+    if(!param_Irot || !param_Rpm){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Невозможно получить параметры двигателя!"));
+        return;
+    }
+
+    Parameter* param_Kp = params.value(PARAM_ID_SPD_PID_K_P);
+    Parameter* param_Ki = params.value(PARAM_ID_SPD_PID_K_I);
+    Parameter* param_Kd = params.value(PARAM_ID_SPD_PID_K_D);
+
+    if(!param_Kp || !param_Ki || !param_Kd){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Невозможно получить параметры ПИД!"));
+        return;
+    }
+
+    float Irot = param_Irot->toFloat();
+    float Rpm = param_Rpm->toFloat();
+
+    if(Irot == 0 || Rpm == 0){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Не указаны параметры двигателя!"));
+        return;
+    }
+
+    bool ok = false;
+    float T = (float)QInputDialog::getDouble(this, tr("Запрос значения"), tr("Введите постоянную времени регулятора:"), 1.0, 0.001, 1000, 3, &ok);
+
+    if(!ok) return;
+
+    float Kp = Irot / Rpm;
+    float Ki = Kp / T;
+    float Kd = 0;
+
+    param_Kp->setFloat(Kp);
+    param_Ki->setFloat(Ki);
+    param_Kd->setFloat(Kd);
+
+    paramsModel->paramsUpdated();
+}
+
+void MainWindow::on_actCalcPidRot_triggered()
+{
+    QHash<param_id_t, Parameter*> params = paramsModel->getRealParamsHash();
+
+    Parameter* param_Unom = params.value(PARAM_ID_U_NOM);
+    Parameter* param_Irot = params.value(PARAM_ID_MOTOR_I_ROT_NOM);
+    Parameter* param_L = params.value(PARAM_ID_MOTOR_L_ROT_NOM);
+    Parameter* param_R = params.value(PARAM_ID_MOTOR_R_ROT_NOM);
+
+    if(!param_Unom || !param_Irot || !param_L || !param_R){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Невозможно получить параметры двигателя!"));
+        return;
+    }
+
+    Parameter* param_Kp = params.value(PARAM_ID_ROT_PID_K_P);
+    Parameter* param_Ki = params.value(PARAM_ID_ROT_PID_K_I);
+    Parameter* param_Kd = params.value(PARAM_ID_ROT_PID_K_D);
+
+    if(!param_Kp || !param_Ki || !param_Kd){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Невозможно получить параметры ПИД!"));
+        return;
+    }
+
+    float Irot = param_Irot->toFloat();
+    float Unom = param_Unom->toFloat();
+
+    if(Irot == 0 || Unom == 0){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Не указаны параметры двигателя!"));
+        return;
+    }
+
+    float L = param_L->toFloat();
+    float R = param_R->toFloat();
+
+    if(R == 0.0f) {
+        bool ok = false;
+        R = (float)QInputDialog::getDouble(this, tr("Запрос значения"), tr("Введите сопротивление якоря:"), 0.5, 0.001, 1000, 3, &ok);
+        if(!ok) return;
+    }
+
+    float T = 0.0f;
+
+    if(L == 0.0f) {
+        bool ok = false;
+        T = (float)QInputDialog::getDouble(this, tr("Запрос значения"), tr("Введите постоянную времени регулятора:"), 0.01, 0.001, 1000, 3, &ok);
+        if(!ok) return;
+    }else{
+        T = 0.001 * L / R;
+    }
+
+    // Падение напряжения на якоре при протекании номинального тока на активной составляющей.
+    float Urot = Irot * R;
+    // Максимальное выпрямленное напряжение.
+    float Ud0 = 3 * sqrt(6.0) / M_PI * Unom;
+    // Угол открытия для заданного напряжения.
+    float alpha = 120 - (degrees(acos(Urot / Ud0 - 1.0f)) - 60);
+
+    float Kp = alpha / Irot;
+    float Ki = Kp / T;
+    float Kd = 0;
+
+    param_Kp->setFloat(Kp);
+    param_Ki->setFloat(Ki);
+    param_Kd->setFloat(Kd);
+
+    paramsModel->paramsUpdated();
+}
+
+void MainWindow::on_actCalcPidField_triggered()
+{
+    QHash<param_id_t, Parameter*> params = paramsModel->getRealParamsHash();
+
+    Parameter* param_Iexc = params.value(PARAM_ID_MOTOR_I_EXC_NOM);
+
+    if(!param_Iexc){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Невозможно получить параметры двигателя!"));
+        return;
+    }
+
+    Parameter* param_Kp = params.value(PARAM_ID_EXC_PID_K_P);
+    Parameter* param_Ki = params.value(PARAM_ID_EXC_PID_K_I);
+    Parameter* param_Kd = params.value(PARAM_ID_EXC_PID_K_D);
+
+    if(!param_Kp || !param_Ki || !param_Kd){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Невозможно получить параметры ПИД!"));
+        return;
+    }
+
+    float Iexc = param_Iexc->toFloat();
+
+    if(Iexc == 0){
+        QMessageBox::critical(this, tr("Ошибка"), tr("Не указаны параметры двигателя!"));
+        return;
+    }
+
+    float T = 0.0f;
+
+    bool ok = false;
+    T = (float)QInputDialog::getDouble(this, tr("Запрос значения"), tr("Введите постоянную времени регулятора:"), 0.02, 0.001, 1000, 3, &ok);
+    if(!ok) return;
+
+    float Kp = 180.0 / Iexc;
+    float Ki = Kp / T;
+    float Kd = 0;
+
+    param_Kp->setFloat(Kp);
+    param_Ki->setFloat(Ki);
+    param_Kd->setFloat(Kd);
+
+    paramsModel->paramsUpdated();
+}
+
 void MainWindow::lvEvents_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
 {
     eventModel->setEvent(eventsModel->eventByIndex(current));
@@ -702,6 +860,16 @@ void MainWindow::refreshOscsList(int set_index)
             ui->cbOscs->setCurrentIndex(set_index);
         }
     }
+}
+
+float MainWindow::degrees(float val)
+{
+    return val * 180 / M_PI;
+}
+
+float MainWindow::radians(float val)
+{
+    return val * M_PI / 180;
 }
 
 void MainWindow::selectAndReadOscs()

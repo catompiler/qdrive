@@ -238,6 +238,21 @@ private slots:
     void on_pbSelftune_clicked();
 
     /**
+     * @brief Обработчик действия персчёта ПИД скорости.
+     */
+    void on_actCalcPidSpeed_triggered();
+
+    /**
+     * @brief Обработчик действия персчёта ПИД тока якоря.
+     */
+    void on_actCalcPidRot_triggered();
+
+    /**
+     * @brief Обработчик действия персчёта ПИД тока возбуждения.
+     */
+    void on_actCalcPidField_triggered();
+
+    /**
      * @brief Обработчик выделения события.
      * @param current Текущий индекс.
      * @param previous Предыдущий индекс.
@@ -276,6 +291,14 @@ private:
      * @brief Обновляет список осциллограмм в списке.
      */
     void refreshOscsList(int set_index = -1);
+    /**
+     * @brief Преобразует радианы в градусы.
+     */
+    float degrees(float val);
+    /**
+     * @brief Преобразует градусы в радианы.
+     */
+    float radians(float val);
     /**
      * @brief Графический интерфейс.
      */
