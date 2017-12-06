@@ -53,14 +53,15 @@ static ParamItem default_params[] = {
     {"PIDexc", PARAM_ID_PID_EXC_CURRENT, Qt::black},
     {"Temperature", PARAM_ID_HEATSINK_TEMP, Qt::darkGreen},
     //{"Calc Urot", PARAM_ID_POWER_CALC_U_ROT, Qt::blue},
+    {"RPM max", PARAM_ID_MOTOR_CUR_RPM_MAX, Qt::darkBlue},
     //{"Erot", PARAM_ID_MOTOR_E, Qt::blue},
-    {"PCA resets", PARAM_ID_DEBUG_2, Qt::black},
-    {"LM75 resets", PARAM_ID_DEBUG_3, Qt::black},
+    //{"PCA resets", PARAM_ID_DEBUG_2, Qt::black},
+    //{"LM75 resets", PARAM_ID_DEBUG_3, Qt::black},
     //{"I_c_zero", PARAM_ID_DEBUG_8, Qt::black},
     //{"Rrot", PARAM_ID_MOTOR_R_ROT, Qt::darkYellow},
     //{"Eff", PARAM_ID_MOTOR_EFF, Qt::darkYellow},
-    {"Iter time", PARAM_ID_DEBUG_0, Qt::black},
-    {"Adc time", PARAM_ID_DEBUG_1, Qt::black},
+    //{"Iter time", PARAM_ID_DEBUG_0, Qt::black},
+    //{"Adc time", PARAM_ID_DEBUG_1, Qt::black},
 };
 
 #define PARAM_ITEMS_COLS 2

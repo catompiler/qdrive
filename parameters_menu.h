@@ -188,6 +188,7 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_MOTOR_R_EXC, "Сопротивление возбуждения", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_MOTOR_RPM, "Обороты двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
             MENU_DESCR(2, PARAM_ID_MOTOR_TORQUE, "Момент двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
+            MENU_DESCR(2, PARAM_ID_MOTOR_CUR_RPM_MAX, "Тек. макс. обороты двигателя", NULL, 0, MENU_FLAG_VALUE, 0, 0),
         // Цифровые входа
         MENU_DESCR(1, 0, "Цифровые входа", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_DIGITAL_IN_1_STATE, "Цифровой вход 1", NULL, 0, MENU_FLAG_VALUE, 0, &menu_val_gui_digital_states),
@@ -233,6 +234,7 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, PARAM_ID_MOTOR_L_ROT_NOM, "Индуктивность якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_EXC_NOM, "Сопротивление возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, PARAM_ID_MOTOR_R_WIRES, "Сопротивление проводов", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_U_ROT_MAX, "Максимальное выходное напряжение", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
     // Возбуждение.
     MENU_DESCR(0, 0, "Возбуждение", NULL, 0, 0, 0, 0),
