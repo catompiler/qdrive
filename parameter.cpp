@@ -1,4 +1,6 @@
 #include "parameter.h"
+#define NEED_DESCRS
+#include "parameters_list.h"
 #include <algorithm>
 #include <QLocale>
 

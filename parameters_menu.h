@@ -88,6 +88,7 @@ MENU_VALUES(menu_enum_gui_tiles,
     MAKE_MENU_VALUE_STRING("Напряжение фазы B"),      // PARAM_ID_POWER_U_B
     MAKE_MENU_VALUE_STRING("Напряжение фазы C"),      // PARAM_ID_POWER_U_C
     MAKE_MENU_VALUE_STRING("Напряжение якоря"),    // PARAM_ID_POWER_U_ROT
+    MAKE_MENU_VALUE_STRING("ЭДС якоря"),    // PARAM_ID_MOTOR_E
     MAKE_MENU_VALUE_STRING("Ток фазы A"),      // PARAM_ID_POWER_I_A
     MAKE_MENU_VALUE_STRING("Ток фазы B"),      // PARAM_ID_POWER_I_B
     MAKE_MENU_VALUE_STRING("Ток фазы C"),      // PARAM_ID_POWER_I_C
@@ -111,8 +112,8 @@ MENU_VALUES(menu_enum_gui_languages,
 );
 //! Перечисления состояний цифрового входа/выхода
 MENU_VALUES(menu_enum_gui_digital_states,
-    MAKE_MENU_VALUE_STRING("Включен"),      // Включен
     MAKE_MENU_VALUE_STRING("Выключен"),      // Выключен
+    MAKE_MENU_VALUE_STRING("Включен"),      // Включен
 );
 //! Перечисления плиток для выбора отображения текста ошибок и предупреждений
 MENU_VALUES(menu_enum_gui_tiles_for_warnings,
@@ -288,6 +289,16 @@ MENU_DESCRS(menu_descrs) {
                 MENU_DESCR(3, PARAM_ID_EXC_PID_K_I, "Коэффициент И", NULL, 0, MENU_FLAG_DATA, 0, 0),
                 MENU_DESCR(3, PARAM_ID_EXC_PID_K_D, "Коэффициент Д", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
+    // Самонастройка.
+    MENU_DESCR(0, 0, "Самонастройка", NULL, 0, 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_OPEN_ANGLE, "Угол открытия", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_USE_MID_FILTER, "Использовать медианный фильтр", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_DIDT_AVG_COUNT, "Количество точек значений для расчёта dI/dt", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_ITERS_COUNT, "Количество итераций сбора данных", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_PAUSE_TIME_MS, "Пауза между итерациями сбора данных", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_USE_AB_FILTER, "Использовать АБ-фильтр", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+        MENU_DESCR(1, PARAM_ID_SELFTUNE_AB_FILTER_WEIGHT, "Вес АБ-фильтра", NULL, 0, MENU_FLAG_DATA, 0, 0),
+
     // Запуск и останов.
     MENU_DESCR(0, 0, "Запуск и останов", NULL, 0, 0, 0, 0),
         MENU_DESCR(1, PARAM_ID_ROT_STOP_TIME, "Время ожидания останова якоря", NULL, 0, MENU_FLAG_DATA, 0, 0),
@@ -310,6 +321,9 @@ MENU_DESCRS(menu_descrs) {
         MENU_DESCR(1, 0, "Время открытия", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_TIME, "Силовых тиристоров", NULL, 0, MENU_FLAG_DATA, 0, 0),
             MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_TIME, "Симистора возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, 0, "Компенсация задержки открытия", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_DELAY, "Силовых тиристоров", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_DELAY, "Симистора возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
         MENU_DESCR(1, 0, "Углы открытия", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, 0, "Силовые тиристоры", NULL, 0, 0, 0, 0),
                 MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_ANGLE_MIN, "Минимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),

@@ -50,7 +50,7 @@ public:
      * @brief Получает текущее задание.
      * @return Текущее задание.
      */
-    unsigned int reference() const;
+    float reference() const;
 
     /**
      * @brief Получает флаг работы.
@@ -315,7 +315,7 @@ signals:
      * @brief Устанавливает задание.
      * @param reference Задание.
      */
-    void setReference(unsigned int reference);
+    void setReference(float reference);
 
     /**
      * @brief Очищает ошибки привода.

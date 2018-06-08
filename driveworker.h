@@ -58,7 +58,7 @@ public:
      * @brief Получает текущее задание.
      * @return Текущее задание.
      */
-    unsigned int reference() const;
+    float reference() const;
 
     /**
      * @brief Получает флаг работы.
@@ -267,7 +267,7 @@ public slots:
      * @brief Устанавливает задание.
      * @param reference Задание.
      */
-    void setReference(unsigned int reference);
+    void setReference(float reference);
 
     /**
      * @brief Очищает ошибки привода.
@@ -476,7 +476,7 @@ private:
     /**
      * @brief Задание.
      */
-    unsigned int dev_reference;
+    float dev_reference;
     /**
      * @brief Работа.
      */

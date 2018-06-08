@@ -232,6 +232,43 @@ bool DriveOscillogram::saveCsv(const QString& filename) const
     return ts.status() == QTextStream::Ok;
 }
 
+bool DriveOscillogram::saveTxt(const QString& filename) const
+{
+    QFile file(filename);
+
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
+
+    QTextStream ts(&file);
+
+    ts.setLocale(QLocale());
+
+    size_t min_size = DRIVE_POWER_OSC_CHANNEL_LEN;
+    const Channel* ch = nullptr;
+
+    for(size_t i = 0; i < channelsCount(); i ++){
+        min_size = std::min(min_size, ch->size());
+    }
+
+    for(size_t n = 0; n < min_size; n ++){
+
+        if(n != 0) ts << "\n";
+
+        for(size_t i = 0; i < channelsCount(); i ++){
+
+            if(i != 0) ts << "\t";
+
+            ch = channel(i);
+
+            ts << ch->value(n);
+        }
+    }
+    ts << "\n";
+
+    file.close();
+
+    return ts.status() == QTextStream::Ok;
+}
+
 DriveOscillogram::Channel::Channel()
 {
     data_ptr = new float[DRIVE_POWER_OSC_CHANNEL_LEN];

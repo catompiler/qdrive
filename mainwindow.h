@@ -120,7 +120,13 @@ private slots:
      * @brief Обработчик изменения значения задания.
      * @param value Значение.
      */
-    void on_sbReference_valueChanged(int value);
+    void on_sbReference_valueChanged(double value);
+
+    /**
+     * @brief Обработчик изменения значения задания.
+     * @param value Значение.
+     */
+    void on_hsReference_valueChanged(int value);
 
     /**
      * @brief Обработчик нажатия кнопки сброса ошибок.

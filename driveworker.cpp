@@ -367,7 +367,7 @@ bool DriveWorker::connectedToDevice() const
     return connected_to_device;
 }
 
-unsigned int DriveWorker::reference() const
+float DriveWorker::reference() const
 {
     return dev_reference;
 }
@@ -620,13 +620,19 @@ void DriveWorker::rebootDrive()
     emit information(tr("Перезагрузка привода."));
 }
 
-void DriveWorker::setReference(unsigned int reference)
+void DriveWorker::setReference(float reference)
 {
     if(!connected_to_device) return;
 
+    reference = std::min(std::max(reference, 0.0f), 100.0f);
+
+    int referencei = static_cast<int>(floorf(reference * 10.0f));
+
+    //qDebug() << referencei;
+
     int res = 0;
 
-    res = modbusTry(modbus_write_register, DRIVE_MODBUS_HOLD_REG_REFERENCE, static_cast<int>(reference));
+    res = modbusTry(modbus_write_register, DRIVE_MODBUS_HOLD_REG_REFERENCE, referencei);
     if(res == -1){
         emit errorOccured(tr("Невозможно записать данные о задании.(%1)").arg(modbus_strerror(errno)));
         disconnectFromDevice();
@@ -1350,9 +1356,9 @@ void DriveWorker::writeNextParams()
             if(res == -1){
                 emit errorOccured(tr("Невозможно записать параметр с id %1.(%2)")
                                   .arg((*it)->id()).arg(modbus_strerror(errno)));
-                curParams.second->finish();
-                disconnectFromDevice();
-                return;
+                //curParams.second->finish();
+                //disconnectFromDevice();
+                //return;
             }
             curParams.second->setProgress(++ cur_progress);
         }
@@ -1363,8 +1369,8 @@ void DriveWorker::writeNextParams()
     res = modbusTry(modbus_write_bit, DRIVE_MODBUS_COIL_APPLY_PARAMS, 1);
     if(res == -1){
         emit errorOccured(tr("Невозможно применить параметры привода.(%1)").arg(modbus_strerror(errno)));
-        disconnectFromDevice();
-        return;
+        //disconnectFromDevice();
+        //return;
     }
 }
 
@@ -1385,7 +1391,9 @@ void DriveWorker::update()
         disconnectFromDevice();
         return;
     }
-    dev_reference = udata;
+
+    //qDebug() << udata;
+    dev_reference = static_cast<float>(udata) / 10.0f;
 
     res = modbusTry(modbus_read_bits, DRIVE_MODBUS_COIL_RUN, 1, &bits_data);
     if(res == -1){

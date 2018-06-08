@@ -7,6 +7,35 @@
 
 // Идентификаторы.
 
+
+////////////////////////////////////
+// Общие настройки с загрузчиком. //
+////////////////////////////////////
+
+/*
+ * Modbus.
+ */
+/**
+ * Скорость.
+ */
+#define PARAM_ID_MODBUS_BAUD 1
+/**
+ * Чётность.
+ */
+#define PARAM_ID_MODBUS_PARITY 2
+/**
+ * Стоповые биты.
+ */
+#define PARAM_ID_MODBUS_STOP_BITS 3
+/**
+ * Адрес устройства.
+ */
+#define PARAM_ID_MODBUS_ADDRESS 4
+/**
+ * Контрольная сумма общих параметров.
+ */
+#define PARAM_ID_SHARED_CRC 10
+
 //////////////////////
 // Общие параметры. //
 //////////////////////
@@ -337,6 +366,18 @@
 #define PARAM_ID_TRIAC_EXC_OPEN_TIME 1351
 
 /*
+ * Тиристоры - компенсация задержки прохождения сигнала.
+ */
+/*
+ * Компенсация по тиристорным парам.
+ */
+#define PARAM_ID_TRIACS_PAIRS_OPEN_DELAY 1355
+/*
+ * Компенсация по симистору возбуждения.
+ */
+#define PARAM_ID_TRIAC_EXC_OPEN_DELAY 1356
+
+/*
  * Тиристоры - углы открытия.
  */
 /**
@@ -399,6 +440,41 @@
  * Значение уровеня предупреждения превышения тока вентилятора, %.
  */
 #define PARAM_ID_FAN_PROT_OVF_LEVEL 1516
+
+
+/*
+ * Самонастройка.
+ */
+
+/*
+ * Угол открытия для самонастройки.
+ */
+#define PARAM_ID_SELFTUNE_OPEN_ANGLE 1610
+/*
+ * Использовать медианный фильтр для устранения помех.
+ */
+#define PARAM_ID_SELFTUNE_USE_MID_FILTER 1611
+/*
+ * Количесвто значений для вычисления dI/dt.
+ */
+#define PARAM_ID_SELFTUNE_DIDT_AVG_COUNT 1612
+/*
+ * Количество выборок данных.
+ */
+#define PARAM_ID_SELFTUNE_ITERS_COUNT 1613
+/*
+ * Время паузы между выборкаит данных.
+ */
+#define PARAM_ID_SELFTUNE_PAUSE_TIME_MS 1614
+/*
+ * Использовать АБ-фильтра.
+ */
+#define PARAM_ID_SELFTUNE_USE_AB_FILTER 1615
+/*
+ * Вес АБ-фильтра.
+ */
+#define PARAM_ID_SELFTUNE_AB_FILTER_WEIGHT 1616
+
 
 
 /////////////
@@ -1034,21 +1110,9 @@
 #define PARAM_ID_PROT_I_EXC_IDLE_WARN_ACTION 4174
 
 
-/////////////////
-// Интерфейсы. //
-/////////////////
-
-/*
- * Modbus.
- */
-/**
- * Скорость соединения Modbus RTU.
- */
-#define PARAM_ID_MODBUS_BAUD 5100
-/**
- * Адрес устройства Modbus RTU.
- */
-#define PARAM_ID_MODBUS_ADDRESS 5101
+/////////////////////
+// Входа - выхода. //
+/////////////////////
 
 /**
  * Параметры цифровых входов/выходов.

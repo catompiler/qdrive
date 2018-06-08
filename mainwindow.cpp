@@ -187,8 +187,12 @@ void MainWindow::disconnected()
 void MainWindow::updated()
 {
     ui->sbReference->blockSignals(true);
-    ui->hsReference->setValue(drive->reference());
+    ui->sbReference->setValue(drive->reference());
     ui->sbReference->blockSignals(false);
+
+    ui->hsReference->blockSignals(true);
+    ui->hsReference->setValue(static_cast<int>(drive->reference() * 10));
+    ui->hsReference->blockSignals(false);
 
     ui->lblLifeTimeVal->setText(QString::number(drive->devLifetime()));
     ui->lblRunTimeVal->setText(QString::number(drive->devRuntime()));
@@ -277,9 +281,24 @@ void MainWindow::on_pbReboot_clicked()
     drive->reboot();
 }
 
-void MainWindow::on_sbReference_valueChanged(int value)
+void MainWindow::on_sbReference_valueChanged(double value)
 {
     drive->setReference(value);
+
+    /*ui->hsReference->blockSignals(true);
+    ui->hsReference->setValue(static_cast<int>(value * 10));
+    ui->hsReference->blockSignals(false);*/
+}
+
+void MainWindow::on_hsReference_valueChanged(int value)
+{
+    float val = static_cast<float>(value) / 10;
+
+    drive->setReference(val);
+
+    /*ui->sbReference->blockSignals(true);
+    ui->sbReference->setValue(val);
+    ui->sbReference->blockSignals(false);*/
 }
 
 void MainWindow::on_pbClearErrs_clicked()
@@ -487,7 +506,7 @@ void MainWindow::on_pbSaveOsc_clicked()
     }
 
     QString filename = QFileDialog::getSaveFileName(this, tr("Сохранение осциллограммы"), Settings::get().lastPath(),
-                                                    tr("Осциллограммы (*.osc);;CSV (*.csv)"));
+                                                    tr("Осциллограммы (*.osc);;CSV (*.csv);;TXT(Octave) (*.txt)"));
 
     if(filename.isEmpty()) return;
 
@@ -504,6 +523,10 @@ void MainWindow::on_pbSaveOsc_clicked()
     }else if(ext == ".csv"){
         if(!osc.saveCsv(filename)){
             QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка сохранения файла csv!"));
+        }
+    }else if(ext == ".txt"){
+        if(!osc.saveTxt(filename)){
+            QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка сохранения файла txt!"));
         }
     }else{
         QMessageBox::critical(this, tr("Ошибка"), tr("Неизвестный формат осциллограммы!"));

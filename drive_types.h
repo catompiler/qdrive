@@ -6,6 +6,10 @@
 #include "fixed/fixed32.h"
 
 
+
+//! Тип данных в массиве значений параметров.
+typedef uint16_t param_data_t;
+
 //! @brief Тип идентификатора параметра.
 typedef uint16_t param_id_t;
 

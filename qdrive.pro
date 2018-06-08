@@ -8,6 +8,8 @@ QT       += core gui
 
 CONFIG   += c++11
 
+QMAKE_CFLAGS_ISYSTEM = ""
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = qdrive

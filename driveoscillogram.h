@@ -166,6 +166,13 @@ public:
      */
     bool saveCsv(const QString& filename) const;
 
+    /**
+     * @brief Сохраняет осциллограмму в файл TXT (GNU/Octave).
+     * @param filename Имя файла.
+     * @return Флаг успеха.
+     */
+    bool saveTxt(const QString& filename) const;
+
 private:
     //! Идентификатор события осциллограммы.
     drive_event_id_t event_id;

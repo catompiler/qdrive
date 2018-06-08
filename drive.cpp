@@ -72,7 +72,7 @@ bool Drive::connectedToDevice() const
     return worker->connectedToDevice();
 }
 
-unsigned int Drive::reference() const
+float Drive::reference() const
 {
     return worker->reference();
 }
