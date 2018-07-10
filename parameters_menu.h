@@ -334,6 +334,7 @@ MENU_DESCRS(menu_descrs) {
 
     // Защита.
     MENU_DESCR(0, 0, "Защита", NULL, 0, 0, 0, 0),
+        MENU_DESCR(1, PARAM_ID_PROT_WARNING_WRITE_OSC, "Осциллограмма при предупреждении", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
         // Тепловая защита.
         MENU_DESCR(1, 0, "Тепловая защита", NULL, 0, 0, 0, 0),
             MENU_DESCR(2, PARAM_ID_THERMAL_OVERLOAD_PROT_ENABLE, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
