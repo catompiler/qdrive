@@ -41,7 +41,8 @@ MENU_VALUES(menu_enum_overload_mode,
 MENU_VALUES(menu_enum_exc_mode,
     MAKE_MENU_VALUE_STRING("Фиксированное"),
     MAKE_MENU_VALUE_STRING("Регулируемое"),
-    MAKE_MENU_VALUE_STRING("Внешнее")
+    MAKE_MENU_VALUE_STRING("Внешнее"),
+    MAKE_MENU_VALUE_STRING("Фиксированное импульсное")
 );
 //! Перечисление типа останова.
 MENU_VALUES(menu_enum_stop_mode,
@@ -315,22 +316,30 @@ MENU_DESCRS(menu_descrs) {
             MENU_DESCR(2, PARAM_ID_SELFSTART_CLEAR_ERRORS_ATTEMPTS, "Попытки очистки", NULL, 0, MENU_FLAG_DATA, 0, 0),
             MENU_DESCR(2, PARAM_ID_SELFSTART_CLEAR_ERRORS_PERIOD, "Период очистки", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
-
     // Тиристоры.
     MENU_DESCR(0, 0, "Тиристоры", NULL, 0, 0, 0, 0),
-        MENU_DESCR(1, 0, "Время открытия", NULL, 0, 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_TIME, "Силовых тиристоров", NULL, 0, MENU_FLAG_DATA, 0, 0),
-            MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_TIME, "Симистора возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
-        MENU_DESCR(1, 0, "Компенсация задержки открытия", NULL, 0, 0, 0, 0),
-            MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_DELAY, "Силовых тиристоров", NULL, 0, MENU_FLAG_DATA, 0, 0),
-            MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_DELAY, "Симистора возбуждения", NULL, 0, MENU_FLAG_DATA, 0, 0),
-        MENU_DESCR(1, 0, "Углы открытия", NULL, 0, 0, 0, 0),
-            MENU_DESCR(2, 0, "Силовые тиристоры", NULL, 0, 0, 0, 0),
+        MENU_DESCR(1, 0, "Силовые", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_TIME, "Время открытия", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_TRIACS_PAIRS_OPEN_DELAY, "Компенсация задержки открытия", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, 0, "Углы открытия", NULL, 0, 0, 0, 0),
                 MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_ANGLE_MIN, "Минимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),
                 MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_ANGLE_MAX, "Максимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),
-            MENU_DESCR(2, 0, "Симистор возбуждения", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, 0, "Гребёнка", NULL, 0, 0, 0, 0),
+                MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_PULSE_TRAIN_ENABLED, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+                MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_PULSE_TRAIN_WIDTH, "Ширина", NULL, 0, MENU_FLAG_DATA, 0, 0),
+                MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_PULSE_TRAIN_DUTY_RATIO, "Коэффициент заполнения", NULL, 0, MENU_FLAG_DATA, 0, 0),
+                MENU_DESCR(3, PARAM_ID_TRIACS_PAIRS_PULSE_TRAIN_ANGLE_MIN, "Минимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),
+        MENU_DESCR(1, 0, "Возбуждения", NULL, 0, 0, 0, 0),
+            MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_TIME, "Время открытия", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, PARAM_ID_TRIAC_EXC_OPEN_DELAY, "Компенсация задержки открытия", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, 0, "Углы открытия", NULL, 0, 0, 0, 0),
                 MENU_DESCR(3, PARAM_ID_TRIAC_EXC_ANGLE_MIN, "Минимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),
                 MENU_DESCR(3, PARAM_ID_TRIAC_EXC_ANGLE_MAX, "Максимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),
+            MENU_DESCR(2, 0, "Гребёнка", NULL, 0, 0, 0, 0),
+                MENU_DESCR(3, PARAM_ID_TRIAC_EXC_PULSE_TRAIN_ENABLED, "Включено", NULL, 0, MENU_FLAG_DATA, 0, &menu_val_bool),
+                MENU_DESCR(3, PARAM_ID_TRIAC_EXC_PULSE_TRAIN_WIDTH, "Ширина", NULL, 0, MENU_FLAG_DATA, 0, 0),
+                MENU_DESCR(3, PARAM_ID_TRIAC_EXC_PULSE_TRAIN_DUTY_RATIO, "Коэффициент заполнения", NULL, 0, MENU_FLAG_DATA, 0, 0),
+                MENU_DESCR(3, PARAM_ID_TRIAC_EXC_PULSE_TRAIN_ANGLE_MIN, "Минимальный угол", NULL, 0, MENU_FLAG_DATA, 0, 0),
 
     // Защита.
     MENU_DESCR(0, 0, "Защита", NULL, 0, 0, 0, 0),
